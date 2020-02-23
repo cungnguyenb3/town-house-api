@@ -79,7 +79,14 @@
 			<artifactId>hibernate-search-orm</artifactId>
 			<version>5.11.1.Final</version>
 		</dependency>
-    </dependencies>
+		<!-- https://mvnrepository.com/artifact/postgresql/postgresql -->
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>
