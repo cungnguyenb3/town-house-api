@@ -5,9 +5,9 @@ import vn.com.pn.common.dto.UserUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
 
 public interface UserService {
-    BaseOutput getAll();
-    BaseOutput getId(String userId);
-    BaseOutput insert(UserDTO userDTO);
-    BaseOutput update(UserUpdateDTO userUpdateDTO);
-    BaseOutput delete(String userId);
+//    BaseOutput getAll();
+//    BaseOutput getId(String userId);
+//    BaseOutput insert(UserDTO userDTO);
+//    BaseOutput update(UserUpdateDTO userUpdateDTO);
+//    BaseOutput delete(String userId);
 }
