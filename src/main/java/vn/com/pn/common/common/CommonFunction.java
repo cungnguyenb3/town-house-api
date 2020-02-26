@@ -5,6 +5,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import vn.com.pn.common.output.BaseOutput;
 
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class CommonFunction {
@@ -63,6 +67,18 @@ public class CommonFunction {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Date convertStringToDateObject(String inputDate){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = dateFormat.parse(inputDate);
+            return date;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
 

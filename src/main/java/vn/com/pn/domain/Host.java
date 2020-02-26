@@ -11,6 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.sql.Timestamp;
 
 @Setter
 @Getter
@@ -49,49 +52,48 @@ public class Host implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private HostCity hostCity;
 
+    @Column(name = "address", nullable = true)
+    private String address;
+
+    @Column(name = "latitude", nullable = true)
+    private String latitude;
+
+    @Column(name = "longitude", nullable = true)
+    private String longitude;
+
+    @Column(name = "bedroom_count", nullable = true)
+    private int bedroomCount;
+
+    @Column(name = "bed", nullable = true)
+    private int bed;
+
+    @Column(name = "bathroom_count", nullable = true)
+    private int bathroomCount;
+
+    @Column(name = "availability_type", nullable = true)
+    private boolean availabilityType;
 //
-//    @Column(name = "address", nullable = false)
-//    private String address;
+    @Column(name = "start_date", nullable = true)
+    private Date startDate;
 //
-//    @Column(name = "latitude", nullable = false)
-//    private String latitude;
+    @Column(name = "end_date", nullable = true)
+    private Date endDate;
 //
-//    @Column(name = "logitude", nullable = false)
-//    private String logitude;
+    @Column(name = "price", nullable = true)
+    private BigDecimal price;
+
+    @Column(name = "price_type", nullable = true)
+    private boolean priceType;
+
+    @Column(name = "minimum_stay", nullable = true)
+    private String minimumStay;
+
+    @Column(name = "minimum_stay_type", nullable = true)
+    private boolean minimumStayType;
 //
-//    @Column(name = "bedroom_count", nullable = false)
-//    private String bedroomCount;
-//
-//    @Column(name = "bed", nullable = false)
-//    private String bed;
-//
-//    @Column(name = "bathroom_count", nullable = false)
-//    private String bathroomCount;
-//
-//    @Column(name = "availability_type", nullable = false)
-//    private String availabilityType;
-//
-//    @Column(name = "start_date", nullable = false)
-//    private String startDate;
-//
-//    @Column(name = "end_date", nullable = false)
-//    private String endDate;
-//
-//    @Column(name = "price", nullable = false)
-//    private String price;
-//
-//    @Column(name = "price_type", nullable = false)
-//    private String priceType;
-//
-//    @Column(name = "minimum_stay", nullable = false)
-//    private String priceType;
-//
-//    @Column(name = "minimum_stay_type", nullable = false)
-//    private String minimumStayType;
-//
-//    @Column(name = "refund_type", nullable = false)
-//    private String refundType;
-//
-//    @Column(name = "status", nullable = false)
-//    private String status;
+    @Column(name = "refund_type", nullable = true)
+    private boolean refundType;
+
+    @Column(name = "status", nullable = true)
+    private boolean status;
 }

@@ -17,8 +17,11 @@ import vn.com.pn.repository.hostcategory.HostCategoryRepository;
 import vn.com.pn.repository.hostcity.HostCityRepository;
 import vn.com.pn.repository.hostroomtype.HostRoomTypeRepository;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 @Service
 public class HostServiceImpl implements HostService {
@@ -76,11 +79,83 @@ public class HostServiceImpl implements HostService {
                         -> new ResourceNotFoundException("HostCity","id", hostDTO.getHostCityId()));
                 host.setHostCity(hostCity);
             }
+            if (hostDTO.getAddress() != null && hostDTO.getAddress() != ""){
+                host.setAddress(hostDTO.getAddress());
+            }
+            if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != ""){
+                host.setLatitude(hostDTO.getLatitude());
+            }
+            if (hostDTO.getLongitude() != null && hostDTO.getLongitude() != ""){
+                host.setLongitude(hostDTO.getLongitude());
+            }
+            if (hostDTO.getBedroomCount() != null && hostDTO.getBedroomCount() != ""){
+                host.setBedroomCount(Integer.parseInt(hostDTO.getBedroomCount()));
+            }
+            if (hostDTO.getBed() != null && hostDTO.getBed() != ""){
+                host.setBed(Integer.parseInt(hostDTO.getBed()));
+            }
+            if (hostDTO.getBathroomCount() != null && hostDTO.getBathroomCount() != ""){
+                host.setBathroomCount(Integer.parseInt(hostDTO.getBathroomCount()));
+            }
+            if (hostDTO.getAvailabilityType() != null && hostDTO.getAvailabilityType() != ""){
+                if(hostDTO.getAvailabilityType().equals("0")){
+                    host.setAvailabilityType(false);
+                }
+                if(hostDTO.getAvailabilityType().equals("1")){
+                    host.setAvailabilityType(true);
+                }
+            }
+            if (hostDTO.getStartDate() != null && hostDTO.getStartDate() != ""){
+                host.setStartDate(CommonFunction.convertStringToDateObject(hostDTO.getStartDate()));
+            }
+            if (hostDTO.getEndDate() != null && hostDTO.getEndDate() != ""){
+                host.setEndDate(CommonFunction.convertStringToDateObject(hostDTO.getEndDate()));
+            }
+            if (hostDTO.getPrice() != null && hostDTO.getPrice() != ""){
+                host.setPrice(new BigDecimal(hostDTO.getPrice()));
+            }
+//
+            if (hostDTO.getPriceType() != null && hostDTO.getPriceType() != ""){
+                if(hostDTO.getPriceType().equals("0")){
+                    host.setPriceType(false);
+                }
+                if(hostDTO.getPriceType().equals("1")){
+                    host.setPriceType(true);
+                }
+            }
+            if (hostDTO.getMinimumStay() != null && hostDTO.getMinimumStay() != ""){
+                host.setMinimumStay(hostDTO.getMinimumStay());
+            }
+            if (hostDTO.getMinimumStayType() != null && hostDTO.getMinimumStayType() != ""){
+                if(hostDTO.getMinimumStayType().equals("0")){
+                    host.setMinimumStayType(false);
+                }
+                if(hostDTO.getMinimumStayType().equals("1")){
+                    host.setMinimumStayType(true);
+                }
+            }
+            if (hostDTO.getRefundType() != null && hostDTO.getRefundType() != ""){
+                if(hostDTO.getRefundType().equals("0")){
+                    host.setRefundType(false);
+                }
+                if(hostDTO.getRefundType().equals("1")){
+                    host.setRefundType(true);
+                }
+            }
+            if (hostDTO.getStatus() != null && hostDTO.getStatus() != ""){
+                if(hostDTO.getStatus().equals("0")){
+                    host.setStatus(false);
+                }
+                if(hostDTO.getStatus().equals("1")){
+                    host.setStatus(true);
+                }
+            }
 
             return CommonFunction.successOutput(hostRepository.save(host));
         } catch (Exception e) {
             logger.trace(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
+
     }
 }
