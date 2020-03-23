@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserDTO extends BaseDTO{
-    private String name;
+    private String fullName;
+    private String username;
     private String email;
-    private String phone;
     private String password;
 }

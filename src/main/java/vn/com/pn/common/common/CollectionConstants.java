@@ -3,7 +3,7 @@ package vn.com.pn.common.common;
 public class CollectionConstants {
 
     /**
-     * user collection
+     * User Table
      */
     public class USER {
         public static final String _ID = "_id";

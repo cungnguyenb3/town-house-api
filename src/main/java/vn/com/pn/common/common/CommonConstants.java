@@ -16,6 +16,11 @@ public class CommonConstants {
         int STATUS_NO_RECORD = 8;
     }
 
+    public interface HTTP_STATUS_CODE {
+        int SUCCESS = 400;
+        int BAD_REQUEST = 400;
+    }
+
     /**
      * URL Constants
      */
@@ -25,6 +30,8 @@ public class CommonConstants {
         // User controller
         String USER_ROOT = "/users";
         String USER_ID= "/users/{id}";
+        String USER_CHANGE_PASSWORD= "/users/change-password/{id}";
+        String USER_CHANGE_HOST_WISH_LIST= "/users/change-host-wish-list/{id}";
 
         // HostAgent controller
         String HOST_AGENT_ROOT = "/host-agents";
@@ -42,9 +49,19 @@ public class CommonConstants {
         String HOST_ROOM_TYPE_ROOT = "/host-room-types";
         String HOST_ROOM_TYPE_ID = "/host-room-types/{id}";
 
-        // HostRoomType controller
+        // Host City controller
         String HOST_CITY_ROOT = "/host-cities";
         String HOST_CITY_ID = "/host-cities/{id}";
 
+        // Role controller
+        String ROLE_ROOT = "/roles";
+        String ROLE_ID= "/roles/{id}";
+
+        // Booking controller
+        String BOOKING_ROOT = "/bookings";
+        String BOOKING_CANCEL = "/bookings-cancel/{id}";
+
+        // Host review controller1
+        String HOST_REVIEW_ROOT = "/host-reviews";
     }
 }

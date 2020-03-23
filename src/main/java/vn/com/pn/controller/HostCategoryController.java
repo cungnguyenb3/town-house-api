@@ -52,7 +52,7 @@ public class HostCategoryController {
             return response;
         }
         catch (Exception e){
-            logger.trace(ScreenMessageConstants.FAILURE, e);
+            logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
     }

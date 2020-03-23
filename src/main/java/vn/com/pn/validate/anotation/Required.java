@@ -1,4 +1,4 @@
-package vn.com.pn.validate.annotation;
+package vn.com.pn.validate.anotation;
 
 import java.lang.annotation.*;
 @Target({ ElementType.FIELD })

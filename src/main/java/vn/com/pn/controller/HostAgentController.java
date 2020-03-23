@@ -5,16 +5,13 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import vn.com.pn.api.request.HostAgentInsertRequest;
+import org.springframework.web.bind.annotation.*;
+import vn.com.pn.api.request.HostAgentRequest;
 import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.dto.HostAgentDTO;
-import vn.com.pn.common.dto.UserDTO;
+import vn.com.pn.common.dto.HostAgentUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.service.hostagent.HostAgentService;
 import vn.com.pn.utils.MapperUtil;
@@ -40,9 +37,24 @@ public class HostAgentController {
         return response;
     }
 
+    @ApiOperation(value = "Get a host agent with an Id", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_AGENT_ID, method = RequestMethod.GET)
+    public BaseOutput getId(@PathVariable String id) {
+        logger.info("========== HostAgentController.getId START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        try {
+            BaseOutput response = hostAgentService.getId(id);
+            logger.info("======= HostAgentController.getId ========");
+            return response;
+        } catch (Exception e){
+            logger.error(ScreenMessageConstants.FAILURE,e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
     @ApiOperation(value = "Add a new host agent", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_AGENT_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody HostAgentInsertRequest request) {
+    public BaseOutput insert(@Valid @RequestBody HostAgentRequest request) {
         logger.info("========== UserController.getAll START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
@@ -53,7 +65,41 @@ public class HostAgentController {
             return response;
         }
         catch (Exception e){
-            logger.trace(ScreenMessageConstants.FAILURE, e);
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @ApiOperation(value = "Update a host agent", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_AGENT_ID, method = RequestMethod.PUT)
+    public BaseOutput update(@Valid @PathVariable String id, @RequestBody HostAgentRequest request) {
+        logger.info("========== HostAgentController.update START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(request));
+        try {
+            HostAgentUpdateDTO hostAgentUpdateDTO = MapperUtil.mapper(request, HostAgentUpdateDTO.class);
+            hostAgentUpdateDTO.setId(id);
+            BaseOutput response = hostAgentService.update(hostAgentUpdateDTO);
+            logger.info(CommonFunction.convertToJSONStringResponse(response));
+            logger.info("========== HostAgentController.update END ==========");
+            return response;
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @ApiOperation(value = "Delete an host agent", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_AGENT_ID, method = RequestMethod.DELETE)
+    public BaseOutput delete(@Valid @PathVariable String id){
+        logger.info("========== HostAgentController.delete START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        try {
+            BaseOutput response = hostAgentService.delete(id);
+            logger.info("========== HostAgentController.delete END ==========");
+            return response;
+        }
+        catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
     }

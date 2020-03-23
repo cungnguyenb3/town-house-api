@@ -6,8 +6,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserUpdateRequest extends BaseRequest {
-    private String name;
+    private String fullName;
+    private String userName;
     private String email;
     private String phone;
-    private String password;
+    private String dateOfBirth;
+    private String national;
+    private String gender;
 }

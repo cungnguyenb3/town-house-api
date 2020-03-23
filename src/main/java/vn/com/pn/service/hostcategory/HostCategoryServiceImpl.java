@@ -43,7 +43,7 @@ public class HostCategoryServiceImpl implements HostCategoryService{
             }
             return CommonFunction.successOutput(hostCategoryRepository.save(hostCategory));
         } catch (Exception e) {
-            logger.trace(ScreenMessageConstants.FAILURE, e);
+            logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
     }

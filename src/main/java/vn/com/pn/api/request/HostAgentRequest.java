@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HostAgentInsertRequest {
+public class HostAgentRequest {
     private String fullName;
     private String email;
     private String phone;

@@ -3,8 +3,11 @@ package vn.com.pn.common.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.validation.BindingResult;
 import vn.com.pn.common.output.BaseOutput;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -46,6 +49,14 @@ public class CommonFunction {
         output.setMessage(ScreenMessageConstants.FAILURE);
         return output;
     }
+    public static BaseOutput errorLogic(int status, Object message) {
+        logger.info("CommonFunction.failureOutput");
+        BaseOutput output = new BaseOutput();
+        output.setStatus(CommonConstants.STATUS.STATUS_FAILURE);
+        output.setMessage(message);
+        return output;
+    }
+
 
     public static String convertToJSONString(Object object) {
         logger.info("CommonFunction.convertToJSONString");
@@ -78,8 +89,18 @@ public class CommonFunction {
             e.printStackTrace();
             return null;
         }
-
     }
 
+    public static BaseOutput errorValidateItem(BindingResult bindingResult) {
+        List<String> errors = new ArrayList<>();
+        if (bindingResult.getFieldErrors() != null && bindingResult.getFieldErrors().size() > 0) {
+            bindingResult.getFieldErrors().stream().forEach(f -> {
+                errors.add(MessageFormat.format(f.getDefaultMessage(), f.getField()));
+            });
+        } else if (bindingResult.getErrorCount() > 0) {
+            errors.add(bindingResult.getGlobalError().getDefaultMessage());
+        }
+        return CommonFunction.errorLogic(CommonConstants.STATUS.STATUS_PARAM_ERROR, errors);
+    }
 
 }

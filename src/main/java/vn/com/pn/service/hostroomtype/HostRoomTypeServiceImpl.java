@@ -42,7 +42,7 @@ public class HostRoomTypeServiceImpl implements HostRoomTypeService{
             }
             return CommonFunction.successOutput(hostRoomTypeRepository.save(hostRoomType));
         } catch (Exception e) {
-            logger.trace(ScreenMessageConstants.FAILURE, e);
+            logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
     }

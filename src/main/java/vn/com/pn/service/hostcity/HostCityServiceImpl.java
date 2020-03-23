@@ -37,7 +37,7 @@ public class HostCityServiceImpl implements HostCityService{
             }
             return CommonFunction.successOutput(hostCityRepository.save(hostCity));
         } catch (Exception e) {
-            logger.trace(ScreenMessageConstants.FAILURE, e);
+            logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
     }
