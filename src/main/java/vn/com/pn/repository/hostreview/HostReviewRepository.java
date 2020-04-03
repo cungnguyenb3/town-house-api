@@ -8,6 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface HostReviewRepository extends JpaRepository <HostReview, Integer> {
-    @Query(value="SELECT `star_rating`  FROM `host_reviews` WHERE host_id = ?1",nativeQuery=true)
+    @Query(value="SELECT star_rating  FROM host_reviews WHERE host_id = ?1", nativeQuery=true)
     List<Integer> findStarRatingByHostId(int hostId);
 }

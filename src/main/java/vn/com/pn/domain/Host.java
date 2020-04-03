@@ -50,6 +50,11 @@ public class Host implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private HostCity hostCity;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "cancellation_policy_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private HostCancellationPolicy hostCancellationPolicy;
+
     private String address;
 
     private String latitude;
@@ -57,12 +62,12 @@ public class Host implements Serializable {
     private String longitude;
 
     @Column(name = "bedroom_count")
-    private int bedroomCount;
+    private Integer bedroomCount;
 
-    private int bed;
+    private Integer bed;
 
     @Column(name = "bathroom_count")
-    private int bathroomCount;
+    private Integer bathroomCount;
 
     @Column(name = "availability_type")
     private boolean availabilityType;
@@ -90,4 +95,7 @@ public class Host implements Serializable {
     private boolean status;
 
     private float star;
+
+    @Column(name = "total_review")
+    private Integer totalReview;
 }

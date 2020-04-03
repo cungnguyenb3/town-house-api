@@ -3,6 +3,7 @@ package vn.com.pn.service.host;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
@@ -164,6 +165,7 @@ public class HostServiceImpl implements HostService {
             }
         }
         host.setStar(0);
+        host.setTotalReview(0);
         return host;
     }
 
@@ -270,5 +272,15 @@ public class HostServiceImpl implements HostService {
             }
         }
         return null;
+    }
+
+    @Override
+    public BaseOutput delete(String hostId) {
+        logger.info("HostService.delete");
+        Host host = hostRepository.findById(Integer.parseInt(hostId)).orElseThrow(()
+                -> new ResourceNotFoundException("Host","id",hostId));
+        hostRepository.delete(host);
+        Object object = ResponseEntity.ok().build();
+        return CommonFunction.successOutput(object);
     }
 }

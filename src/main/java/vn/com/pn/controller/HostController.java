@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.com.pn.api.request.HostInsertRequest;
 import vn.com.pn.api.request.HostUpdateRequest;
 import vn.com.pn.api.request.UserInsertRequest;
@@ -79,6 +76,22 @@ public class HostController {
             HostUpdateDTO hostUpdateDTO = MapperUtil.mapper(request, HostUpdateDTO.class);
             BaseOutput response = hostService.update(hostUpdateDTO);
             logger.info("========== UserController.update END ==========");
+            return response;
+        }
+        catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.DELETE)
+    public BaseOutput delete(@Valid @PathVariable String id){
+        logger.info("========== HostController.delete START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        try {
+            BaseOutput response = hostService.delete(id);
+            logger.info("========== HostController.delete END ==========");
             return response;
         }
         catch (Exception e) {

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import vn.com.pn.domain.User;
 import vn.com.pn.service.user.UserPrinciple;
 
 import java.util.Date;
@@ -35,6 +36,11 @@ public class JwtProvider {
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+    }
+
+    public UserPrinciple getUserFromLogin(Authentication authentication) {
+        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+        return userPrinciple;
     }
 
     public String getUserNameFromJwtToken(String token) {

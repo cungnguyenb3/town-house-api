@@ -122,7 +122,8 @@ public class UserController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        UserPrinciple userPrinciple = jwtProvider.getUserFromLogin(authentication);
+        return ResponseEntity.ok(new JwtResponse(jwt, userPrinciple));
     }
 
     @ApiImplicitParams({

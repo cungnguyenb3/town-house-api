@@ -8,4 +8,6 @@ public interface HostService {
     BaseOutput getAll();
     BaseOutput insert(HostDTO hostDTO);
     BaseOutput update(HostUpdateDTO hostUpdateDTO);
+    BaseOutput delete(String hostId);
+
 }

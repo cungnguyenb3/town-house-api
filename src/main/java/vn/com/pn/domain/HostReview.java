@@ -34,7 +34,7 @@ public class HostReview {
     private String content;
 
     @Column(name = "star_rating")
-    private int starRating;
+    private Integer starRating;
 
     @Column(name = "is_delete", nullable = true)
     private boolean isDelete;

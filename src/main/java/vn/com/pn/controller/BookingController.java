@@ -17,7 +17,6 @@ import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.dto.BookingCancelDTO;
 import vn.com.pn.common.dto.BookingDTO;
 import vn.com.pn.common.output.BaseOutput;
-import vn.com.pn.domain.Booking;
 import vn.com.pn.domain.User;
 import vn.com.pn.security.AuthService;
 import vn.com.pn.service.booking.BookingService;

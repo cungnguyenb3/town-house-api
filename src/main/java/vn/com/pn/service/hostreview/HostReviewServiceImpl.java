@@ -127,6 +127,7 @@ public class HostReviewServiceImpl implements HostReviewService {
         List<Integer> listStarRating = getStarRatingByHost(hostId);
         listStarRating.add(Integer.parseInt(starRating));
         host.setStar(calculateAverage(listStarRating));
+        host.setTotalReview(listStarRating.size());
         return host;
     }
 
