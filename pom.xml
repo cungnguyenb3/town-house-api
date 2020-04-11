@@ -90,6 +90,11 @@
 			<version>5.2.1.RELEASE</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- For heroku	-->
 <!--		<dependency>-->
 <!--			<groupId>org.postgresql</groupId>-->

@@ -15,4 +15,5 @@ public interface UserService {
     BaseOutput delete(String userId);
     BaseOutput changePassword(UserChangePasswordDTO userChangePasswordDTO);
     BaseOutput updateWishListHost(UserUpdateWishListDTO userUpdateWishListDTO);
+    BaseOutput enableUser(UserPrinciple userPrinciple);
 }

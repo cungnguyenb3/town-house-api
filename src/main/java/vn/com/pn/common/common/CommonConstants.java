@@ -32,6 +32,7 @@ public class CommonConstants {
         String USER_ID= "/users/{id}";
         String USER_CHANGE_PASSWORD= "/users/change-password/{id}";
         String USER_CHANGE_HOST_WISH_LIST= "/users/change-host-wish-list/{id}";
+        String USER_ACTIVATION="/users/activation";
 
         // HostAgent controller
         String HOST_AGENT_ROOT = "/host-agents";
@@ -61,7 +62,11 @@ public class CommonConstants {
         String BOOKING_ROOT = "/bookings";
         String BOOKING_CANCEL = "/bookings-cancel/{id}";
 
-        // Host review controller1
+        // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";
+
+        // Host cancellation policy
+        String HOST_CANCELLATION_POLICY_ROOT = "/host-cancellation-policies";
+
     }
 }

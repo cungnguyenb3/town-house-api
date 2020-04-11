@@ -3,6 +3,9 @@ package vn.com.pn.common.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.BindingResult;
 import vn.com.pn.common.output.BaseOutput;
 
@@ -16,6 +19,8 @@ import java.util.List;
 
 public class CommonFunction {
     private static Log logger = LogFactory.getLog(CommonFunction.class);
+
+
 
     public static BaseOutput successOutput(List<Object> list){
         logger.info("CommonFunction.successOutput");
@@ -102,5 +107,6 @@ public class CommonFunction {
         }
         return CommonFunction.errorLogic(CommonConstants.STATUS.STATUS_PARAM_ERROR, errors);
     }
+
 
 }

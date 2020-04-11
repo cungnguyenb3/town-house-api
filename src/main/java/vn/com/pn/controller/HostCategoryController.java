@@ -38,23 +38,4 @@ public class HostCategoryController {
         logger.info("========== HostCategoryController.getAll END ==========");
         return response;
     }
-
-    @ApiOperation(value = "Add an host", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody HostCategoryInsertRequest request) {
-        logger.info("========== HostCategoryController.insert START ==========");
-        logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostCategoryDTO hostCategoryDTO = MapperUtil.mapper(request, HostCategoryDTO.class);
-            BaseOutput response = hostCategoryService.insert(hostCategoryDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostCategoryController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
-    }
-
 }

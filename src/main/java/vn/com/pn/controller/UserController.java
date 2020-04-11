@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,9 @@ public class UserController {
 
     @Autowired
     private JwtProvider jwtProvider;
+
+    @Autowired
+    private JwtUserDetailsServiceImpl userDetailsService;
 
     @ApiOperation(value = "View a list users", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ROOT, method = RequestMethod.GET)
@@ -191,6 +195,21 @@ public class UserController {
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE);
             return CommonFunction.failureOutput();
+        }
+    }
+
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ACTIVATION, method = RequestMethod.GET)
+    public String authenticateUser(@RequestParam(value = "token") String token) {
+        logger.info("========== UserController.updateHostWishList START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(token));
+        try {
+            String userNameFromJwtToken = jwtProvider.getUserNameFromJwtToken(token);
+            UserPrinciple userPrinciple = (UserPrinciple) userDetailsService.loadUserByUsername(userNameFromJwtToken);
+            userService.enableUser(userPrinciple);
+            return "Tài khoản của bạn đã xác nhận thành công!";
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE);
+            return "Tài khoản xác nhận thất bại!";
         }
     }
 }

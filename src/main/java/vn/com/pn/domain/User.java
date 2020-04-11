@@ -59,6 +59,8 @@ public class User implements Serializable{
     @Column(nullable = false)
     private String password;
 
+    private boolean isEnable;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
