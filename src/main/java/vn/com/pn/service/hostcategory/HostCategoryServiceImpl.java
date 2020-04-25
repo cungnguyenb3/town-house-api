@@ -8,10 +8,7 @@ import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.dto.HostCategoryDTO;
 import vn.com.pn.common.output.BaseOutput;
-import vn.com.pn.domain.Host;
-import vn.com.pn.domain.HostAgent;
 import vn.com.pn.domain.HostCategory;
-import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.repository.hostcategory.HostCategoryRepository;
 import vn.com.pn.service.host.HostServiceImpl;
 
@@ -27,12 +24,14 @@ public class HostCategoryServiceImpl implements HostCategoryService{
 
     @Override
     public BaseOutput getAll() {
+        logger.info("ForgotPasswordCodeServiceImpl.getAll");
         List<Object> listHostCategories = new ArrayList<Object>(hostCategoryRepository.findAll());
         return CommonFunction.successOutput(listHostCategories);
     }
 
     @Override
     public BaseOutput insert(HostCategoryDTO hostCategoryDTO) {
+        logger.info("ForgotPasswordCodeServiceImpl.insert");
         try {
             HostCategory hostCategory = new HostCategory();
             if (hostCategoryDTO.getName() != null && hostCategoryDTO.getName() != ""){

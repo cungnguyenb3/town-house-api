@@ -11,7 +11,6 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "host_categories")
-@EntityListeners(AuditingEntityListener.class)
 public class HostCategory implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

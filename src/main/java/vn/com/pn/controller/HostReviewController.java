@@ -47,6 +47,7 @@ public class HostReviewController {
         return response;
     }
 
+    @ApiOperation(value = "Add a host review", response = BaseOutput.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header") })

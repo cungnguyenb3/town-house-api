@@ -8,6 +8,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.format.annotation.NumberFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,17 +26,18 @@ import vn.com.pn.api.request.*;
 import vn.com.pn.api.response.JwtResponse;
 import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
+import vn.com.pn.common.common.DisplayNameConstant;
 import vn.com.pn.common.common.ScreenMessageConstants;
-import vn.com.pn.common.dto.UserChangePasswordDTO;
-import vn.com.pn.common.dto.UserDTO;
-import vn.com.pn.common.dto.UserUpdateDTO;
-import vn.com.pn.common.dto.UserUpdateWishListDTO;
+import vn.com.pn.common.dto.*;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.domain.ForgotPasswordCode;
+import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.security.JwtProvider;
 import vn.com.pn.security.JwtUserDetailsServiceImpl;
 import vn.com.pn.service.user.UserPrinciple;
 import vn.com.pn.service.user.UserService;
 import vn.com.pn.utils.MapperUtil;
+import vn.com.pn.validate.anotation.Number;
 
 //https://dzone.com/articles/spring-boot-restful-api-documentation-with-swagger
 
@@ -48,9 +52,6 @@ public class UserController {
     private String tokenHeader;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -58,6 +59,9 @@ public class UserController {
 
     @Autowired
     private JwtUserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private ApplicationContext context;
 
     @ApiOperation(value = "View a list users", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ROOT, method = RequestMethod.GET)
@@ -71,17 +75,12 @@ public class UserController {
 
     @ApiOperation(value = "Get a user with an Id", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.GET)
-    public BaseOutput getId(@PathVariable String id) {
+    public ResponseEntity<?> getId(@PathVariable String id) {
         logger.info("========== UserController.getId START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
-        try {
-            BaseOutput response = userService.getId(id);
-            logger.info("======= UserController.getId ========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        BaseOutput response = userService.getId(id);
+        logger.info("======= UserController.getId END========");
+        return ResponseEntity.ok(response);
     }
 
     @ApiOperation(value = "Delete an user", response = BaseOutput.class)
@@ -99,49 +98,21 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "Register a new user", response = BaseOutput.class)
     @PostMapping("/users/signup")
     public BaseOutput registerUser(@Valid @RequestBody UserInsertRequest request) {
-        logger.info("========== UserController.getAll START ==========");
+        logger.info("========== UserController.register START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
             UserDTO userDTO = MapperUtil.mapper(request,UserDTO.class);
             BaseOutput response = userService.insert(userDTO);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.insert END ==========");
+            logger.info("========== UserController.register END ==========");
             return response;
         }
         catch (Exception e){
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
-        }
-    }
-
-    @PostMapping("/users/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwtToken(authentication);
-        UserPrinciple userPrinciple = jwtProvider.getUserFromLogin(authentication);
-        return ResponseEntity.ok(new JwtResponse(jwt, userPrinciple));
-    }
-
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
-    @RequestMapping(value = "/users/refreshToken", method = RequestMethod.GET)
-    public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
-        String authToken = request.getHeader(tokenHeader);
-        final String token = authToken.substring(7);
-        if (jwtProvider.canTokenBeRefreshed(token)) {
-            String refreshedToken = jwtProvider.refreshToken(token);
-            return ResponseEntity.ok(CommonFunction.successOutput(new JwtResponse(refreshedToken)));
-        } else {
-            return ResponseEntity.badRequest().body(null);
         }
     }
 
@@ -163,6 +134,7 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "Update a user profile", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.PUT)
     public BaseOutput update(@Valid @PathVariable String id, @RequestBody UserUpdateRequest request) {
         logger.info("========== UserController.update START ==========");
@@ -180,6 +152,7 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "Update list host wishlist", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_CHANGE_HOST_WISH_LIST, method = RequestMethod.PUT)
     public BaseOutput updateHostWishList(@Valid @PathVariable String id, @RequestBody UserUpdateHostWishListRequest request) {
         logger.info("========== UserController.updateHostWishList START ==========");
@@ -198,18 +171,40 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "Active user with send email", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ACTIVATION, method = RequestMethod.GET)
     public String authenticateUser(@RequestParam(value = "token") String token) {
-        logger.info("========== UserController.updateHostWishList START ==========");
+        logger.info("========== UserController.authenticateUser START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(token));
         try {
             String userNameFromJwtToken = jwtProvider.getUserNameFromJwtToken(token);
             UserPrinciple userPrinciple = (UserPrinciple) userDetailsService.loadUserByUsername(userNameFromJwtToken);
             userService.enableUser(userPrinciple);
+            logger.info("========== UserController.authenticateUser START ==========");
             return "Tài khoản của bạn đã xác nhận thành công!";
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE);
             return "Tài khoản xác nhận thất bại!";
         }
+    }
+
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_UPDATE_PASSWORD_WITH_CODE, method = RequestMethod.PUT)
+    public BaseOutput getForgotPasswordCode (@Valid @RequestBody ForgotPasswordCodeRequest request){
+        try {
+            logger.info("========== UserController.sendForgotPasswordCode START ==========");
+            logger.info("request: " + CommonFunction.convertToJSONString(request));
+            ForgotPasswordInputDTO forgotPasswordInputDTO = MapperUtil.mapper(request, ForgotPasswordInputDTO.class);
+            logger.info("========== UserController.sendForgotPasswordCode END ==========");
+            return userService.handleForgotPassword(forgotPasswordInputDTO);
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SEND_FORGOT_CODE_VIA_EMAIL, method = RequestMethod.POST)
+    public BaseOutput sendForgotPasswordCode (@Valid @RequestBody UserSendForgotPasswordRequest request){
+        BaseOutput response = userService.forgotPassword(request.getEmail());
+        return response;
     }
 }

@@ -12,6 +12,7 @@ public class HostDTO extends BaseDTO{
     private String hostCategoryId;
     private String hostRoomTypeId;
     private String hostCityId;
+    private String hostCancellationPolicyId;
     private String address;
     private String latitude;
     private String longitude;

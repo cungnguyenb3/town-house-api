@@ -20,8 +20,6 @@ import java.util.List;
 public class CommonFunction {
     private static Log logger = LogFactory.getLog(CommonFunction.class);
 
-
-
     public static BaseOutput successOutput(List<Object> list){
         logger.info("CommonFunction.successOutput");
         BaseOutput output = new BaseOutput();
@@ -55,10 +53,12 @@ public class CommonFunction {
         return output;
     }
     public static BaseOutput errorLogic(int status, Object message) {
-        logger.info("CommonFunction.failureOutput");
+        logger.info("CommonFunction.errorLogic");
         BaseOutput output = new BaseOutput();
-        output.setStatus(CommonConstants.STATUS.STATUS_FAILURE);
+        output.setStatus(status);
         output.setMessage(message);
+        output.setTotalRecord(0);
+        output.setData(null);
         return output;
     }
 

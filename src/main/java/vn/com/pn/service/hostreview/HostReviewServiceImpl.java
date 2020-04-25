@@ -36,14 +36,14 @@ public class HostReviewServiceImpl implements HostReviewService {
 
     @Override
     public BaseOutput getAll() {
-        logger.info("BookingServiceImpl.insert");
+        logger.info("HostReviewServiceImpl.getAll");
         List<Object> listHostReview = new ArrayList<>(hostReviewRepository.findAll());
         return  CommonFunction.successOutput(listHostReview);
     }
 
     @Override
     public BaseOutput insert(HostReviewDTO hostReviewDTO, User userLogin) {
-        logger.info("BookingServiceImpl.insert");
+        logger.info("HostReviewServiceImpl.insert");
         try {
             HostReview hostReview = getInsertHostReviewInfo(hostReviewDTO, userLogin);
             return CommonFunction.successOutput(hostReviewRepository.save(hostReview));
@@ -54,6 +54,7 @@ public class HostReviewServiceImpl implements HostReviewService {
     }
 
     public List<Integer> getStarRatingByHost(String hostId){
+        logger.info("HostReviewServiceImpl.insert");
         try {
             return hostReviewRepository.findStarRatingByHostId(Integer.parseInt(hostId));
         } catch (Exception e) {
@@ -63,6 +64,7 @@ public class HostReviewServiceImpl implements HostReviewService {
     }
 
     private HostReview getInsertHostReviewInfo(HostReviewDTO hostReviewDTO, User userLogin) {
+        logger.info("HostReviewServiceImpl.getInsertHostReviewInfo");
         HostReview hostReview = new HostReview();
         if (hostReviewDTO.getHostId() != null && hostReviewDTO.getHostId() != ""){
             Host host = changeStarRating(hostReviewDTO.getHostId(),hostReviewDTO.getStarRating());
@@ -122,6 +124,7 @@ public class HostReviewServiceImpl implements HostReviewService {
 
 
     private Host changeStarRating (String hostId, String starRating){
+        logger.info("HostReviewServiceImpl.changeStarRating");
         Host host = hostRepository.findById(Integer.parseInt(hostId)).orElseThrow(()
                 -> new ResourceNotFoundException("Host","id", hostId));
         List<Integer> listStarRating = getStarRatingByHost(hostId);
@@ -132,6 +135,7 @@ public class HostReviewServiceImpl implements HostReviewService {
     }
 
     private float calculateAverage(List <Integer> listStarRating) {
+        logger.info("HostReviewServiceImpl.calculateAverage");
         Integer sum = 0;
         if(!listStarRating.isEmpty()) {
             for (Integer star : listStarRating) {

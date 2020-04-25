@@ -11,3 +11,4 @@ public class BaseOutput {
     private Integer totalRecord;
     private Object data;
 }
+

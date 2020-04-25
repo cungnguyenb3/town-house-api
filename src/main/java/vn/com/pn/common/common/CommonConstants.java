@@ -33,10 +33,8 @@ public class CommonConstants {
         String USER_CHANGE_PASSWORD= "/users/change-password/{id}";
         String USER_CHANGE_HOST_WISH_LIST= "/users/change-host-wish-list/{id}";
         String USER_ACTIVATION="/users/activation";
-
-        // HostAgent controller
-        String HOST_AGENT_ROOT = "/host-agents";
-        String HOST_AGENT_ID = "/host-agents/{id}";
+        String USER_UPDATE_PASSWORD_WITH_CODE="/users/update-password-with-code";
+        String USER_SEND_FORGOT_CODE_VIA_EMAIL="/users/send-code-via_email";
 
         // HostAgent controller
         String HOST_ROOT = "/hosts";
@@ -68,5 +66,11 @@ public class CommonConstants {
         // Host cancellation policy
         String HOST_CANCELLATION_POLICY_ROOT = "/host-cancellation-policies";
 
+        // Host image
+        String HOST_IMAGE_UPLOAD_FILE = "/host-images/upload-file";
+        String HOST_IMAGE_DATA_INFO = "/host-images/data-info";
+        String HOST_IMAGE_UPLOAD_MULTIPLE_FILES = "/host-images/upload-multiple-files";
+        String HOST_IMAGE_DOWNLOAD_FILE_ID = "/host-images/download-file/{id}";
+        String HOST_IMAGE_FILE_ID = "/host-images/{id}";
     }
 }

@@ -3,7 +3,7 @@ package vn.com.pn.common.common;
 public class DisplayNameConstant {
 
     /**
-     * Controller FAIR
+     * Controller User
      */
     public class USER {
         public class GET_ID {

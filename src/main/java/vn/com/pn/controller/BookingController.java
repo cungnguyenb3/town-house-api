@@ -49,6 +49,7 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header") })
+    @ApiOperation(value = "Api add new booking", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody BookingInsertRequest request, BindingResult bindingResult){
         logger.info("========== BookingController.insert START ==========");

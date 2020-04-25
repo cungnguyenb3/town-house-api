@@ -26,12 +26,14 @@ public class HostRoomTypeServiceImpl implements HostRoomTypeService{
 
     @Override
     public BaseOutput getAll() {
+        logger.info("HostRoomTypeServiceImpl.getAll");
         List<Object> listHostRoomTypes = new ArrayList<Object>(hostRoomTypeRepository.findAll());
         return CommonFunction.successOutput(listHostRoomTypes);
     }
 
     @Override
     public BaseOutput insert(HostRoomTypeDTO hostRoomTypeDTO) {
+        logger.info("HostRoomTypeServiceImpl.insert");
         try {
             HostRoomType hostRoomType = new HostRoomType();
             if (hostRoomTypeDTO.getName() != null && hostRoomTypeDTO.getName() != ""){

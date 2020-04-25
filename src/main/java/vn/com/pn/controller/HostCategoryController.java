@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import vn.com.pn.api.request.HostCategoryInsertRequest;
+import vn.com.pn.api.request.HostRoomTypeInsertRequest;
 import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.dto.HostCategoryDTO;
+import vn.com.pn.common.dto.HostRoomTypeDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.service.hostcategory.HostCategoryService;
 import vn.com.pn.utils.MapperUtil;
@@ -37,5 +39,23 @@ public class HostCategoryController {
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== HostCategoryController.getAll END ==========");
         return response;
+    }
+
+    @ApiOperation(value = "Add a new host category", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ROOT, method = RequestMethod.POST)
+    public BaseOutput insert(@Valid @RequestBody HostCategoryInsertRequest request) {
+        logger.info("========== HostCategoryController.insert START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(request));
+        try {
+            HostCategoryDTO hostRoomTypeDTO = MapperUtil.mapper(request, HostCategoryDTO.class);
+            BaseOutput response = hostCategoryService.insert(hostRoomTypeDTO);
+            logger.info(CommonFunction.convertToJSONStringResponse(response));
+            logger.info("========== HostCategoryController.insert END ==========");
+            return response;
+        }
+        catch (Exception e){
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
     }
 }

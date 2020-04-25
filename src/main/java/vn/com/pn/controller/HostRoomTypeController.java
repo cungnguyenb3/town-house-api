@@ -44,13 +44,13 @@ public class HostRoomTypeController {
     @ApiOperation(value = "Add a host room type", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOM_TYPE_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostRoomTypeInsertRequest request) {
-        logger.info("========== HostCategoryController.insert START ==========");
+        logger.info("========== HostRoomTypeController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
             HostRoomTypeDTO hostRoomTypeDTO = MapperUtil.mapper(request, HostRoomTypeDTO.class);
             BaseOutput response = hostRoomTypeService.insert(hostRoomTypeDTO);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostCategoryController.insert END ==========");
+            logger.info("========== HostRoomTypeController.insert END ==========");
             return response;
         }
         catch (Exception e){

@@ -32,7 +32,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         logger.error("Unauthorized error. Message - {}", e.getMessage());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        ResponseEntity<String> loginError = ResponseEntity.badRequest().body(ScreenMessageConstants.NOT_LOGIN);
+        ResponseEntity<?> loginError = ResponseEntity.badRequest().body(ScreenMessageConstants.NOT_LOGIN);
         response.getWriter().write(CommonFunction.convertToJSONString(loginError));
     }
 }

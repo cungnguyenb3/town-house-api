@@ -5,9 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HostAgentRequest {
-    private String fullName;
+public class UserSendForgotPasswordRequest {
     private String email;
-    private String phone;
-    private String password;
 }

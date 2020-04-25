@@ -32,7 +32,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BaseOutput getAll() {
-        logger.info("BookingServiceImpl.insert");
+        logger.info("BookingServiceImpl.getAll");
         List<Object> listBooking = new ArrayList<>(bookingRepository.findAll());
         return  CommonFunction.successOutput(listBooking);
     }
@@ -50,10 +50,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private Booking getInsertBookingInfo(BookingDTO bookingDTO, User userLogin) {
+        logger.info("BookingServiceImpl.getInsertBookingInfo");
         Booking booking = new Booking();
         if (bookingDTO.getHostId() != null && bookingDTO.getHostId() != ""){
-            Host host = hostRepository.findById(Integer.parseInt(bookingDTO.getHostId())).orElseThrow(()
-                    -> new ResourceNotFoundException("Host","id", bookingDTO.getHostId()));
+            Host host = hostRepository.findById(Integer.parseInt(bookingDTO.getHostId())).orElse(null);
+            if (host == null) {
+                throw new ResourceNotFoundException("Host", "id",bookingDTO.getHostId());
+            }
             booking.setHost(host);
         }
         if (userLogin != null) {
@@ -113,7 +116,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BaseOutput bookingCancel(BookingCancelDTO bookingCancelDTO, User userLogin){
-        logger.info("BookingService.bookingCancel");
+        logger.info("BookingServiceImpl.bookingCancel");
         try {
             Booking booking = bookingRepository.findById(Integer.parseInt(bookingCancelDTO.getId())).orElseThrow(()
                     -> new  ResourceNotFoundException("User", "id", bookingCancelDTO.getId()));
@@ -134,5 +137,6 @@ public class BookingServiceImpl implements BookingService {
         }
         return null;
     }
+
 
 }

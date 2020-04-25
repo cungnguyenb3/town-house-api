@@ -77,7 +77,7 @@ public class JwtProvider {
         return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
-    private Date calculateExpirationDate(Date createdDate) {
+    public Date calculateExpirationDate(Date createdDate) {
         return new Date(createdDate.getTime() + jwtExpiration * 1000);
     }
 

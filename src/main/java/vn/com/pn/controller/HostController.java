@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,8 +43,6 @@ public class HostController {
     public BaseOutput getAll() {
         logger.info("========== HostController.getAll START ==========");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("-------------AUTHENTICATION ---------");
-        System.out.println(authentication);
         BaseOutput response = hostService.getAll();
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== HostController.getAll END ==========");
@@ -59,7 +58,7 @@ public class HostController {
             HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
             BaseOutput response = hostService.insert(hostDTO);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.insert END ==========");
+            logger.info("========== HostController.insert END ==========");
             return response;
         }
         catch (Exception e){
@@ -68,6 +67,7 @@ public class HostController {
         }
     }
 
+    @ApiOperation(value = "Update a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.PUT)
     public BaseOutput update(@RequestBody HostUpdateRequest request) {
         logger.info("========== HostController.update START ==========");
@@ -75,7 +75,7 @@ public class HostController {
         try {
             HostUpdateDTO hostUpdateDTO = MapperUtil.mapper(request, HostUpdateDTO.class);
             BaseOutput response = hostService.update(hostUpdateDTO);
-            logger.info("========== UserController.update END ==========");
+            logger.info("========== HostController.update END ==========");
             return response;
         }
         catch (Exception e) {
@@ -84,7 +84,7 @@ public class HostController {
         }
     }
 
-
+    @ApiOperation(value = "Delete a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.DELETE)
     public BaseOutput delete(@Valid @PathVariable String id){
         logger.info("========== HostController.delete START ==========");
@@ -98,5 +98,15 @@ public class HostController {
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
+    }
+
+    @ApiOperation(value = "Get a host by host id", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.GET)
+    public ResponseEntity<?> getId (@Valid @PathVariable String id) {
+        logger.info("========== HostController.delete START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        logger.info("========== HostController.delete END ==========");
+        BaseOutput response = hostService.getId(id);
+        return ResponseEntity.ok(response);
     }
 }

@@ -13,10 +13,12 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.domain.*;
 import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.repository.host.HostRepository;
-import vn.com.pn.repository.hostagent.HostAgentRepository;
+import vn.com.pn.repository.hostcancellationpolicy.HostCancellationPolicyRepository;
 import vn.com.pn.repository.hostcategory.HostCategoryRepository;
 import vn.com.pn.repository.hostcity.HostCityRepository;
 import vn.com.pn.repository.hostroomtype.HostRoomTypeRepository;
+import vn.com.pn.repository.role.RoleRepository;
+import vn.com.pn.repository.user.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,9 +32,6 @@ public class HostServiceImpl implements HostService {
     private HostRepository hostRepository;
 
     @Autowired
-    private HostAgentRepository hostAgentRepository;
-
-    @Autowired
     private HostCategoryRepository hostCategoryRepository;
 
     @Autowired
@@ -40,6 +39,15 @@ public class HostServiceImpl implements HostService {
 
     @Autowired
     private HostCityRepository hostCityRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private HostCancellationPolicyRepository hostCancellationPolicyRepository;
 
     @Override
     public BaseOutput getAll() {
@@ -49,7 +57,18 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
+    public BaseOutput getId(String hostId) {
+        logger.info("HostServiceImpl.getId");
+        Host host = hostRepository.findById(Integer.parseInt(hostId)).orElse(null);
+        if (host != null) {
+            return CommonFunction.successOutput(host);
+        }
+        throw new ResourceNotFoundException("Host", "id", hostId);
+    }
+
+    @Override
     public BaseOutput insert(HostDTO hostDTO) {
+        logger.info("HostServiceImpl.insert");
         try {
             Host host = getInsertHostInfo(hostDTO);
             return CommonFunction.successOutput(hostRepository.save(host));
@@ -62,10 +81,18 @@ public class HostServiceImpl implements HostService {
 
     @Override
     public BaseOutput update(HostUpdateDTO hostUpdateDTO) {
-        return null;
+        logger.info("HostServiceImpl.update");
+        try {
+            Host host = getUpdateHostInfo(hostUpdateDTO);
+            return CommonFunction.successOutput(host);
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
     }
 
     private Host getInsertHostInfo(HostDTO hostDTO) {
+        logger.info("HostServiceImpl.getInsertHostInfo");
         Host host = new Host();
         if (hostDTO.getName() != null && hostDTO.getName() != ""){
             host.setName(hostDTO.getName());
@@ -74,9 +101,9 @@ public class HostServiceImpl implements HostService {
             host.setDescription(hostDTO.getDescription());
         }
         if (hostDTO.getHostAgentId() != null && hostDTO.getHostAgentId() != ""){
-            HostAgent hostAgent = hostAgentRepository.findById(Integer.parseInt(hostDTO.getHostAgentId())).orElseThrow(()
+            User user = userRepository.findById(Integer.parseInt(hostDTO.getHostAgentId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostAgent","id", hostDTO.getHostAgentId()));
-            host.setHostAgent(hostAgent);
+            host.setUser(user);
         }
         if (hostDTO.getHostCategoryId() != null && hostDTO.getHostCategoryId() != ""){
             HostCategory hostCategory = hostCategoryRepository.findById(Integer.parseInt(hostDTO.getHostCategoryId())).orElseThrow(()
@@ -92,6 +119,12 @@ public class HostServiceImpl implements HostService {
             HostCity hostCity = hostCityRepository.findById(Integer.parseInt(hostDTO.getHostCityId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCity","id", hostDTO.getHostCityId()));
             host.setHostCity(hostCity);
+        }
+        if (hostDTO.getHostCancellationPolicyId() != null && hostDTO.getHostCancellationPolicyId() != ""){
+            HostCancellationPolicy hostCancellationPolicy = hostCancellationPolicyRepository.findById(Integer.parseInt(
+                    hostDTO.getHostCancellationPolicyId())).orElseThrow(()
+                    -> new ResourceNotFoundException("HostCity","id", hostDTO.getHostCityId()));
+            host.setHostCancellationPolicy(hostCancellationPolicy);
         }
         if (hostDTO.getAddress() != null && hostDTO.getAddress() != ""){
             host.setAddress(hostDTO.getAddress());
@@ -170,6 +203,7 @@ public class HostServiceImpl implements HostService {
     }
 
     private Host getUpdateHostInfo(HostUpdateDTO hostUpdateDTO){
+        logger.info("HostServiceImpl.getUpdateHostInfo");
         Host host = hostRepository.findById(
                 Integer.parseInt(hostUpdateDTO.getId())
         ).orElseThrow(
@@ -182,9 +216,13 @@ public class HostServiceImpl implements HostService {
             host.setDescription(hostUpdateDTO.getDescription());
         }
         if (hostUpdateDTO.getHostAgentId() != null && hostUpdateDTO.getHostAgentId() != ""){
-            HostAgent hostAgent = hostAgentRepository.findById(Integer.parseInt(hostUpdateDTO.getHostAgentId())).orElseThrow(()
+            User user = userRepository.findById(Integer.parseInt(hostUpdateDTO.getHostAgentId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostAgent","id", hostUpdateDTO.getHostAgentId()));
-            host.setHostAgent(hostAgent);
+            Role userRole = roleRepository.findByName(RoleName.ROLE_HOST_AGENT)
+                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
+            if (user.getRoles() == userRole) {
+                host.setUser(user);
+            }
         }
         if (hostUpdateDTO.getHostCategoryId() != null && hostUpdateDTO.getHostCategoryId() != ""){
             HostCategory hostCategory = hostCategoryRepository.findById(Integer.parseInt(hostUpdateDTO.getHostCategoryId())).orElseThrow(()

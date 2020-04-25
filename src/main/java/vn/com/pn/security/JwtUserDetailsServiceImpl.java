@@ -29,7 +29,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService, AuthServic
     }
 
     public UserDetails loadUserByEmail(String email) {
-        User user = userRepository.findByUsername(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User Not Found with -> email: " + email)
                 );

@@ -31,7 +31,7 @@ public class HostCityController {
     @Autowired
     private HostCityService hostCityService;
 
-    @ApiOperation(value = "View a list users", response = BaseOutput.class)
+    @ApiOperation(value = "View a list host city", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CITY_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== HostCityController.getAll START ==========");
@@ -41,7 +41,7 @@ public class HostCityController {
         return response;
     }
 
-    @ApiOperation(value = "Add a host city", response = BaseOutput.class)
+    @ApiOperation(value = "Add a new host city", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CITY_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostCityInsertRequest request) {
         logger.info("========== HostCityController.insert START ==========");

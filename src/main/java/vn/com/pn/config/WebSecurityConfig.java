@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Autowired
-    JwtAuthTokenFilter jwtAuthTokenFilter;
+    private JwtAuthTokenFilter jwtAuthTokenFilter;
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -56,12 +56,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/api/hosts").permitAll()
-                .antMatchers("/api/host-agents/**").permitAll()
+                .antMatchers("/api/hosts/**").permitAll()
                 .antMatchers("/api/host-reviews/**").permitAll()
                 .antMatchers("/api/users/**").permitAll()
                 .antMatchers("/api/roles/**").permitAll()
                 .antMatchers("/api/email/**").permitAll()
+                .antMatchers("/api/host-images/**").permitAll()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
                 .and()

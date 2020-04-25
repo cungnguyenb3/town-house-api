@@ -1,9 +1,12 @@
 package vn.com.pn.exception;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
+@Getter
+@Setter
 public class ResourceNotFoundException extends RuntimeException {
     private String resourceName;
     private String fieldName;
@@ -16,15 +19,9 @@ public class ResourceNotFoundException extends RuntimeException {
         this.fieldValue = fieldValue;
     }
 
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public Object getFieldValue() {
-        return fieldValue;
+    public ResourceNotFoundException (String message) {
+        super(message);
     }
 }
+
+

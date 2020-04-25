@@ -14,6 +14,7 @@ public class HostInsertRequest extends BaseRequest{
     private String hostCategoryId;
     private String hostRoomTypeId;
     private String hostCityId;
+    private String hostCancellationPolicyId;
     private String address;
     private String latitude;
     private String longitude;

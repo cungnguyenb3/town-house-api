@@ -1,5 +1,7 @@
 package vn.com.pn.service.mail;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
@@ -7,12 +9,15 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import vn.com.pn.service.booking.BookingServiceImpl;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
 public class MailServiceImpl implements MailService{
+    private static Log logger = LogFactory.getLog(BookingServiceImpl.class);
+
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -22,7 +27,8 @@ public class MailServiceImpl implements MailService{
     }
 
     @Override
-    public void sendEmail(String emailAddress, String emailSubject, StringBuffer text) throws MailException {
+    public void sendEmail(String emailAddress, String emailSubject, StringBuilder text) throws MailException {
+        logger.info("MailServiceImpl.sendEmail");
 
         /*
          * This JavaMailSender Interface is used to send Mail in Spring Boot. This
@@ -51,7 +57,7 @@ public class MailServiceImpl implements MailService{
      */
     @Override
     public void sendEmailWithAttachment(String emailAddress) throws MailException, MessagingException {
-
+        logger.info("MailServiceImpl.sendEmailWithAttachment");
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);

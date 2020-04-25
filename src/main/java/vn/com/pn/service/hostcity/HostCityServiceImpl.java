@@ -24,12 +24,14 @@ public class HostCityServiceImpl implements HostCityService{
 
     @Override
     public BaseOutput getAll() {
+        logger.info("HostCityServiceImpl.getAll");
         List<Object> listHostCities = new ArrayList<Object>(hostCityRepository.findAll());
         return CommonFunction.successOutput(listHostCities);
     }
 
     @Override
     public BaseOutput insert(HostCityDTO hostCityDTO) {
+        logger.info("HostCityServiceImpl.insert");
         try {
             HostCity hostCity = new HostCity();
             if (hostCityDTO.getName() != null && hostCityDTO.getName() != ""){

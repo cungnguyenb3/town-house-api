@@ -9,5 +9,5 @@ public interface HostService {
     BaseOutput insert(HostDTO hostDTO);
     BaseOutput update(HostUpdateDTO hostUpdateDTO);
     BaseOutput delete(String hostId);
-
+    BaseOutput getId(String id);
 }

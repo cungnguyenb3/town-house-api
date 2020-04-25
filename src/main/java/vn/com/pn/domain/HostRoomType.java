@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "host_room_types")
-@EntityListeners(AuditingEntityListener.class)
 public class HostRoomType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

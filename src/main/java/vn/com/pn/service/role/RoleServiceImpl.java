@@ -42,6 +42,9 @@ public class RoleServiceImpl implements RoleService {
                     case "super-admin":
                         role.setName(RoleName.ROLE_SUPER_ADMIN);
                         break;
+                    case "agent":
+                        role.setName(RoleName.ROLE_HOST_AGENT);
+                        break;
                     default:
                         role.setName(RoleName.ROLE_USER);
                 }
