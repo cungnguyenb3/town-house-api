@@ -42,7 +42,7 @@ public class RuleController {
     }
 
     @ApiOperation(value = "Add a new rule", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.LANGUAGE_ROOT, method = RequestMethod.POST)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.RULE_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody RuleRequest request) {
         logger.info("========== RuleController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

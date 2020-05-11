@@ -32,7 +32,7 @@ public class CurrencyUnitController {
     private CurrencyUnitService currencyUnitService;
 
     @ApiOperation(value = "View a list currency unit", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.CURRENCY_UNIT, method = RequestMethod.GET)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.CURRENCY_UNIT_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== CurrencyUnitController.getAll START ==========");
         BaseOutput response = currencyUnitService.getAll();
@@ -42,7 +42,7 @@ public class CurrencyUnitController {
     }
 
     @ApiOperation(value = "Add a new currency unit", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.CURRENCY_UNIT, method = RequestMethod.POST)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.CURRENCY_UNIT_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody CurrencyUnitRequest request) {
         logger.info("========== CurrencyUnitController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

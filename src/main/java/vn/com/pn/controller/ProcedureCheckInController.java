@@ -32,7 +32,7 @@ public class ProcedureCheckInController {
     private ProcedureCheckInService procedureCheckInService;
 
     @ApiOperation(value = "View a list procedure check in", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.PROCEDURE_CHECK_IN, method = RequestMethod.GET)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.PROCEDURE_CHECK_IN_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== ProcedureCheckInController.getAll START ==========");
         BaseOutput response = procedureCheckInService.getAll();
@@ -42,7 +42,7 @@ public class ProcedureCheckInController {
     }
 
     @ApiOperation(value = "Add a new procedure check in", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.PROCEDURE_CHECK_IN, method = RequestMethod.POST)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.PROCEDURE_CHECK_IN_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody ProcedureCheckInRequest request) {
         logger.info("========== ProcedureCheckInController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

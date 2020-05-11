@@ -85,9 +85,9 @@ public class CommonConstants {
         String RULE_ROOT = "/rules";
 
         // Currency unit
-        String CURRENCY_UNIT = "/currency_units";
+        String CURRENCY_UNIT_ROOT = "/currency_units";
 
         // Procedure checkin
-        String PROCEDURE_CHECK_IN = "/procedures_check_in";
+        String PROCEDURE_CHECK_IN_ROOT = "/procedures_check_in";
     }
 }
