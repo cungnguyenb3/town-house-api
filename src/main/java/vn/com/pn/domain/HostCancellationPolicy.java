@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "host_cancellation_policies")
-public class HostCancellationPolicy implements Serializable {
+public class HostCancellationPolicy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

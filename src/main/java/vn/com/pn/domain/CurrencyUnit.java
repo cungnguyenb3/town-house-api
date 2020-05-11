@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Setter
 @Table(name = "currency_units")
 @Entity
-public class CurrencyUnit implements Serializable {
+public class CurrencyUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

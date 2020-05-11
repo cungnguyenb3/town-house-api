@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "host_categories")
-public class HostCategory implements Serializable {
+public class HostCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

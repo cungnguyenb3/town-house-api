@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vn.com.pn.common.common.CommonFunction;
+import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.dto.HostImageDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.domain.Host;
@@ -15,12 +17,13 @@ import vn.com.pn.domain.HostImage;
 import vn.com.pn.domain.ImageInfo;
 import vn.com.pn.exception.FileNotFoundException;
 import vn.com.pn.exception.FileStorageException;
+import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.repository.host.HostRepository;
 import vn.com.pn.repository.hostimage.HostImageRepository;
 import vn.com.pn.service.user.UserServiceImpl;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.*;
 
 @Service
 public class HostImageServiceImpl implements HostImageService {
@@ -33,22 +36,55 @@ public class HostImageServiceImpl implements HostImageService {
     private HostRepository hostRepository;
 
     @Override
-    public HostImage storeFile(HostImageDTO hostImageDTO) {
+    public BaseOutput getAllFile() {
+        logger.info("HostImageServiceImpl.getAll");
+        List<Object> listHostImage = new ArrayList<>(hostImageRepository.findAll());
+        return CommonFunction.successOutput(listHostImage);
+    }
+
+    @Override
+    public BaseOutput storeFile(HostImageDTO hostImageDTO) {
         logger.info("HostImageServiceImpl.storeFile");
         try {
+            Host host = hostRepository.findById(Integer.parseInt(hostImageDTO.getHostId())).orElseThrow(()
+                    -> new ResourceNotFoundException("Host", "id", hostImageDTO.getHostId()));
+            String fileSize = CommonFunction.humanReadableByteCountBin(Long.parseLong(hostImageDTO.getFileSize()));
             HostImage hostImage = new HostImage();
+            hostImage.setHost(host);
             hostImage.setFileName(hostImageDTO.getFileName());
-            hostImage.setFileType(hostImageDTO.getMediaType());
-            byte[] imageByte = Base64.getDecoder().decode(hostImageDTO.getBase64Encoded()) ;
-            hostImage.setData(imageByte);
-
-            Host host = hostRepository.findById(Integer.parseInt(hostImageDTO.getHostId())).orElse(null);
-            if (host != null) {
-                hostImage.setHost(host);
-            }
-            return hostImageRepository.save(hostImage);
+            hostImage.setFileSize(fileSize);
+            hostImage.setFileType(hostImageDTO.getFileType());
+            hostImage.setWebContentLink(hostImageDTO.getWebContentLink());
+            hostImage.setWebViewLink(hostImageDTO.getWebViewLink());
+            return CommonFunction.successOutput(hostImageRepository.save(hostImage));
         } catch (Exception e) {
             throw new FileStorageException("Could not store file " + hostImageDTO.getFileName() + ". Please try again!", e);
+        }
+    }
+
+    @Override
+    public List<HostImage> storeMultipleFile (List<HostImageDTO> hostImageDTOList) {
+        try {
+            List<HostImage> hostImages = new ArrayList<>();
+            for (HostImageDTO hostImageDTO: hostImageDTOList) {
+                Host host = hostRepository.findById(Integer.parseInt(hostImageDTO.getHostId())).orElse(null);
+                if (host != null) {
+                    String fileSize = CommonFunction.humanReadableByteCountBin(Long.parseLong(hostImageDTO.getFileSize()));
+                    HostImage hostImage = new HostImage();
+                    hostImage.setHost(host);
+                    hostImage.setFileName(hostImageDTO.getFileName());
+                    hostImage.setFileSize(fileSize);
+                    hostImage.setFileType(hostImageDTO.getFileType());
+                    hostImage.setWebContentLink(hostImageDTO.getWebContentLink());
+                    hostImage.setWebViewLink(hostImageDTO.getWebViewLink());
+
+                    hostImages.add(hostImage);
+                }
+            }
+            return hostImageRepository.saveAll(hostImages);
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            throw new FileStorageException("Could not store all file Please try again!", e);
         }
     }
 

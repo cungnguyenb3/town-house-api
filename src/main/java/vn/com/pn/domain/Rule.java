@@ -8,9 +8,9 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@Table(name = "host_rules")
+@Table(name = "rules")
 @Entity
-public class HostRule implements Serializable {
+public class Rule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

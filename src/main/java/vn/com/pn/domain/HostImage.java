@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 
@@ -18,13 +19,16 @@ public class HostImage {
 
     private String fileName;
 
+    private String fileSize;
+
     private String fileType;
 
-    @Lob
-    private byte[] data;
+    private String webContentLink;
+
+    private String webViewLink;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "host_id", nullable = true)
+    @JoinColumn(name = "host_id", referencedColumnName = "id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Host host;
 }

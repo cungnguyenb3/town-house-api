@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import vn.com.pn.api.request.BookingCancelRequest;
@@ -14,6 +16,7 @@ import vn.com.pn.api.request.BookingInsertRequest;
 import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.common.dto.BookingCalculatePriceDTO;
 import vn.com.pn.common.dto.BookingCancelDTO;
 import vn.com.pn.common.dto.BookingDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -49,15 +52,12 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header") })
-    @ApiOperation(value = "Api add new booking", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody BookingInsertRequest request, BindingResult bindingResult){
+    @ApiOperation(value = "Send request booking to host agent", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_SEND_REQUEST_TO_HOST, method = RequestMethod.POST)
+    public BaseOutput insert(@Valid @RequestBody BookingInsertRequest request){
         logger.info("========== BookingController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
-            if (bindingResult.hasErrors()) {
-                return CommonFunction.errorValidateItem(bindingResult);
-            }
             User userLogin = authService.getLoggedUser();
             BookingDTO bookingDTO = MapperUtil.mapper(request, BookingDTO.class);
             BaseOutput response = bookingService.insert(bookingDTO, userLogin);
@@ -68,6 +68,20 @@ public class BookingController {
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
+    @ApiOperation(value = "Confirm  booking request", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CONFIRM_REQUEST, method = RequestMethod.PUT)
+    public ResponseEntity<?> confirmBookingRequest(@PathVariable String id) {
+        logger.info("========== BookingController.confirmBookingRequest START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        User userLogin = authService.getLoggedUser();
+        BaseOutput response = bookingService.confirmBookingRequest(id, userLogin.getId());
+        logger.info("======= UserController.getId END========");
+        return ResponseEntity.ok(response);
     }
 
     @ApiOperation(value = "Update Booking status for authentication user", response = BaseOutput.class)
@@ -86,6 +100,26 @@ public class BookingController {
             BaseOutput response = bookingService.bookingCancel(bookingCancelDTO, userLogin);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
             logger.info("========== BookingController.bookingCancel END ==========");
+            return response;
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
+    @ApiOperation(value = "Api add new booking", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CALCULATE_PRICE, method = RequestMethod.POST)
+    public BaseOutput calculatePrice(@Valid @RequestBody BookingCalculatePriceDTO request){
+        logger.info("========== BookingController.calculatePrice START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(request));
+        try {
+            BookingCalculatePriceDTO bookingCalculatePriceDTO = MapperUtil.mapper(request, BookingCalculatePriceDTO.class);
+            BaseOutput response = bookingService.calculatePrice(bookingCalculatePriceDTO);
+            logger.info(CommonFunction.convertToJSONStringResponse(response));
+            logger.info("========== BookingController.calculatePrice END ==========");
             return response;
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);

@@ -34,11 +34,12 @@ public class CommonConstants {
         String USER_CHANGE_HOST_WISH_LIST= "/users/change-host-wish-list/{id}";
         String USER_ACTIVATION="/users/activation";
         String USER_UPDATE_PASSWORD_WITH_CODE="/users/update-password-with-code";
-        String USER_SEND_FORGOT_CODE_VIA_EMAIL="/users/send-code-via_email";
+        String USER_SEND_FORGOT_CODE_VIA_EMAIL="/users/send-code-via-email";
 
-        // HostAgent controller
+        // Host controller
         String HOST_ROOT = "/hosts";
         String HOST_ID = "/hosts/{id}";
+        String HOST_DISCOUNT = "/hosts/discount";
 
         // HostCategory controller
         String HOST_CATEGORY_ROOT = "/host-categories";
@@ -59,6 +60,9 @@ public class CommonConstants {
         // Booking controller
         String BOOKING_ROOT = "/bookings";
         String BOOKING_CANCEL = "/bookings-cancel/{id}";
+        String BOOKING_CALCULATE_PRICE = "/bookings-calculate-price";
+        String BOOKING_SEND_REQUEST_TO_HOST = "/bookings-send-request-to-host";
+        String BOOKING_CONFIRM_REQUEST = "/bookings-confirm-request/{id}";
 
         // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";
@@ -72,5 +76,9 @@ public class CommonConstants {
         String HOST_IMAGE_UPLOAD_MULTIPLE_FILES = "/host-images/upload-multiple-files";
         String HOST_IMAGE_DOWNLOAD_FILE_ID = "/host-images/download-file/{id}";
         String HOST_IMAGE_FILE_ID = "/host-images/{id}";
+        String HOST_IMAGE_GET_ALL_FILE = "/host-images";
+
+        // Language
+        String LANGUAGE_ROOT = "/languages";
     }
 }

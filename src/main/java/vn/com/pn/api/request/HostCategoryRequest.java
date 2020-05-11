@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HostCategoryInsertRequest extends BaseRequest{
+public class HostCategoryRequest extends BaseRequest{
     private String name;
     private String description;
 }

@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HostRoomTypeInsertRequest extends BaseRequest{
+public class LanguageRequest {
     private String name;
-    private String description;
 }

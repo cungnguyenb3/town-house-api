@@ -1,5 +1,6 @@
 package vn.com.pn.service.booking;
 
+import vn.com.pn.common.dto.BookingCalculatePriceDTO;
 import vn.com.pn.common.dto.BookingCancelDTO;
 import vn.com.pn.common.dto.BookingDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -9,4 +10,6 @@ public interface BookingService {
     BaseOutput getAll();
     BaseOutput insert(BookingDTO bookingDTO, User userLogin);
     BaseOutput bookingCancel(BookingCancelDTO bookingCancelDTO, User userLogin);
+    BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO);
+    BaseOutput confirmBookingRequest(String bookingId, int userId);
 }

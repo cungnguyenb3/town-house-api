@@ -6,9 +6,13 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.domain.HostImage;
 import vn.com.pn.domain.ImageInfo;
 
+import java.util.List;
+
 public interface HostImageService {
-    HostImage storeFile(HostImageDTO file);
+    BaseOutput storeFile(HostImageDTO file);
     HostImage getFile (String fileId);
     ImageInfo getImageInfo(MultipartFile file);
     BaseOutput deleteFile (String fileId);
+    List<HostImage> storeMultipleFile (List<HostImageDTO> hostImageDTOs);
+    BaseOutput getAllFile();
 }
