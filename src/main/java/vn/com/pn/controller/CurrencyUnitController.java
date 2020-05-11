@@ -9,47 +9,48 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import vn.com.pn.api.request.CurrencyUnitRequest;
 import vn.com.pn.api.request.LanguageRequest;
 import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
-import vn.com.pn.common.dto.HostCityDTO;
+import vn.com.pn.common.dto.CurrencyUnitDTO;
 import vn.com.pn.common.dto.LanguageDTO;
 import vn.com.pn.common.output.BaseOutput;
-import vn.com.pn.service.language.LanguageService;
+import vn.com.pn.service.currencyunit.CurrencyUnitService;
 import vn.com.pn.utils.MapperUtil;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(CommonConstants.API_URL_CONST.ROOT)
-@Api(value = "language", description = "Manage language")
-public class LanguageController {
+@Api(value = "Currency Unit", description = "Manage Currency Unit")
+public class CurrencyUnitController {
     private static Log logger = LogFactory.getLog(UserController.class);
 
     @Autowired
-    private LanguageService languageService;
+    private CurrencyUnitService currencyUnitService;
 
-    @ApiOperation(value = "View a list language", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.LANGUAGE_ROOT, method = RequestMethod.GET)
+    @ApiOperation(value = "View a list currency unit", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.CURRENCY_UNIT, method = RequestMethod.GET)
     public BaseOutput getAll() {
-        logger.info("========== LanguageController.getAll START ==========");
-        BaseOutput response = languageService.getAll();
+        logger.info("========== CurrencyUnitController.getAll START ==========");
+        BaseOutput response = currencyUnitService.getAll();
         logger.info(CommonFunction.convertToJSONStringResponse(response));
-        logger.info("========== LanguageController.getAll END ==========");
+        logger.info("========== CurrencyUnitController.getAll END ==========");
         return response;
     }
 
-    @ApiOperation(value = "Add a new language", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.LANGUAGE_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody LanguageRequest request) {
-        logger.info("========== LanguageController.insert START ==========");
+    @ApiOperation(value = "Add a new currency unit", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.CURRENCY_UNIT, method = RequestMethod.POST)
+    public BaseOutput insert(@Valid @RequestBody CurrencyUnitRequest request) {
+        logger.info("========== CurrencyUnitController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
-            LanguageDTO languageDTO = MapperUtil.mapper(request, LanguageDTO.class);
-            BaseOutput response = languageService.insert(languageDTO);
+            CurrencyUnitDTO currencyUnitDTO = MapperUtil.mapper(request, CurrencyUnitDTO.class);
+            BaseOutput response = currencyUnitService.insert(currencyUnitDTO);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== LanguageController.insert END ==========");
+            logger.info("========== CurrencyUnitController.insert END ==========");
             return response;
         }
         catch (Exception e){

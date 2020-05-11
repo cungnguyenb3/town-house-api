@@ -80,5 +80,14 @@ public class CommonConstants {
 
         // Language
         String LANGUAGE_ROOT = "/languages";
+
+        // Rule
+        String RULE_ROOT = "/rules";
+
+        // Currency unit
+        String CURRENCY_UNIT = "/currency_units";
+
+        // Procedure checkin
+        String PROCEDURE_CHECK_IN = "/procedures_check_in";
     }
 }

@@ -8,7 +8,7 @@
 		<version>2.1.6.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>vn.com.minori</groupId>
+	<groupId>vn.com.pnv</groupId>
 	<artifactId>java-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>java-api</name>
