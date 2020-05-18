@@ -10,6 +10,7 @@ import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.dto.HostCategoryDTO;
 import vn.com.pn.common.dto.HostCategoryUpdateDTO;
 import vn.com.pn.common.dto.LanguageDTO;
+import vn.com.pn.common.dto.LanguageUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.domain.HostCategory;
 import vn.com.pn.domain.Language;
@@ -37,11 +38,28 @@ public class LanguageServiceImpl implements LanguageService{
 
     @Override
     public BaseOutput insert(LanguageDTO languageDTO) {
-        logger.info("ForgotPasswordCodeServiceImpl.insert");
+        logger.info("LanguageRepository.insert");
         try {
             Language language = new Language();
             if (languageDTO.getName() != null && languageDTO.getName() != ""){
                 language.setName(languageDTO.getName());
+            }
+            return CommonFunction.successOutput(languageRepository.save(language));
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @Override
+    public BaseOutput update(LanguageUpdateDTO languageUpdateDTO) {
+        logger.info("LanguageRepository.update");
+        try {
+            Language language = languageRepository.findById(
+                    Integer.parseInt(languageUpdateDTO.getId())).orElseThrow(
+                    () -> new ResourceNotFoundException("Language", "id", languageUpdateDTO.getId()));
+            if (languageUpdateDTO.getName() != null && languageUpdateDTO.getName() != "") {
+                language.setName(languageUpdateDTO.getName());
             }
             return CommonFunction.successOutput(languageRepository.save(language));
         } catch (Exception e) {

@@ -80,6 +80,7 @@ public class CommonConstants {
 
         // Language
         String LANGUAGE_ROOT = "/languages";
+        String LANGUAGE_ID = "/languages/{id}";
 
         // Rule
         String RULE_ROOT = "/rules";
