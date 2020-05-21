@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    PasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
     @Autowired
     private MailService mailService;
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseOutput insert (UserDTO userDTO) {
+    public BaseOutput insert (UserDTO userDTO, boolean isRegisterAdmin) {
         logger.info("UserServiceImpl.insert");
         try {
             if(userRepository.existsByUsername(userDTO.getUsername())) {
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
             if(userRepository.existsByEmail(userDTO.getEmail())) {
                 return CommonFunction.errorLogic(400,"Fail -> Email is already in use!");
             }
-            User user = userRepository.save(getInsertUserInfo(userDTO));
+            User user = userRepository.save(getInsertUserInfo(userDTO, isRegisterAdmin));
             sendEmailConfirm(userDTO);
             return CommonFunction.successOutput(user);
         } catch (Exception e) {
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private User getInsertUserInfo (UserDTO userDTO){
+    private User getInsertUserInfo (UserDTO userDTO, boolean isRegisterAdmin){
         logger.info("UserServiceImpl.getInsertUserInfo");
         User user = new User();
         if (userDTO.getFullName() != null && userDTO.getFullName() != "") {
@@ -243,12 +243,18 @@ public class UserServiceImpl implements UserService {
         }
         user.setEnable(false);
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
-        Role agentRole = roleRepository.findByName(RoleName.ROLE_HOST_AGENT)
-                .orElseThrow(() -> new RuntimeException("Fail! -> Cause: Host Agent Role not find."));
-        roles.add(userRole);
-        roles.add(agentRole);
+        if (isRegisterAdmin) {
+            Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
+            roles.add(adminRole);
+        } else {
+            Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
+            Role agentRole = roleRepository.findByName(RoleName.ROLE_HOST_AGENT)
+                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: Host Agent Role not find."));
+            roles.add(userRole);
+            roles.add(agentRole);
+        }
         user.setRoles(roles);
         return user;
     }

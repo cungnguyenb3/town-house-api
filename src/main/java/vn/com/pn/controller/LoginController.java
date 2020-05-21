@@ -42,21 +42,29 @@ public class LoginController {
     private JwtProvider jwtProvider;
 
     @ApiOperation(value = "Login with username and password", response = BaseOutput.class)
-    @PostMapping("/users/signin")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_IN, method = RequestMethod.POST)
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest loginRequest) {
         logger.info("========== LoginController.login START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(loginRequest));
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwtToken(authentication);
-        UserPrinciple userPrinciple = jwtProvider.getUserFromLogin(authentication);
-        logger.info("========== LoginController.login END ==========");
-        return ResponseEntity.ok(new JwtResponse(jwt, userPrinciple));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtProvider.generateJwtToken(authentication);
+            UserPrinciple userPrinciple = jwtProvider.getUserFromLogin(authentication);
+            logger.info("========== LoginController.login END ==========");
+            return ResponseEntity.ok(new JwtResponse(jwt, userPrinciple));
+        }catch (Exception e) {
+            BaseOutput baseOutput = new BaseOutput();
+            baseOutput.setStatus(401);
+            baseOutput.setData(null);
+            baseOutput.setMessage("Username hoặc password không chính xác! ");
+            return ResponseEntity.badRequest().body(baseOutput);
+        }
     }
 
     @ApiOperation(value = "Refresh token", response = BaseOutput.class)

@@ -12,4 +12,5 @@ public interface HostService {
     BaseOutput update(HostUpdateDTO hostUpdateDTO);
     BaseOutput delete(String hostId);
     BaseOutput getId(String id);
+    BaseOutput approve(String id);
 }

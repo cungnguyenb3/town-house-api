@@ -8,7 +8,7 @@ import vn.com.pn.domain.User;
 public interface UserService {
     BaseOutput getAll();
     BaseOutput getId(String userId);
-    BaseOutput insert(UserDTO userDTO);
+    BaseOutput insert(UserDTO userDTO, boolean isRegisterAdmin);
     BaseOutput update(UserUpdateDTO userUpdateDTO);
     BaseOutput delete(String userId);
     BaseOutput changePassword(UserChangePasswordDTO userChangePasswordDTO);

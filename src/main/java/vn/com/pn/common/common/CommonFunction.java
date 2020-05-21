@@ -6,6 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.validation.BindingResult;
 import vn.com.pn.common.output.BaseOutput;
 
@@ -118,5 +120,9 @@ public class CommonFunction {
         }
         value *= Long.signum(bytes);
         return String.format("%.1f %ciB", value / 1024.0, ci.current());
+    }
+
+    public static CronTask createCronTask(Runnable action, String expression) {
+        return new CronTask(action, new CronTrigger(expression));
     }
 }

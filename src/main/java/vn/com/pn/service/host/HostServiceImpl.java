@@ -26,6 +26,7 @@ import vn.com.pn.repository.rule.RuleRepository;
 import vn.com.pn.repository.user.UserRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -88,6 +89,24 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
+    public BaseOutput approve(String id) {
+        logger.info("HostServiceImpl.approve");
+        try {
+            Host host = hostRepository.findById(
+                    Integer.parseInt(id)).orElse(null);
+            if (host != null) {
+                host.setApproved(true);
+                return CommonFunction.successOutput(hostRepository.save(host));
+            }
+            return CommonFunction.failureOutput();
+
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @Override
     public BaseOutput insert(HostDTO hostDTO) {
         logger.info("HostServiceImpl.insert");
         try {
@@ -110,8 +129,8 @@ public class HostServiceImpl implements HostService {
             hostDiscount.setPriceBeforeDiscountMondayToThursday(host.getStandardPriceMondayToThursday());
             hostDiscount.setPriceBeforeDiscountFridayToSunday(host.getStandardPriceFridayToSunday());
             hostDiscount.setDiscountPercent(Short.parseShort(hostDiscountDTO.getDiscountPercent()));
-            hostDiscount.setStartDiscountDay(LocalDate.parse(hostDiscountDTO.getStartDiscountDay()));
-            hostDiscount.setEndDiscountDay(LocalDate.parse(hostDiscountDTO.getEndDiscountDay()));
+            hostDiscount.setStartDiscountDay(LocalDateTime.parse(hostDiscountDTO.getStartDiscountDay()));
+            hostDiscount.setEndDiscountDay(LocalDateTime.parse(hostDiscountDTO.getEndDiscountDay()));
             hostDiscount.setHost(host);
             hostDiscountRepository.save(hostDiscount);
 
@@ -1312,7 +1331,6 @@ public class HostServiceImpl implements HostService {
         }
         host.setDateCanNotBookings(null);
         host.setAvailabilityType(true);
-        host.setRefundType(false);
         host.setStatus(true);
         host.setApproved(false);
         host.setStars(0f);

@@ -1,11 +1,14 @@
 package vn.com.pn.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.pn.api.request.HostDiscountRequest;
 import vn.com.pn.api.request.HostRequest;
@@ -114,5 +117,19 @@ public class HostController {
         logger.info("========== HostController.delete END ==========");
         BaseOutput response = hostService.getId(id);
         return ResponseEntity.ok(response);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
+    @PreAuthorize("hasRole('ADMIN')")
+    @ApiOperation(value = "Approve host by host id", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_APPROVED, method = RequestMethod.POST)
+    public BaseOutput approveHost(@Valid @PathVariable String id) {
+        logger.info("========== HostController.approveHost START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        logger.info("========== HostController.approveHost END ==========");
+        BaseOutput response = hostService.approve(id);  
+        return CommonFunction.successOutput(response);
     }
 }

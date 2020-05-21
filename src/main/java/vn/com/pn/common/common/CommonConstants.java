@@ -29,17 +29,21 @@ public class CommonConstants {
 
         // User controller
         String USER_ROOT = "/users";
-        String USER_ID= "/users/{id}";
-        String USER_CHANGE_PASSWORD= "/users/change-password/{id}";
-        String USER_CHANGE_HOST_WISH_LIST= "/users/change-host-wish-list/{id}";
-        String USER_ACTIVATION="/users/activation";
-        String USER_UPDATE_PASSWORD_WITH_CODE="/users/update-password-with-code";
-        String USER_SEND_FORGOT_CODE_VIA_EMAIL="/users/send-code-via-email";
+        String USER_ID = "/users/{id}";
+        String USER_CHANGE_PASSWORD = "/users/change-password/{id}";
+        String USER_CHANGE_HOST_WISH_LIST = "/users/change-host-wish-list/{id}";
+        String USER_ACTIVATION = "/users/activation";
+        String USER_UPDATE_PASSWORD_WITH_CODE = "/users/update-password-with-code";
+        String USER_SEND_FORGOT_CODE_VIA_EMAIL = "/users/send-code-via-email";
+        String USER_SIGN_UP = "/users/sign-up";
+        String USER_SIGN_UP_ADMIN = "/users/sign-up/admin";
+        String USER_SIGN_IN = "users/sign-in";
 
         // Host controller
         String HOST_ROOT = "/hosts";
         String HOST_ID = "/hosts/{id}";
         String HOST_DISCOUNT = "/hosts/discount";
+        String HOST_APPROVED = "/hosts/approved/{id}";
 
         // HostCategory controller
         String HOST_CATEGORY_ROOT = "/host-categories";
@@ -61,8 +65,8 @@ public class CommonConstants {
         String BOOKING_ROOT = "/bookings";
         String BOOKING_CANCEL = "/bookings-cancel/{id}";
         String BOOKING_CALCULATE_PRICE = "/bookings-calculate-price";
-        String BOOKING_SEND_REQUEST_TO_HOST = "/bookings-send-request-to-host";
-        String BOOKING_CONFIRM_REQUEST = "/bookings-confirm-request/{id}";
+        String BOOKING_REQUEST_SUCCESS = "/bookings-request-success/{bookingId}";
+        String BOOKING_CONFIRM_REQUEST = "/bookings-confirm-request/{bookingId}";
 
         // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";

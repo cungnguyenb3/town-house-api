@@ -12,4 +12,5 @@ public interface BookingService {
     BaseOutput bookingCancel(BookingCancelDTO bookingCancelDTO, User userLogin);
     BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO);
     BaseOutput confirmBookingRequest(String bookingId, int userId);
+    BaseOutput confirmBookingPaid(String bookingId);
 }

@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -99,18 +100,42 @@ public class UserController {
     }
 
     @ApiOperation(value = "Register a new user", response = BaseOutput.class)
-    @PostMapping("/users/signup")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_UP, method = RequestMethod.POST)
     public BaseOutput registerUser(@Valid @RequestBody UserInsertRequest request) {
         logger.info("========== UserController.register START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
+            boolean isRegisterAdmin = false;
             UserDTO userDTO = MapperUtil.mapper(request,UserDTO.class);
-            BaseOutput response = userService.insert(userDTO);
+            BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
             logger.info("========== UserController.register END ==========");
             return response;
         }
         catch (Exception e){
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @ApiOperation(value = "Register a new admin", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_UP_ADMIN, method = RequestMethod.POST)
+    public BaseOutput registerAdmin(@Valid @RequestBody UserInsertRequest request) {
+        logger.info("========== UserController.registerAdmin START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(request));
+        try {
+            boolean isRegisterAdmin = true;
+            UserDTO userDTO = MapperUtil.mapper(request,UserDTO.class);
+            BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
+            logger.info(CommonFunction.convertToJSONStringResponse(response));
+            logger.info("========== UserController.register END ==========");
+            return response;
+
+        } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }

@@ -52,8 +52,8 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header") })
-    @ApiOperation(value = "Send request booking to host agent", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_SEND_REQUEST_TO_HOST, method = RequestMethod.POST)
+    @ApiOperation(value = "API request booking", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody BookingInsertRequest request){
         logger.info("========== BookingController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
@@ -75,37 +75,51 @@ public class BookingController {
                     required = true, dataType = "string", paramType = "header") })
     @ApiOperation(value = "Confirm  booking request", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CONFIRM_REQUEST, method = RequestMethod.PUT)
-    public ResponseEntity<?> confirmBookingRequest(@PathVariable String id) {
+    public ResponseEntity<?> confirmBookingRequest(@PathVariable String bookingId) {
         logger.info("========== BookingController.confirmBookingRequest START ==========");
-        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
         User userLogin = authService.getLoggedUser();
-        BaseOutput response = bookingService.confirmBookingRequest(id, userLogin.getId());
-        logger.info("======= UserController.getId END========");
+        BaseOutput response = bookingService.confirmBookingRequest(bookingId, userLogin.getId());
+        logger.info("======= BookingController.confirmBookingRequest END========");
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Update Booking status for authentication user", response = BaseOutput.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header") })
-    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CANCEL, method = RequestMethod.PUT)
-    public BaseOutput bookingCancel(@Valid @PathVariable String id, @RequestBody BookingCancelRequest request){
-        logger.info("========== BookingController.bookingCancel START ==========");
-        logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            BookingCancelDTO bookingCancelDTO = new BookingCancelDTO();
-            User userLogin = authService.getLoggedUser();
-            bookingCancelDTO.setId(id);
-            bookingCancelDTO.setStatus(request.getStatus());
-            BaseOutput response = bookingService.bookingCancel(bookingCancelDTO, userLogin);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== BookingController.bookingCancel END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    @ApiOperation(value = "Booking request successful", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_REQUEST_SUCCESS, method = RequestMethod.PUT)
+    public ResponseEntity<?> bookingRequestSuccess(@PathVariable String bookingId) {
+        logger.info("========== BookingController.bookingRequestSuccess START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
+        BaseOutput response = bookingService.confirmBookingPaid(bookingId);
+        logger.info("======= BookingController.bookingRequestSuccess END========");
+        return ResponseEntity.ok(response);
     }
+
+//    @ApiOperation(value = "Update Booking status for authentication user", response = BaseOutput.class)
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+//                    required = true, dataType = "string", paramType = "header") })
+//    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CANCEL, method = RequestMethod.PUT)
+//    public BaseOutput bookingCancel(@Valid @PathVariable String id, @RequestBody BookingCancelRequest request){
+//        logger.info("========== BookingController.bookingCancel START ==========");
+//        logger.info("request: " + CommonFunction.convertToJSONString(request));
+//        try {
+//            BookingCancelDTO bookingCancelDTO = new BookingCancelDTO();
+//            User userLogin = authService.getLoggedUser();
+//            bookingCancelDTO.setId(id);
+//            bookingCancelDTO.setStatus(request.getStatus());
+//            BaseOutput response = bookingService.bookingCancel(bookingCancelDTO, userLogin);
+//            logger.info(CommonFunction.convertToJSONStringResponse(response));
+//            logger.info("========== BookingController.bookingCancel END ==========");
+//            return response;
+//        } catch (Exception e) {
+//            logger.error(ScreenMessageConstants.FAILURE, e);
+//            return CommonFunction.failureOutput();
+//        }
+//    }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
