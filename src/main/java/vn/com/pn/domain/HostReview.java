@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class HostReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "host_id", nullable = false)

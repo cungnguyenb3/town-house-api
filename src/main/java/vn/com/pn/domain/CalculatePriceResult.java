@@ -3,14 +3,13 @@ package vn.com.pn.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.Date;
+import org.joda.time.LocalDate;
 
 @Getter
 @Setter
 public class CalculatePriceResult {
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String startDate;
+    private String endDate;
     private Long pricePerNight;
     private Long nights;
     private Long totalPrice;
@@ -21,4 +20,5 @@ public class CalculatePriceResult {
     private Integer numberOfAdultGuest;
     private Integer numberOfChildrenGuest;
     private Integer numberOfInfantGuest;
+    private Long hostId;
 }

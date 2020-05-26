@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -17,13 +22,14 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
+@Indexed
 @Table(name="hosts")
-public class Host extends DateAudit{
+public class Host extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @NonNull
+    @Field(index= Index.YES, analyze= Analyze.YES, store= Store.NO)
     private String name;
 
     @NonNull

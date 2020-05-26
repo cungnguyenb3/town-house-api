@@ -44,6 +44,7 @@ public class CommonConstants {
         String HOST_ID = "/hosts/{id}";
         String HOST_DISCOUNT = "/hosts/discount";
         String HOST_APPROVED = "/hosts/approved/{id}";
+        String HOST_SEARCH = "/hosts/search";
 
         // HostCategory controller
         String HOST_CATEGORY_ROOT = "/host-categories";

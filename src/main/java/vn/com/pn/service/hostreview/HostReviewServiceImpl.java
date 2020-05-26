@@ -75,7 +75,7 @@ public class HostReviewServiceImpl implements HostReviewService {
             hostReview.setUser(userLogin);
         }
         if (hostReviewDTO.getBookingId() != null && hostReviewDTO.getBookingId() != ""){
-            Booking booking = bookingRepository.findById(Integer.parseInt(hostReviewDTO.getBookingId())).orElseThrow(()
+            Booking booking = bookingRepository.findById(Long.parseLong(hostReviewDTO.getBookingId())).orElseThrow(()
                     -> new ResourceNotFoundException("Booking","id", hostReviewDTO.getBookingId()));
             hostReview.setBooking(booking);
         }
@@ -125,7 +125,7 @@ public class HostReviewServiceImpl implements HostReviewService {
 
     private Host changeStarRating (String hostId, String starRating){
         logger.info("HostReviewServiceImpl.changeStarRating");
-        Host host = hostRepository.findById(Integer.parseInt(hostId)).orElseThrow(()
+        Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(()
                 -> new ResourceNotFoundException("Host","id", hostId));
         List<Integer> listStarRating = getStarRatingByHost(hostId);
         listStarRating.add(Integer.parseInt(starRating));

@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class DateCanNotBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private LocalDate date;
 }

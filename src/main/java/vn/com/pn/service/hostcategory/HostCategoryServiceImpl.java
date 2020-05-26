@@ -55,7 +55,7 @@ public class HostCategoryServiceImpl implements HostCategoryService{
         logger.info("ForgotPasswordCodeServiceImpl.update");
         try {
             HostCategory hostCategory = hostCategoryRepository.findById(
-                    Integer.parseInt(hostCategoryUpdateDTO.getId())).orElseThrow(
+                    Long.parseLong(hostCategoryUpdateDTO.getId())).orElseThrow(
                     () -> new ResourceNotFoundException("Host Category", "id",hostCategoryUpdateDTO.getId()));
             if (hostCategoryUpdateDTO.getName() != null && hostCategoryUpdateDTO.getName() != ""){
                 hostCategory.setName(hostCategoryUpdateDTO.getName());
@@ -73,7 +73,7 @@ public class HostCategoryServiceImpl implements HostCategoryService{
     @Override
     public BaseOutput delete(String id) {
         logger.info("ForgotPasswordCodeServiceImpl.update");
-        HostCategory hostCategory = hostCategoryRepository.findById(Integer.parseInt(id))
+        HostCategory hostCategory = hostCategoryRepository.findById(Long.parseLong(id))
                 .orElse(null);
         if (hostCategory == null){
             throw new ResourceNotFoundException("Host Category","id",id);

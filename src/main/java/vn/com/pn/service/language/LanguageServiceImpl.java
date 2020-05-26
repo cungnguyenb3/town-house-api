@@ -56,7 +56,7 @@ public class LanguageServiceImpl implements LanguageService{
         logger.info("LanguageRepository.update");
         try {
             Language language = languageRepository.findById(
-                    Integer.parseInt(languageUpdateDTO.getId())).orElseThrow(
+                    Long.parseLong(languageUpdateDTO.getId())).orElseThrow(
                     () -> new ResourceNotFoundException("Language", "id", languageUpdateDTO.getId()));
             if (languageUpdateDTO.getName() != null && languageUpdateDTO.getName() != "") {
                 language.setName(languageUpdateDTO.getName());

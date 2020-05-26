@@ -57,7 +57,7 @@ public class HostRoomTypeServiceImpl implements HostRoomTypeService{
         logger.info("HostRoomTypeServiceImpl.update");
         try {
             HostRoomType hostRoomType = hostRoomTypeRepository.findById(
-                    Integer.parseInt(hostRoomTypeUpdateDTO.getId())).orElseThrow(
+                    Long.parseLong(hostRoomTypeUpdateDTO.getId())).orElseThrow(
             () -> new ResourceNotFoundException("Host Room Type", "id",hostRoomTypeUpdateDTO.getId()));;
             if (hostRoomTypeUpdateDTO.getName() != null && hostRoomTypeUpdateDTO.getName() != ""){
                 hostRoomType.setName(hostRoomTypeUpdateDTO.getName());
@@ -75,7 +75,7 @@ public class HostRoomTypeServiceImpl implements HostRoomTypeService{
     @Override
     public BaseOutput delete(String id) {
         logger.info("HostRoomTypeServiceImpl.delete");
-        HostRoomType hostRoomType = hostRoomTypeRepository.findById(Integer.parseInt(id)).orElse(null);
+        HostRoomType hostRoomType = hostRoomTypeRepository.findById(Long.parseLong(id)).orElse(null);
         if (hostRoomType == null) {
             throw new ResourceNotFoundException("Host room type", "id", id);
         }

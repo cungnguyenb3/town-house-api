@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class FlashSale {
-    private int id;
+    private Long id;
     private String code;
     private LocalDateTime startDay;
     private LocalDateTime expirationDate;

@@ -19,6 +19,8 @@ import vn.com.pn.common.dto.HostDTO;
 import vn.com.pn.common.dto.HostDiscountDTO;
 import vn.com.pn.common.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.domain.User;
+import vn.com.pn.security.AuthService;
 import vn.com.pn.service.host.HostService;
 import vn.com.pn.utils.MapperUtil;
 
@@ -33,24 +35,33 @@ public class HostController {
     @Autowired
     private HostService hostService;
 
+    @Autowired
+    private AuthService authService;
+
     @ApiOperation(value = "View a list hosts", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOT, method = RequestMethod.GET)
-    public BaseOutput getAll() {
+    public BaseOutput getAll(@RequestParam(defaultValue = "0") Integer pageNo,
+                             @RequestParam(defaultValue = "15") Integer pageSize,
+                             @RequestParam(defaultValue = "id") String sortBy) {
         logger.info("========== HostController.getAll START ==========");
-        BaseOutput response = hostService.getAll();
+        BaseOutput response = hostService.getAll(pageNo, pageSize, sortBy);
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== HostController.getAll END ==========");
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @ApiOperation(value = "Add a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostRequest request) {
         logger.info("========== HostController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         try {
+            User userLogin = authService.getLoggedUser();
             HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
-            BaseOutput response = hostService.insert(hostDTO);
+            BaseOutput response = hostService.insert(hostDTO, userLogin);
             logger.info(CommonFunction.convertToJSONStringResponse(response));
             logger.info("========== HostController.insert END ==========");
             return response;
@@ -59,6 +70,21 @@ public class HostController {
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
+    }
+
+    @ApiOperation(value = "Search host")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_SEARCH, method = RequestMethod.GET)
+    public BaseOutput search(@RequestParam(value = "name", required = false) String name) {
+        logger.info("========== HostController.search START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(name));
+        BaseOutput response = new BaseOutput();
+        int pageNo = 0;
+        if (name != null ){
+            pageNo = 1;
+        }
+        response.setData(hostService.search(name, pageNo));
+        logger.info("========== HostController.search END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Update host discount from agent")

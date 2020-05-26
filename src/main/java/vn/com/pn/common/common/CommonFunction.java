@@ -7,17 +7,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.validation.BindingResult;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.config.ScheduledConfig;
 
 import java.text.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class CommonFunction {
     private static Log logger = LogFactory.getLog(CommonFunction.class);
+
+    @Autowired
+    private ScheduledConfig scheduledConfig;
 
     public static BaseOutput successOutput(List<Object> list){
         logger.info("CommonFunction.successOutput");
@@ -122,7 +128,15 @@ public class CommonFunction {
         return String.format("%.1f %ciB", value / 1024.0, ci.current());
     }
 
-    public static CronTask createCronTask(Runnable action, String expression) {
-        return new CronTask(action, new CronTrigger(expression));
+    public static ScheduledTaskRegistrar setUpCronTask(LocalDateTime timestamp, Runnable runnable) {
+        StringBuffer expression = new StringBuffer();
+        expression.append(timestamp.getSecond()).append(" ").append(timestamp.getMinute()).append(" ")
+                .append(timestamp.getHour()).append(" ").append(timestamp.getDayOfMonth()).append(" ")
+                .append(timestamp.getMonth().getValue()).append(" ").append(timestamp.getDayOfWeek().getValue());
+
+        ScheduledTaskRegistrar scheduledTaskRegistrar = new ScheduledTaskRegistrar();
+        CronTask task = new CronTask(runnable, new CronTrigger(expression.toString()));
+        scheduledTaskRegistrar.addCronTask(task);
+        return scheduledTaskRegistrar;
     }
 }

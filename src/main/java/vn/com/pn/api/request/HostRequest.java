@@ -18,8 +18,6 @@ public class HostRequest extends BaseRequest{
 
     private String description;
 
-    private String hostAgentId;
-
     private String hostCategoryId;
 
     private String hostRoomTypeId;

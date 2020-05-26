@@ -37,7 +37,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService, AuthServic
     }
 
     public UserDetails loadUserByUserId(String userId) throws UsernameNotFoundException{
-        User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(()
+        User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", userId));
         return UserPrinciple.build(user);
     }

@@ -54,11 +54,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers("/api/hosts/**").permitAll()
-                .antMatchers("/api/languages/**").permitAll()
-                .antMatchers("/api/host-reviews/**").permitAll()
                 .antMatchers("/api/users/**").permitAll()
                 .antMatchers("/api/roles/**").permitAll()
                 .antMatchers("/api/email/**").permitAll()

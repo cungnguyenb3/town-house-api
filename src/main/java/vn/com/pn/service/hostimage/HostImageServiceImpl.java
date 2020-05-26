@@ -46,7 +46,7 @@ public class HostImageServiceImpl implements HostImageService {
     public BaseOutput storeFile(HostImageDTO hostImageDTO) {
         logger.info("HostImageServiceImpl.storeFile");
         try {
-            Host host = hostRepository.findById(Integer.parseInt(hostImageDTO.getHostId())).orElseThrow(()
+            Host host = hostRepository.findById(Long.parseLong(hostImageDTO.getHostId())).orElseThrow(()
                     -> new ResourceNotFoundException("Host", "id", hostImageDTO.getHostId()));
             String fileSize = CommonFunction.humanReadableByteCountBin(Long.parseLong(hostImageDTO.getFileSize()));
             HostImage hostImage = new HostImage();
@@ -67,7 +67,7 @@ public class HostImageServiceImpl implements HostImageService {
         try {
             List<HostImage> hostImages = new ArrayList<>();
             for (HostImageDTO hostImageDTO: hostImageDTOList) {
-                Host host = hostRepository.findById(Integer.parseInt(hostImageDTO.getHostId())).orElse(null);
+                Host host = hostRepository.findById(Long.parseLong(hostImageDTO.getHostId())).orElse(null);
                 if (host != null) {
                     String fileSize = CommonFunction.humanReadableByteCountBin(Long.parseLong(hostImageDTO.getFileSize()));
                     HostImage hostImage = new HostImage();
@@ -111,7 +111,7 @@ public class HostImageServiceImpl implements HostImageService {
     @Override
     public BaseOutput deleteFile(String fileId) {
         logger.info("HostImageServiceImpl.deleteFile");
-        HostImage hostImage = hostImageRepository.findById(Integer.parseInt(fileId)).orElse(null);
+        HostImage hostImage = hostImageRepository.findById(Long.parseLong(fileId)).orElse(null);
         if (hostImage == null) {
             throw new FileNotFoundException("File not found with id " + fileId);
         }
@@ -123,7 +123,7 @@ public class HostImageServiceImpl implements HostImageService {
     @Override
     public HostImage getFile(String fileId) {
         logger.info("HostImageServiceImpl.getFile");
-        HostImage hostImage = hostImageRepository.findById(Integer.parseInt(fileId)).orElse(null);
+        HostImage hostImage = hostImageRepository.findById(Long.parseLong(fileId)).orElse(null);
         if (hostImage != null) {
             return hostImage;
         }

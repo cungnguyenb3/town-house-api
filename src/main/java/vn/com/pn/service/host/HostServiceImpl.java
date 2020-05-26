@@ -2,8 +2,15 @@ package vn.com.pn.service.host;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
@@ -11,10 +18,12 @@ import vn.com.pn.common.dto.HostDTO;
 import vn.com.pn.common.dto.HostDiscountDTO;
 import vn.com.pn.common.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.domain.*;
 import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.repository.currencyunit.CurrencyUnitRepository;
 import vn.com.pn.repository.host.HostRepository;
+import vn.com.pn.repository.host.HostRepositoryCustom;
 import vn.com.pn.repository.hostcancellationpolicy.HostCancellationPolicyRepository;
 import vn.com.pn.repository.hostcategory.HostCategoryRepository;
 import vn.com.pn.repository.hostcity.HostCityRepository;
@@ -25,9 +34,9 @@ import vn.com.pn.repository.procedurecheckin.ProcedureCheckInRepository;
 import vn.com.pn.repository.rule.RuleRepository;
 import vn.com.pn.repository.user.UserRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -70,18 +79,30 @@ public class HostServiceImpl implements HostService {
     @Autowired
     private HostDiscountRepository hostDiscountRepository;
 
+    @Autowired
+    private HostRepositoryCustom hostRepositoryCustom;
+
+    @Autowired
+    private ScheduledConfig scheduledConfig;
 
     @Override
-    public BaseOutput getAll() {
+    public BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy) {
         logger.info("HostServiceImpl.getAll");
-        List<Object> listHost = new ArrayList<>(hostRepository.findAll());
-        return CommonFunction.successOutput(listHost);
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+        Page<Host> pagedResult = hostRepository.findAll(paging);
+
+        if (pagedResult.hasContent()) {
+            return CommonFunction.successOutput(pagedResult.getContent());
+        } else {
+            return CommonFunction.successOutput(new ArrayList<Host>());
+        }
     }
 
     @Override
     public BaseOutput getId(String hostId) {
         logger.info("HostServiceImpl.getId");
-        Host host = hostRepository.findById(Integer.parseInt(hostId)).orElse(null);
+        Host host = hostRepository.findById(Long.parseLong(hostId)).orElse(null);
         if (host != null) {
             return CommonFunction.successOutput(host);
         }
@@ -89,11 +110,18 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
+    public List<Host> search(String searchText, int pageNo) {
+        final int HOST_PER_PAGE = 20;
+        logger.info("HostServiceImpl.search");
+        return hostRepositoryCustom.search(searchText, pageNo, HOST_PER_PAGE);
+    }
+
+    @Override
     public BaseOutput approve(String id) {
         logger.info("HostServiceImpl.approve");
         try {
             Host host = hostRepository.findById(
-                    Integer.parseInt(id)).orElse(null);
+                    Long.parseLong(id)).orElse(null);
             if (host != null) {
                 host.setApproved(true);
                 return CommonFunction.successOutput(hostRepository.save(host));
@@ -107,45 +135,83 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
-    public BaseOutput insert(HostDTO hostDTO) {
+    public BaseOutput insert(HostDTO hostDTO, User userAgent) {
         logger.info("HostServiceImpl.insert");
         try {
-            Host host = getInsertHostInfo(hostDTO);
-            return CommonFunction.successOutput(hostRepository.save(host));
+            if (userAgent.getPhone() != null || !userAgent.getPhone().equalsIgnoreCase("")){
+                Host host = getInsertHostInfo(hostDTO);
+                host.setUser(userAgent);
+                return CommonFunction.successOutput(hostRepository.save(host));
+            }
+            return CommonFunction.errorLogic(400, "Xin vui lòng cập nhật số điện thoại");
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
-
     }
 
-    public BaseOutput discountHostPrice (HostDiscountDTO hostDiscountDTO) {
+    public BaseOutput discountHostPrice(HostDiscountDTO hostDiscountDTO) {
         logger.info("HostServiceImpl.discountHostPrice");
         try {
-            HostDiscount hostDiscount = new HostDiscount();
-            Host host = hostRepository.findById(Integer.parseInt(hostDiscountDTO.getHostId())).orElseThrow(()
-                    -> new ResourceNotFoundException("host", "id", hostDiscountDTO.getHostId()));
+            LocalDate startDate = LocalDate.parse(hostDiscountDTO.getStartDiscountDay());
+            LocalDate currentDate = LocalDate.now();
 
-            hostDiscount.setPriceBeforeDiscountMondayToThursday(host.getStandardPriceMondayToThursday());
-            hostDiscount.setPriceBeforeDiscountFridayToSunday(host.getStandardPriceFridayToSunday());
-            hostDiscount.setDiscountPercent(Short.parseShort(hostDiscountDTO.getDiscountPercent()));
-            hostDiscount.setStartDiscountDay(LocalDateTime.parse(hostDiscountDTO.getStartDiscountDay()));
-            hostDiscount.setEndDiscountDay(LocalDateTime.parse(hostDiscountDTO.getEndDiscountDay()));
-            hostDiscount.setHost(host);
-            hostDiscountRepository.save(hostDiscount);
+            if (startDate.isAfter(currentDate)) {
 
-            float discountPercent = Float.parseFloat(hostDiscountDTO.getDiscountPercent()) / 100f;
-            long discountPriceMondayToThursday = (long) (host.getStandardPriceMondayToThursday()
-                                * discountPercent);
-            long discountPriceFridayToSunday = (long) (host.getStandardPriceFridayToSunday()
-                                * discountPercent);
-            host.setStandardPriceMondayToThursday(discountPriceMondayToThursday);
-            host.setStandardPriceFridayToSunday(discountPriceFridayToSunday);
-            return CommonFunction.successOutput(hostRepository.save(host));
+                HostDiscount hostDiscount = new HostDiscount();
+                Host host = hostRepository.findById(Long.parseLong(hostDiscountDTO.getHostId())).orElseThrow(()
+                        -> new ResourceNotFoundException("host", "id", hostDiscountDTO.getHostId()));
+
+                java.time.LocalDateTime localStartDay = java.time.LocalDate.parse(hostDiscountDTO.getStartDiscountDay())
+                        .atStartOfDay();
+                java.time.LocalDateTime localEndDay = java.time.LocalDate.parse(hostDiscountDTO.getEndDiscountDay())
+                        .atStartOfDay();
+
+                hostDiscount.setPriceBeforeDiscountMondayToThursday(host.getStandardPriceMondayToThursday());
+                hostDiscount.setPriceBeforeDiscountFridayToSunday(host.getStandardPriceFridayToSunday());
+                hostDiscount.setDiscountPercent(Short.parseShort(hostDiscountDTO.getDiscountPercent()));
+                hostDiscount.setStartDiscountDay(localStartDay);
+                hostDiscount.setEndDiscountDay(localEndDay);
+                hostDiscount.setHost(host);
+                hostDiscountRepository.save(hostDiscount);
+
+                setCountDownHandleDiscount(localStartDay, hostDiscountDTO, host);
+                setCountdownPreviousPrice(localEndDay, host, hostDiscount);
+            }
+            return CommonFunction.errorLogic(400, "Ngày bắt đầu phải lớn hơn ngày hiện tại");
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
             return CommonFunction.failureOutput();
         }
+    }
+
+    private void setCountDownHandleDiscount (LocalDateTime startDateTime, HostDiscountDTO hostDiscountDTO, Host host) {
+        Runnable runnable = () -> handleDiscountPrice(hostDiscountDTO, host);
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(startDateTime,runnable);
+        scheduledConfig.configureTasks(setUpCronTask);
+    }
+
+    private void setCountdownPreviousPrice(LocalDateTime endDateTime, Host host, HostDiscount hostDiscount){
+        Runnable runnable = () -> handleBackToPreviousPrice(hostDiscount, host);
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(endDateTime,runnable);
+        scheduledConfig.configureTasks(setUpCronTask);
+    }
+
+    private void handleBackToPreviousPrice (HostDiscount hostDiscount, Host host) {
+        host.setStandardPriceMondayToThursday(hostDiscount.getPriceBeforeDiscountMondayToThursday());
+        host.setStandardPriceFridayToSunday(hostDiscount.getPriceBeforeDiscountFridayToSunday());
+        hostRepository.save(host);
+    }
+
+    private void handleDiscountPrice(HostDiscountDTO hostDiscountDTO, Host host) {
+        float discountPercent = Float.parseFloat(hostDiscountDTO.getDiscountPercent()) / 100f;
+        long discountPriceMondayToThursday = (long) (host.getStandardPriceMondayToThursday()
+                * discountPercent);
+        long discountPriceFridayToSunday = (long) (host.getStandardPriceFridayToSunday()
+                * discountPercent);
+        host.setStandardPriceMondayToThursday(discountPriceMondayToThursday);
+        host.setStandardPriceFridayToSunday(discountPriceFridayToSunday);
+        hostRepository.save(host);
     }
 
     @Override
@@ -161,8 +227,8 @@ public class HostServiceImpl implements HostService {
     }
 
     private Host getUpdateHostInfo(HostUpdateDTO hostUpdateDTO) {
-        Host host = hostRepository.findById(Integer.parseInt(hostUpdateDTO.getId())).orElseThrow(
-        () -> new ResourceNotFoundException("Host Category", "id",hostUpdateDTO.getId()));
+        Host host = hostRepository.findById(Long.parseLong(hostUpdateDTO.getId())).orElseThrow(
+                () -> new ResourceNotFoundException("Host Category", "id", hostUpdateDTO.getId()));
         if (hostUpdateDTO.getName() != null && hostUpdateDTO.getName() != "") {
             host.setName(hostUpdateDTO.getName());
         }
@@ -171,50 +237,50 @@ public class HostServiceImpl implements HostService {
         }
         if (hostUpdateDTO.getHostAgentId() != null && hostUpdateDTO.getHostAgentId() != "") {
             User user = userRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getHostAgentId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getHostAgentId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostAgent", "id", hostUpdateDTO.getHostAgentId()));
             host.setUser(user);
         }
         if (hostUpdateDTO.getHostCategoryId() != null && hostUpdateDTO.getHostCategoryId() != "") {
             HostCategory hostCategory = hostCategoryRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getHostCategoryId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getHostCategoryId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCategory", "id", hostUpdateDTO.getHostCategoryId()));
             host.setHostCategory(hostCategory);
         }
         if (hostUpdateDTO.getHostRoomTypeId() != null && hostUpdateDTO.getHostRoomTypeId() != "") {
             HostRoomType hostRoomType = hostRoomTypeRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getHostRoomTypeId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getHostRoomTypeId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostRoomType", "id", hostUpdateDTO.getHostRoomTypeId()));
             host.setHostRoomType(hostRoomType);
         }
         if (hostUpdateDTO.getHostCityId() != null && hostUpdateDTO.getHostCityId() != "") {
             HostCity hostCity = hostCityRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getHostCityId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getHostCityId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCity", "id", hostUpdateDTO.getHostCityId()));
             host.setHostCity(hostCity);
         }
         if (hostUpdateDTO.getHostCancellationPolicyId() != null && hostUpdateDTO.getHostCancellationPolicyId() != "") {
             HostCancellationPolicy hostCancellationPolicy = hostCancellationPolicyRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getHostCancellationPolicyId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getHostCancellationPolicyId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCancellationPolicy", "id", hostUpdateDTO.getHostCancellationPolicyId()));
             host.setHostCancellationPolicy(hostCancellationPolicy);
         }
 
         if (hostUpdateDTO.getProcedureCheckInId() != null && hostUpdateDTO.getProcedureCheckInId() != "") {
             ProcedureCheckIn procedureCheckIn = procedureCheckInRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getProcedureCheckInId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getProcedureCheckInId())).orElseThrow(()
                     -> new ResourceNotFoundException("ProcedureCheckIn", "id", hostUpdateDTO.getProcedureCheckInId()));
             host.setProcedureCheckIn(procedureCheckIn);
         }
         if (hostUpdateDTO.getCurrencyUnitId() != null && hostUpdateDTO.getCurrencyUnitId() != "") {
             CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getCurrencyUnitId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getCurrencyUnitId())).orElseThrow(()
                     -> new ResourceNotFoundException("CurrencyUnit", "id", hostUpdateDTO.getCurrencyUnitId()));
             host.setCurrencyUnit(currencyUnit);
         }
         if (hostUpdateDTO.getCurrencyUnitId() != null && hostUpdateDTO.getCurrencyUnitId() != "") {
             CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Integer.parseInt(hostUpdateDTO.getCurrencyUnitId())).orElseThrow(()
+                    Long.parseLong(hostUpdateDTO.getCurrencyUnitId())).orElseThrow(()
                     -> new ResourceNotFoundException("CurrencyUnit", "id", hostUpdateDTO.getCurrencyUnitId()));
             host.setCurrencyUnit(currencyUnit);
         }
@@ -223,7 +289,7 @@ public class HostServiceImpl implements HostService {
             Set<Rule> rules = new HashSet<>();
             for (String ruleId : ruleIdSet) {
                 Rule rule = ruleRepository.findById(
-                        Integer.parseInt(ruleId)).orElseThrow(()
+                        Long.parseLong(ruleId)).orElseThrow(()
                         -> new ResourceNotFoundException("Rule", "id", ruleId));
                 rules.add(rule);
             }
@@ -234,7 +300,7 @@ public class HostServiceImpl implements HostService {
             Set<Language> languages = new HashSet<>();
             for (String languageId : languageIdSet) {
                 Language language = languageRepository.findById(
-                        Integer.parseInt(languageId)).orElseThrow(()
+                        Long.parseLong(languageId)).orElseThrow(()
                         -> new ResourceNotFoundException("Language", "id", languageId));
                 languages.add(language);
             }
@@ -243,12 +309,16 @@ public class HostServiceImpl implements HostService {
         if (hostUpdateDTO.getAddress() != null && hostUpdateDTO.getAddress() != "") {
             host.setAddress(hostUpdateDTO.getAddress());
         }
-        if (hostUpdateDTO.getLatitude() != null && hostUpdateDTO.getLatitude() != "")
+        if (hostUpdateDTO.getLatitude() != null && hostUpdateDTO.getLatitude() != ""){
+            host.setLatitude(hostUpdateDTO.getLatitude());
+        }
+        if (hostUpdateDTO.getLongitude() != null && hostUpdateDTO.getLongitude() != ""){
+            host.setLongitude(hostUpdateDTO.getLongitude());
+        }
 
-
-            if (hostUpdateDTO.getBedroomCount() != null && hostUpdateDTO.getBedroomCount() != "") {
+        if (hostUpdateDTO.getBedroomCount() != null && hostUpdateDTO.getBedroomCount() != "") {
                 host.setBedroomCount(Integer.parseInt(hostUpdateDTO.getBedroomCount()));
-            }
+        }
         if (hostUpdateDTO.getBed() != null && hostUpdateDTO.getBed() != "") {
             host.setBed(Integer.parseInt(hostUpdateDTO.getBed()));
         }
@@ -755,52 +825,46 @@ public class HostServiceImpl implements HostService {
         if (hostDTO.getDescription() != null && hostDTO.getDescription() != "") {
             host.setDescription(hostDTO.getDescription());
         }
-        if (hostDTO.getHostAgentId() != null && hostDTO.getHostAgentId() != "") {
-            User user = userRepository.findById(
-                    Integer.parseInt(hostDTO.getHostAgentId())).orElseThrow(()
-                    -> new ResourceNotFoundException("HostAgent", "id", hostDTO.getHostAgentId()));
-            host.setUser(user);
-        }
         if (hostDTO.getHostCategoryId() != null && hostDTO.getHostCategoryId() != "") {
             HostCategory hostCategory = hostCategoryRepository.findById(
-                    Integer.parseInt(hostDTO.getHostCategoryId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getHostCategoryId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCategory", "id", hostDTO.getHostCategoryId()));
             host.setHostCategory(hostCategory);
         }
         if (hostDTO.getHostRoomTypeId() != null && hostDTO.getHostRoomTypeId() != "") {
             HostRoomType hostRoomType = hostRoomTypeRepository.findById(
-                    Integer.parseInt(hostDTO.getHostRoomTypeId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getHostRoomTypeId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostRoomType", "id", hostDTO.getHostRoomTypeId()));
             host.setHostRoomType(hostRoomType);
         }
         if (hostDTO.getHostCityId() != null && hostDTO.getHostCityId() != "") {
             HostCity hostCity = hostCityRepository.findById(
-                    Integer.parseInt(hostDTO.getHostCityId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getHostCityId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCity", "id", hostDTO.getHostCityId()));
             host.setHostCity(hostCity);
         }
         if (hostDTO.getHostCancellationPolicyId() != null && hostDTO.getHostCancellationPolicyId() != "") {
             HostCancellationPolicy hostCancellationPolicy = hostCancellationPolicyRepository.findById(
-                    Integer.parseInt(hostDTO.getHostCancellationPolicyId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getHostCancellationPolicyId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCancellationPolicy", "id", hostDTO.getHostCancellationPolicyId()));
             host.setHostCancellationPolicy(hostCancellationPolicy);
         }
 
         if (hostDTO.getProcedureCheckInId() != null && hostDTO.getProcedureCheckInId() != "") {
             ProcedureCheckIn procedureCheckIn = procedureCheckInRepository.findById(
-                    Integer.parseInt(hostDTO.getProcedureCheckInId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getProcedureCheckInId())).orElseThrow(()
                     -> new ResourceNotFoundException("ProcedureCheckIn", "id", hostDTO.getProcedureCheckInId()));
             host.setProcedureCheckIn(procedureCheckIn);
         }
         if (hostDTO.getCurrencyUnitId() != null && hostDTO.getCurrencyUnitId() != "") {
             CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Integer.parseInt(hostDTO.getCurrencyUnitId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getCurrencyUnitId())).orElseThrow(()
                     -> new ResourceNotFoundException("CurrencyUnit", "id", hostDTO.getCurrencyUnitId()));
             host.setCurrencyUnit(currencyUnit);
         }
         if (hostDTO.getCurrencyUnitId() != null && hostDTO.getCurrencyUnitId() != "") {
             CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Integer.parseInt(hostDTO.getCurrencyUnitId())).orElseThrow(()
+                    Long.parseLong(hostDTO.getCurrencyUnitId())).orElseThrow(()
                     -> new ResourceNotFoundException("CurrencyUnit", "id", hostDTO.getCurrencyUnitId()));
             host.setCurrencyUnit(currencyUnit);
         }
@@ -809,7 +873,7 @@ public class HostServiceImpl implements HostService {
             Set<Rule> rules = new HashSet<>();
             for (String ruleId : ruleIdSet) {
                 Rule rule = ruleRepository.findById(
-                        Integer.parseInt(ruleId)).orElseThrow(()
+                        Long.parseLong(ruleId)).orElseThrow(()
                         -> new ResourceNotFoundException("Rule", "id", ruleId));
                 rules.add(rule);
             }
@@ -820,7 +884,7 @@ public class HostServiceImpl implements HostService {
             Set<Language> languages = new HashSet<>();
             for (String languageId : languageIdSet) {
                 Language language = languageRepository.findById(
-                        Integer.parseInt(languageId)).orElseThrow(()
+                        Long.parseLong(languageId)).orElseThrow(()
                         -> new ResourceNotFoundException("Language", "id", languageId));
                 languages.add(language);
             }
@@ -829,12 +893,15 @@ public class HostServiceImpl implements HostService {
         if (hostDTO.getAddress() != null && hostDTO.getAddress() != "") {
             host.setAddress(hostDTO.getAddress());
         }
-        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != "")
-
-
-            if (hostDTO.getBedroomCount() != null && hostDTO.getBedroomCount() != "") {
-                host.setBedroomCount(Integer.parseInt(hostDTO.getBedroomCount()));
-            }
+        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != ""){
+            host.setLatitude(hostDTO.getLatitude());
+        }
+        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != ""){
+            host.setLongitude(hostDTO.getLongitude());
+        }
+        if (hostDTO.getBedroomCount() != null && hostDTO.getBedroomCount() != "") {
+            host.setBedroomCount(Integer.parseInt(hostDTO.getBedroomCount()));
+        }
         if (hostDTO.getBed() != null && hostDTO.getBed() != "") {
             host.setBed(Integer.parseInt(hostDTO.getBed()));
         }
@@ -1341,8 +1408,8 @@ public class HostServiceImpl implements HostService {
     @Override
     public BaseOutput delete(String hostId) {
         logger.info("HostService.delete");
-        Host host = hostRepository.findById(Integer.parseInt(hostId)).orElseThrow(()
-                -> new ResourceNotFoundException("Host","id",hostId));
+        Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(()
+                -> new ResourceNotFoundException("Host", "id", hostId));
         hostRepository.delete(host);
         Object object = ResponseEntity.ok().build();
         return CommonFunction.successOutput(object);

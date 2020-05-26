@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class CurrencyUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String name;
 }

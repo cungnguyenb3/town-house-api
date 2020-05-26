@@ -15,7 +15,7 @@ import java.util.Date;
 public class ForgotPasswordCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String email;
     private String code;
     private boolean isUsed;

@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
     public BaseOutput getId(String userId) {
         logger.info("UserServiceImpl.getId");
             if (StringUtils.isNumeric(userId)) {
-                User user = userRepository.findById(Integer.parseInt(userId)).orElse(null);
+                User user = userRepository.findById(Long.parseLong(userId)).orElse(null);
                 if (user != null){
                     UserOutputDTO userOutputDTO = MapperUtil.mapper(user, UserOutputDTO.class);
                     return CommonFunction.successOutput(userOutputDTO);
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseOutput delete(String userId) {
         logger.info("UserServiceImpl.delete");
-        User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(()
+        User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(()
                 -> new ResourceNotFoundException("User","id", userId));
         userRepository.delete(user);
         Object object = ResponseEntity.ok().build();
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public BaseOutput update(UserUpdateDTO userUpdateDTO) {
         logger.info("UserServiceImpl.update");
         try {
-            User user = userRepository.findById(Integer.parseInt(userUpdateDTO.getId())).orElseThrow(()
+            User user = userRepository.findById(Long.parseLong(userUpdateDTO.getId())).orElseThrow(()
                     -> new ResourceNotFoundException("user", "id", userUpdateDTO.getId()));
             if (userUpdateDTO.getFullName() != null && userUpdateDTO.getFullName() != ""){
                 user.setFullName(userUpdateDTO.getFullName());
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
     public BaseOutput changePassword(UserChangePasswordDTO userChangePasswordDTO) {
         logger.info("UserServiceImpl.changePassword");
         try {
-           User user = userRepository.findById(Integer.parseInt(userChangePasswordDTO.getId())).orElseThrow(()
+           User user = userRepository.findById(Long.parseLong(userChangePasswordDTO.getId())).orElseThrow(()
                     -> new  ResourceNotFoundException("User", "id", userChangePasswordDTO.getId()));
             if (userChangePasswordDTO.getCurrentPassword() != null && userChangePasswordDTO.getCurrentPassword() != ""
                 && userChangePasswordDTO.getNewPassword() != null && userChangePasswordDTO.getNewPassword() != ""
@@ -195,7 +195,7 @@ public class UserServiceImpl implements UserService {
     public BaseOutput updateWishListHost(UserUpdateWishListDTO userUpdateWishListDTO) {
         logger.info("UserServiceImpl.updateWishListHost");
         try {
-            User user = userRepository.findById(Integer.parseInt(userUpdateWishListDTO.getId())).orElseThrow(()
+            User user = userRepository.findById(Long.parseLong(userUpdateWishListDTO.getId())).orElseThrow(()
                     -> new  ResourceNotFoundException("User", "id", userUpdateWishListDTO.getId()));
             Set<String> strHostIds = userUpdateWishListDTO.getHostIds();
             Set<Host> hosts = new HashSet<>();
@@ -213,7 +213,7 @@ public class UserServiceImpl implements UserService {
             //Way 2
             for (String hostId : strHostIds) {
                 if (hostId != null && hostId != ""){
-                    Host host = hostRepository.findById(Integer.parseInt(hostId)).orElseThrow(()
+                    Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(()
                             -> new  ResourceNotFoundException("Host", "id", hostId));
                     hosts.add(host);
                 }
@@ -240,6 +240,9 @@ public class UserServiceImpl implements UserService {
         }
         if (userDTO.getEmail() != null && userDTO.getEmail() != "") {
             user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getPhone() != null && userDTO.getPhone() == "") {
+            user.setPhone(userDTO.getPhone());
         }
         user.setEnable(false);
         Set<Role> roles = new HashSet<>();
