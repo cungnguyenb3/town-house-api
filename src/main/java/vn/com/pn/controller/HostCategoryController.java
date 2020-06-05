@@ -37,6 +37,16 @@ public class HostCategoryController {
         return response;
     }
 
+    @ApiOperation(value = "View a host category with id", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ID, method = RequestMethod.GET)
+    public BaseOutput getById(@Valid @PathVariable String id){
+        logger.info("========== HostCategoryController.getById START ==========");
+        BaseOutput response = hostCategoryService.getById(id);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostCategoryController.getById END ==========");
+        return response;
+    }
+
     @ApiOperation(value = "Add a new host category", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostCategoryRequest request) {

@@ -3,6 +3,7 @@ package vn.com.pn.service.user;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.pn.domain.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;

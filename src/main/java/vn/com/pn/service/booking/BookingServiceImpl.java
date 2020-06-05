@@ -61,8 +61,8 @@ public class BookingServiceImpl implements BookingService {
         calculatePriceResult.setNights(nights);
 
         LocalDate currentDate = LocalDate.now();
-        if (startDate.isAfter(currentDate) || startDate.isEqual(currentDate)) {
-            if (endDate.isAfter(startDate)) {
+        if (endDate.isAfter(startDate)) {
+            if (startDate.isAfter(currentDate) || startDate.isEqual(currentDate)) {
                 if (bookingCalculatePriceDTO.getHostId() != null && bookingCalculatePriceDTO.getHostId() != "") {
                     Host host = hostRepository.findById(Long.parseLong(bookingCalculatePriceDTO.getHostId())).orElseThrow(()
                             -> new ResourceNotFoundException("User", "id", bookingCalculatePriceDTO.getHostId()));
@@ -106,10 +106,17 @@ public class BookingServiceImpl implements BookingService {
                                 calculatePriceResult.setTotalPrice(price);
                                 return CommonFunction.successOutput(calculatePriceResult);
                             }
+                        } else {
+                            return CommonFunction.errorLogic(400, "Tổng số lượng khách phải ít hơn " +
+                                    "hoặc bằng với số lượng khách cho phép tối đa: " + host.getNumberOfMaximumGuest());
                         }
                     }
                 }
+            }else {
+                return CommonFunction.errorLogic(400, "Ngày checkin phải sau hoặc bằng với ngày hiện tại!");
             }
+        }else {
+            return CommonFunction.errorLogic(400, "Ngày checkin phải trước ngày check out!");
         }
         return CommonFunction.failureOutput();
     }

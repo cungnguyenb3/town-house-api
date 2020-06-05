@@ -22,10 +22,7 @@ import java.util.List;
 public class CommonFunction {
     private static Log logger = LogFactory.getLog(CommonFunction.class);
 
-    @Autowired
-    private ScheduledConfig scheduledConfig;
-
-    public static BaseOutput successOutput(List<Object> list){
+    public static BaseOutput successOutput(List<?> list){
         logger.info("CommonFunction.successOutput");
         BaseOutput output = new BaseOutput();
         if(list != null && list.size() > 0){
@@ -42,8 +39,18 @@ public class CommonFunction {
 
     public static BaseOutput successOutput(Object data){
         logger.info("CommonFunction.successOutput");
-        BaseOutput output = new BaseOutput();
+            BaseOutput output = new BaseOutput();
         output.setTotalRecord(1);
+        output.setData(data);
+        output.setStatus(CommonConstants.STATUS.STATUS_SUCCESS);
+        output.setMessage(ScreenMessageConstants.SUCCESS);
+        return output;
+    }
+
+    public static BaseOutput successOutput(Object data, int total){
+        logger.info("CommonFunction.successOutput");
+        BaseOutput output = new BaseOutput();
+        output.setTotalRecord(total);
         output.setData(data);
         output.setStatus(CommonConstants.STATUS.STATUS_SUCCESS);
         output.setMessage(ScreenMessageConstants.SUCCESS);

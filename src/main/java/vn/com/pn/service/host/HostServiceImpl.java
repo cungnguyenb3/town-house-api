@@ -37,10 +37,7 @@ import vn.com.pn.repository.user.UserRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class HostServiceImpl implements HostService {
@@ -93,7 +90,21 @@ public class HostServiceImpl implements HostService {
         Page<Host> pagedResult = hostRepository.findAll(paging);
 
         if (pagedResult.hasContent()) {
-            return CommonFunction.successOutput(pagedResult.getContent());
+            return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
+        } else {
+            return CommonFunction.successOutput(new ArrayList<Host>());
+        }
+    }
+
+    @Override
+    public BaseOutput getByCityId(String cityId, Integer pageNo, Integer pageSize, String sortBy) {
+        logger.info("HostServiceImpl.getByCityId");
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+        Page<Host> pagedResult = hostRepository.findByHostCityId(Long.parseLong(cityId), paging);
+
+        if (pagedResult.hasContent()) {
+            return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
         } else {
             return CommonFunction.successOutput(new ArrayList<Host>());
         }
@@ -295,7 +306,7 @@ public class HostServiceImpl implements HostService {
             }
             host.setRules(rules);
         }
-        if (hostUpdateDTO.getLanguageIds() != null && !hostUpdateDTO.getRuleIds().isEmpty()) {
+        if (hostUpdateDTO.getLanguageIds() != null && !hostUpdateDTO.getLanguageIds().isEmpty()) {
             Set<String> languageIdSet = hostUpdateDTO.getLanguageIds();
             Set<Language> languages = new HashSet<>();
             for (String languageId : languageIdSet) {
@@ -1410,7 +1421,8 @@ public class HostServiceImpl implements HostService {
         logger.info("HostService.delete");
         Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(()
                 -> new ResourceNotFoundException("Host", "id", hostId));
-        hostRepository.delete(host);
+
+        hostRepository.deleteHostByHostId(host.getId());
         Object object = ResponseEntity.ok().build();
         return CommonFunction.successOutput(object);
     }

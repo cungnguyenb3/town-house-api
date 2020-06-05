@@ -9,4 +9,5 @@ public interface HostCategoryService {
     BaseOutput insert(HostCategoryDTO hostCategoryDTO);
     BaseOutput update(HostCategoryUpdateDTO hostCategoryUpdateDTO);
     BaseOutput delete(String id);
+    BaseOutput getById(String id);
 }

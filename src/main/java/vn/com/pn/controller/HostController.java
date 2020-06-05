@@ -87,6 +87,20 @@ public class HostController {
         return response;
     }
 
+    @ApiOperation(value = "Get host by city id")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_GET_BY_CITY, method = RequestMethod.GET)
+    public BaseOutput getByCity(@PathVariable String id,
+                                @RequestParam(defaultValue = "0") Integer pageNo,
+                                @RequestParam(defaultValue = "15") Integer pageSize,
+                                @RequestParam(defaultValue = "id") String sortBy) {
+        logger.info("========== HostController.getByCity START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        BaseOutput response = new BaseOutput();
+        response.setData(hostService.getByCityId(id, pageNo, pageSize, sortBy));
+        logger.info("========== HostController.getByCity END ==========");
+        return response;
+    }
+
     @ApiOperation(value = "Update host discount from agent")
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_DISCOUNT, method = RequestMethod.POST)
     public BaseOutput updateHostDiscount(@RequestBody HostDiscountRequest request) {

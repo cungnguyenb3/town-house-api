@@ -10,10 +10,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 @SuppressWarnings("serial")
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
@@ -44,7 +46,7 @@ public class User{
     @Column(nullable = false)
     private String email;
 
-    @Size(min=10, max = 10)
+    @NotBlank
     private String phone;
 
     @Column(name = "date_of_birth")
@@ -73,4 +75,6 @@ public class User{
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "host_id"))
     private Set<Host> hosts = new HashSet<>();
+
+
 }

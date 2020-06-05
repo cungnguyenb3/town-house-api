@@ -18,4 +18,5 @@ public interface HostService {
     BaseOutput getId(String id);
     BaseOutput approve(String id);
     List<Host> search(String searchText, int pageNo);
+    BaseOutput getByCityId(String cityId, Integer pageNo, Integer pageSize, String sortBy);
 }

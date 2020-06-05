@@ -31,7 +31,7 @@ public class HostRepositoryCustomImpl implements HostRepositoryCustom{
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder().forEntity(Host.class).get();
 
-        org.apache.lucene.search.Query luceneQuery = queryBuilder.keyword().onField("name")
+        org.apache.lucene.search.Query luceneQuery = queryBuilder.keyword().onFields("name", "address")
                 .matching(searchText).createQuery();
 
         FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Host.class);

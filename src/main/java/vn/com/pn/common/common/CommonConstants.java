@@ -45,10 +45,11 @@ public class CommonConstants {
         String HOST_DISCOUNT = "/hosts/discount";
         String HOST_APPROVED = "/hosts/approved/{id}";
         String HOST_SEARCH = "/hosts/search";
+        String HOST_GET_BY_CITY = "/hosts/get-by-city-id/{id}";
 
         // HostCategory controller
         String HOST_CATEGORY_ROOT = "/host-categories";
-        String HOST_CATEGORY_ID = "/host-category/{id}";
+        String HOST_CATEGORY_ID = "/host-categories/{id}";
 
         // HostRoomType controller
         String HOST_ROOM_TYPE_ROOT = "/host-room-types";
@@ -71,6 +72,7 @@ public class CommonConstants {
 
         // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";
+        String HOST_REVIEW_GET_BY_HOST_ID = "/host-reviews/get-by-host-id/{id}";
 
         // Host cancellation policy
         String HOST_CANCELLATION_POLICY_ROOT = "/host-cancellation-policies";

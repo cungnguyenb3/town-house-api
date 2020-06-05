@@ -82,27 +82,34 @@ public class Host extends DateAudit {
     @JoinTable(name = "hosts_rules",
             joinColumns = @JoinColumn(name = "host_id"),
             inverseJoinColumns = @JoinColumn(name = "rule_id"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Rule> rules = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "languages_communications",
             joinColumns = @JoinColumn(name = "host_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Language> languages = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "hosts_date_can_not_booking",
             joinColumns = @JoinColumn(name = "host_id"),
             inverseJoinColumns = @JoinColumn(name = "date_can_not_booking_id"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<DateCanNotBooking> dateCanNotBookings = new HashSet<>();
 
     @OneToMany(mappedBy = "host", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<HostImage> hostImages = new HashSet<>();
 
     @OneToMany(mappedBy = "host", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<HostDiscount> hostDiscounts = new HashSet<>();
 
+    @Field(index= Index.YES, analyze= Analyze.YES, store= Store.NO)
     private String address;
+
     private String latitude;
     private String longitude;
     private Integer bedroomCount;

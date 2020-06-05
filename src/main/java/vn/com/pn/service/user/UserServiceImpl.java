@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getEmail() != null && userDTO.getEmail() != "") {
             user.setEmail(userDTO.getEmail());
         }
-        if (userDTO.getPhone() != null && userDTO.getPhone() == "") {
+        if (userDTO.getPhone() != null && userDTO.getPhone() != "") {
             user.setPhone(userDTO.getPhone());
         }
         user.setEnable(false);

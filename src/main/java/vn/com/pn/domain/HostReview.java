@@ -17,20 +17,11 @@ public class HostReview {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "host_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Host host;
-
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "review_by_user", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Booking booking;
 
+    @Lob
     private String content;
 
     @Column(name = "star_rating")

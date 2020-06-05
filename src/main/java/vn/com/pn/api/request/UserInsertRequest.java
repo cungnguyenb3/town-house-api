@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Setter
 @Getter
-public class UserInsertRequest extends BaseRequest{
+public class UserInsertRequest {
     @NotBlank
     @Size(min = 3, max = 50)
     private String fullName;

@@ -40,6 +40,9 @@ public class BookingController {
     private BookingService bookingService;
 
     @ApiOperation(value = "View a list bookings", response = BaseOutput.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== BookingController.getAll START ==========");

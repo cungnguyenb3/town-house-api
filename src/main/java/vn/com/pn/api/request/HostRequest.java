@@ -2,18 +2,12 @@ package vn.com.pn.api.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.pn.domain.DateCanNotBooking;
-import vn.com.pn.domain.HostImage;
-import vn.com.pn.domain.Language;
-import vn.com.pn.domain.Rule;
 
-import javax.persistence.Column;
-import java.time.LocalTime;
 import java.util.Set;
 
 @Getter
 @Setter
-public class HostRequest extends BaseRequest{
+public class HostRequest {
     private String name;
 
     private String description;
