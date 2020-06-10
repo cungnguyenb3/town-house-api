@@ -19,7 +19,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("vn.com.pn.controller"))
+                .apis(RequestHandlerSelectors.basePackage("vn.com.pn.screen"))
                 .paths(PathSelectors.any())
                 .build();
     }

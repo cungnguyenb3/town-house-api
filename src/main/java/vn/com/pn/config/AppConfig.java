@@ -1,13 +1,5 @@
 package vn.com.pn.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import vn.com.pn.domain.ForgotPasswordCode;
-import vn.com.pn.domain.User;
-
-import java.util.concurrent.ThreadLocalRandom;
-
 //@Configuration
 public class AppConfig {
 

@@ -14,7 +14,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import vn.com.pn.domain.RoleName;
 import vn.com.pn.security.CustomAccessDeniedHandler;
 import vn.com.pn.security.JwtAuthEntryPoint;
 import vn.com.pn.security.JwtAuthTokenFilter;
@@ -60,6 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/**").permitAll()
                 .antMatchers("/api/roles/**").permitAll()
                 .antMatchers("/api/email/**").permitAll()
+                .antMatchers("/api/bookings-request-success/**").permitAll()
                 .antMatchers("/api/host-categories/**").permitAll()
                 .antMatchers("/api/host-images/**").permitAll()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()

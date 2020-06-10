@@ -7,11 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import vn.com.pn.domain.User;
+import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.exception.ResourceNotFoundException;
-import vn.com.pn.repository.user.UserRepository;
-import vn.com.pn.service.user.UserPrinciple;
+import vn.com.pn.screen.m001User.repository.UserRepository;
+import vn.com.pn.screen.m001User.service.UserPrinciple;
 
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService, AuthService {

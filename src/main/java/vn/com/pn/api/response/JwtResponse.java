@@ -1,7 +1,7 @@
 package vn.com.pn.api.response;
 
 import lombok.Data;
-import vn.com.pn.service.user.UserPrinciple;
+import vn.com.pn.screen.m001User.service.UserPrinciple;
 
 @Data
 public class JwtResponse {
