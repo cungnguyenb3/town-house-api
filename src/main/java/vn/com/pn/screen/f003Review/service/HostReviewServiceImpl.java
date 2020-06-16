@@ -57,18 +57,18 @@ public class HostReviewServiceImpl implements HostReviewService {
         }
     }
 
-//    @Override
-//    public BaseOutput getHostReviewByHost(String hostId) {
-//        logger.info("HostReviewServiceImpl.insert");
-//        try {
-//            List<?> hostReviews = hostReviewRepositoryCustom.getHostReview(Long.parseLong(hostId));
-//            return CommonFunction.successOutput(hostReviews);
-//        }
-//        catch (Exception e) {
-//            logger.error(ScreenMessageConstants.FAILURE, e);
-//            return CommonFunction.failureOutput();
-//        }
-//    }
+    @Override
+    public BaseOutput getHostReviewByHost(String hostId) {
+        logger.info("HostReviewServiceImpl.insert");
+        try {
+            List<?> hostReviews = hostReviewRepositoryCustom.getHostReview(Long.parseLong(hostId));
+            return CommonFunction.successOutput(hostReviews);
+        }
+        catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            return CommonFunction.failureOutput();
+        }
+    }
 
     private BaseOutput getInsertHostReviewInfo(HostReviewDTO hostReviewDTO, User userLogin) {
         logger.info("HostReviewServiceImpl.getInsertHostReviewInfo");
@@ -82,7 +82,7 @@ public class HostReviewServiceImpl implements HostReviewService {
                         "match with user has booked");
             }
 
-            Host host = changeStarRating(booking.getHost().getId(),hostReviewDTO.getStarRating());
+            Host host = changeStarRating(booking.getHost().getId(), hostReviewDTO.getStarRating());
             hostRepository.save(host);
 
             hostReview.setBooking(booking);

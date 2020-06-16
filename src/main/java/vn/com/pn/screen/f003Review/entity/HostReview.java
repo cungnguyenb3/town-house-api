@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import vn.com.pn.screen.f002Booking.entity.Booking;
+import vn.com.pn.utils.DateAuditUtil;
 
 import javax.persistence.*;
 
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name="host_reviews")
-public class HostReview {
+public class HostReview extends DateAuditUtil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

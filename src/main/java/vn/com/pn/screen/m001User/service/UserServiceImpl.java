@@ -5,22 +5,31 @@ import io.jsonwebtoken.impl.DefaultClock;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.MailException;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
+import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.exception.ResourceInternalServerError;
 import vn.com.pn.exception.ResourceNotFoundException;
+import vn.com.pn.screen.f002Booking.entity.Booking;
+import vn.com.pn.screen.f002Booking.repository.BookingRepository;
 import vn.com.pn.screen.m001User.entity.ForgotPasswordCode;
 import vn.com.pn.screen.m001User.repository.ForgotPasswordCodeRepository;
 import vn.com.pn.screen.m001User.dto.*;
@@ -70,15 +79,26 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ForgotPasswordCodeRepository forgotPasswordCodeRepository;
 
+    @Autowired
+    private BookingRepository bookingRepository;
+
     @Override
-    public BaseOutput getAll() {
+    public BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy) {
         logger.info("UserServiceImpl.getAll");
-        List<Object> listUser = new ArrayList<Object>(userRepository.findAll());
-        List<UserOutputDTO> userOutputDTOs = new ArrayList<>();
-        for (Object user: listUser) {
-            userOutputDTOs.add(MapperUtil.mapper(user, UserOutputDTO.class));
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+//        Page<User> pagedResult = userRepository.getAllUser(paging);
+        Page<User> pagedResult = userRepository.getAllUser(paging);
+
+        if (pagedResult.hasContent()) {
+            if (pagedResult.getNumberOfElements() == pageSize) {
+                return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
+            } else {
+                return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getNumberOfElements());
+            }
+        } else {
+            return CommonFunction.successOutput(new ArrayList<User>());
         }
-        return CommonFunction.successOutput(userOutputDTOs);
     }
 
     @Override
@@ -96,13 +116,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseOutput delete(String userId) {
+    public BaseOutput delete(String userId, User userLogin) {
         logger.info("UserServiceImpl.delete");
         User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(()
                 -> new ResourceNotFoundException("User","id", userId));
-        userRepository.delete(user);
-        Object object = ResponseEntity.ok().build();
-        return CommonFunction.successOutput(object);
+        boolean flag = true;
+        for (Role role: user.getRoles()) {
+            if(role.getId() == 1l) {
+                flag = false;
+            }
+            for (Role roleLogin: userLogin.getRoles()) {
+                if (roleLogin.getId() == 3l || roleLogin.getId() == 4l) {
+                    flag = false;
+                }
+                if (roleLogin.getId() == 2l && role.getId() == 2l) {
+                    flag = false;
+                }
+            }
+        }
+        if (flag) {
+            user.setStatus(false);
+            userRepository.save(user);
+            Object object = ResponseEntity.ok().build();
+            return CommonFunction.successOutput(object);
+        }
+        return CommonFunction.errorLogic(403, LogMessageConstants.INCORRECT_ROLE);
     }
 
     @Override
@@ -247,6 +285,7 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getPhone() != null && userDTO.getPhone() != "") {
             user.setPhone(userDTO.getPhone());
         }
+        user.setStatus(true);
         user.setEnable(false);
         Set<Role> roles = new HashSet<>();
         if (isRegisterAdmin) {
@@ -289,7 +328,7 @@ public class UserServiceImpl implements UserService {
             emailContent.append("Xin chào " + userDTO.getFullName() + ", \n\n")
                     .append("Cảm ơn bạn đã đăng ký sử dụng dịch vụ tại Town House. " +
                             "Vui lòng click vào link bên dưới để hoàn tất đăng ký tài khoản. \n\n")
-                    .append(localhostUrl)
+                    .append(herokuUrl)
                     .append("\n\n")
                     .append("Trân trọng, \nTown House team");
 
@@ -382,6 +421,13 @@ public class UserServiceImpl implements UserService {
         }
         return CommonFunction.errorLogic(404, "Không tìm thấy user");
     }
+
+    @Override
+    public BaseOutput getListBookingHistories(Long userId) {
+        List<Booking> listBookingHistories = bookingRepository.getListBookingHistory(userId);
+        return CommonFunction.successOutput(listBookingHistories);
+    }
+
 
     private User changePassword(User user, String newPassword){
         user.setPassword(encoder.encode(newPassword));

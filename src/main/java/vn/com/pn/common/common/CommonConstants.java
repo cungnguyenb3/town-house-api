@@ -38,6 +38,7 @@ public class CommonConstants {
         String USER_SIGN_UP = "/users/sign-up";
         String USER_SIGN_UP_ADMIN = "/users/sign-up/admin";
         String USER_SIGN_IN = "users/sign-in";
+        String USER_BOOKING_HISTORIES = "users/booking-histories";
 
         // Host controller
         String HOST_ROOT = "/hosts";

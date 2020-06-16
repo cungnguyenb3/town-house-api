@@ -1,6 +1,7 @@
 package vn.com.pn.screen.m002Host.service;
 
 import vn.com.pn.screen.m002Host.dto.HostDTO;
+import vn.com.pn.screen.m002Host.dto.HostSearchDTO;
 import vn.com.pn.screen.m006HostCategory.dto.HostDiscountDTO;
 import vn.com.pn.screen.m002Host.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -17,6 +18,6 @@ public interface HostService {
     BaseOutput delete(String hostId);
     BaseOutput getId(String id);
     BaseOutput approve(String id);
-    List<Host> search(String searchText, int pageNo);
+    BaseOutput search(String searchText, int pageNo);
     BaseOutput getByCityId(String cityId, Integer pageNo, Integer pageSize, String sortBy);
 }

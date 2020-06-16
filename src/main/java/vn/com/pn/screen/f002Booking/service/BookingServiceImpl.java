@@ -53,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         calculatePriceResult.setStartDate(startDate.toString());
 
         LocalDate endDate = LocalDate.parse(bookingCalculatePriceDTO.getEndDate());
-        calculatePriceResult.setEndDate(endDate .toString());
+        calculatePriceResult.setEndDate(endDate.toString());
 
         long nights = Days.daysBetween(startDate, endDate).getDays();
         calculatePriceResult.setNights(nights);
@@ -107,17 +107,16 @@ public class BookingServiceImpl implements BookingService {
                                 calculatePriceResult.setTotalPrice(price);
                                 return CommonFunction.successOutput(calculatePriceResult);
                             }
-                        }
-                        else {
+                        } else {
                             return CommonFunction.errorLogic(400, "Tổng số lượng khách phải ít hơn " +
                                     "hoặc bằng với số lượng khách cho phép tối đa: " + host.getNumberOfMaximumGuest());
                         }
                     }
                 }
-            }else {
+            } else {
                 return CommonFunction.errorLogic(400, "Ngày checkin phải sau hoặc bằng với ngày hiện tại!");
             }
-        }else {
+        } else {
             return CommonFunction.errorLogic(400, "Ngày checkin phải trước ngày check out!");
         }
         return CommonFunction.failureOutput();
@@ -197,7 +196,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setBookingCode(randomStringUtil.nextString());
         booking.setAcceptedFromHost(false);
         booking.setPaid(false);
-        booking.setStatus(true);
+        booking.setStatus(false);
         return booking;
     }
 
@@ -223,8 +222,8 @@ public class BookingServiceImpl implements BookingService {
         if (booking != null) {
             booking.setPaid(true);
             sendEmailBookingSuccess(booking);
+            setCountdownBookingCompleteTime(booking);
             return CommonFunction.successOutput(bookingRepository.save(booking));
-
         }
         return CommonFunction.failureOutput();
     }
@@ -258,7 +257,7 @@ public class BookingServiceImpl implements BookingService {
                 }
             }
             String cleanCost = "";
-            if (booking.getCleanCosts() != 0){
+            if (booking.getCleanCosts() != 0) {
                 cleanCost = "\nChi phí dọn dẹp " + booking.getCleanCosts() + "VNĐ";
             }
             String serviceCharge = "";
@@ -326,7 +325,7 @@ public class BookingServiceImpl implements BookingService {
             }
 
             String cleanCost = null;
-            if (booking.getCleanCosts() != 0){
+            if (booking.getCleanCosts() != 0) {
                 cleanCost = "\nChi phí dọn dẹp " + booking.getCleanCosts() + "VNĐ";
             }
             String serviceCharge = null;
@@ -394,7 +393,7 @@ public class BookingServiceImpl implements BookingService {
             }
 
             String cleanCost = "";
-            if (booking.getCleanCosts() != 0){
+            if (booking.getCleanCosts() != 0) {
                 cleanCost = "\nChi phí dọn dẹp " + booking.getCleanCosts() + "VNĐ";
             }
             String serviceCharge = "";
@@ -443,8 +442,20 @@ public class BookingServiceImpl implements BookingService {
         Runnable runnable = () -> checkIsPaidAndSendEmailBookingFailure(booking);
 
         LocalDateTime date = LocalDateTime.from(LocalDateTime.now().plusDays(1));
-        
-        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(date,runnable);
+
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(date, runnable);
+        scheduledConfig.configureTasks(setUpCronTask);
+    }
+
+    private void setCountdownBookingCompleteTime(Booking booking) {
+        Runnable runnable = () -> setBookingCompletedAndSendEmailThankful(booking);
+
+        java.time.LocalDate checkOutDate = booking.getCheckOutDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime date = LocalDateTime.of(checkOutDate.getYear(), checkOutDate.getMonth(), checkOutDate.getDayOfMonth(),
+                booking.getHost().getCheckOutTime().getHour(), booking.getHost().getCheckOutTime().getMinute(),
+                booking.getHost().getCheckOutTime().getSecond());
+
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(date, runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }
 
@@ -499,6 +510,33 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    private void setBookingCompletedAndSendEmailThankful(Booking booking) {
+        try {
+            booking.setStatus(true);
+            bookingRepository.save(booking);
+
+            String emailSubject = "Cảm ơn bạn đã đặt phòng tại Town House";
+            StringBuilder emailContent = new StringBuilder();
+
+            emailContent.append("Xin chào " + booking.getUser().getFullName())
+                    .append("\n\nCảm ơn bạn đã sử dụng dịch vụ của chúng tôi để đặt chỗ tại " + booking.getHost().getName() + ".")
+                    .append("\n\nChúng tôi rất vui khi xác nhận rằng bạn đã hoành thành quá trình đặt phòng ")
+                    .append("trong thời gian " + booking.getNights() + " đêm.")
+                    .append("\n\nNếu bạn có bất kỳ phản hồi nào về các dịch vụ của Town House, bạn có thể vui lòng ")
+                    .append("cho chúng tôi biết bằng cách trả lời lại email này? Hệ thống giải đáp thắc mắc sẽ trả lời ")
+                    .append("cho bạn sớm nhất có thể.")
+                    .append("\n\nNếu bạn hài lòng với dịch vụ của chúng tôi, bạn có thể đánh giá chúng tôi và căn hộ bạn vừa ")
+                    .append("trải nghiệm 5 để chúng tôi có đổng lục mang đến cho các bạn những trải nghiệm mới mẻ hơn.")
+                    .append("\n\nCảm ơn bạn dã sử dụng dịch vụ của Town Hose.\n\n")
+                    .append("Trân trọng, \nTown house team");
+            mailService.sendEmail(booking.getUser().getEmail(), emailSubject, emailContent);
+        } catch (MailException mailException) {
+            logger.error(ScreenMessageConstants.FAILURE, mailException);
+        }
+
+    }
+
+
     private void sendEmailBookingSuccess(Booking booking) {
         try {
             String emailSubject = "Đặt phòng thành công";
@@ -542,7 +580,7 @@ public class BookingServiceImpl implements BookingService {
             }
 
             String cleanCost = "";
-            if (booking.getCleanCosts() != 0){
+            if (booking.getCleanCosts() != 0) {
                 cleanCost = "\nChi phí dọn dẹp " + booking.getCleanCosts() + "VNĐ";
             }
             String serviceCharge = "";
@@ -550,7 +588,7 @@ public class BookingServiceImpl implements BookingService {
                 serviceCharge = "\nPhí dịch vụ: " + booking.getServiceCharge() + "VNĐ";
             }
 
-            emailContent.append("Xin chào " + booking.getHost().getUser().getFullName())
+            emailContent.append("Xin chào " + booking.getUser().getFullName())
                     .append("\n\nXin chúc mừng, bạn đã hoàn tất quá trình đặt phòng.")
                     .append("\n\nTên nhà: " + booking.getHost().getName())
                     .append("\nTên chủ nhà: " + booking.getHost().getUser().getFullName())
@@ -566,7 +604,7 @@ public class BookingServiceImpl implements BookingService {
                     .append("\n------------------------------------------------------------------------------------------")
                     .append(cancellationPolicy)
                     .append("\nHướng dẫn nhận phòng: " + booking.getHost().getCheckInInstructions())
-                    .append("\nThời gian check in trong vòng từ "+ booking.getHost().getEarliestCheckIn()
+                    .append("\nThời gian check in trong vòng từ " + booking.getHost().getEarliestCheckIn()
                             + " đến " + booking.getHost().getCheckOutTime() + ".")
                     .append("\nThời gian check out: " + booking.getHost().getCheckOutTime() + ".")
                     .append("\nHướng dẫn sử dụng tiện ích: "

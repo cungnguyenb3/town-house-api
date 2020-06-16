@@ -69,15 +69,15 @@ public class HostReviewController {
         }
     }
 
-//    @ApiOperation(value = "Add a host review", response = BaseOutput.class)
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-//                    required = true, dataType = "string", paramType = "header") })
-//    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_REVIEW_GET_BY_HOST_ID, method = RequestMethod.POST)
-//    public BaseOutput getHostReviewByHostId(@Valid @PathVariable String id) {
-//        logger.info("========== HostReviewController.insert START ==========");
-//        logger.info("request: " + CommonFunction.convertToJSONString(id));
-//        BaseOutput response = hostReviewService.getHostReviewByHost(id);
-//        return CommonFunction.successOutput(response);
-//    }
+    @ApiOperation(value = "Get list reviews of host", response = BaseOutput.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_REVIEW_GET_BY_HOST_ID, method = RequestMethod.GET)
+    public BaseOutput getHostReviewByHostId(@Valid @PathVariable String id) {
+        logger.info("========== HostReviewController.insert START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        BaseOutput response = hostReviewService.getHostReviewByHost(id);
+        return response;
+    }
 }

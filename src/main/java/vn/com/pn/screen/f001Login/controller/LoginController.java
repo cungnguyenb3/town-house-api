@@ -62,7 +62,7 @@ public class LoginController {
             BaseOutput baseOutput = new BaseOutput();
             baseOutput.setStatus(401);
             baseOutput.setData(null);
-            baseOutput.setMessage("Username hoặc password không chính xác! ");
+            baseOutput.setMessage("Tên đăng nhập hoặc mật khẩu không chính xác! ");
             return ResponseEntity.badRequest().body(baseOutput);
         }
     }

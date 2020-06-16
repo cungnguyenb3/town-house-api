@@ -7,5 +7,5 @@ import vn.com.pn.screen.m001User.entity.User;
 public interface HostReviewService {
     BaseOutput getAll();
     BaseOutput insert(HostReviewDTO hostReviewDTO, User userLogin);
-//    BaseOutput getHostReviewByHost(String hostId);
+    BaseOutput getHostReviewByHost(String hostId);
 }

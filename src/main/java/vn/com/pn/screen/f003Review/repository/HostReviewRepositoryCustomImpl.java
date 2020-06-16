@@ -13,18 +13,15 @@ public class HostReviewRepositoryCustomImpl {
     @Autowired
     private EntityManager entityManager;
 
-    public List<?> getHostReview (Long id) {
-        List<HostReviewWithUserDTO> postDTOs = entityManager.createNativeQuery(
-                "SELECT new vn.com.pn.common.dto.HostReviewWithUserDTO (hr.content) FROM host_reviews hr " +
-                        "INNER JOIN bookings bk on hr.booking_id = bk.id " +
-                        "INNER JOIN users ON bk.user_id = users.id " +
-                        "INNER JOIN hosts ON bk.host_id = hosts.id " +
-                        "WHERE hosts.id = :id")
-                .setParameter( "id",  id)
-                .unwrap(org.hibernate.query.NativeQuery.class)
-                .setResultTransformer( Transformers.aliasToBean( HostReviewWithUserDTO.class ) )
+    public List<?> getHostReview (Long hostId) {
+        List<HostReviewWithUserDTO> postDTOs = entityManager.createQuery(
+                "SELECT NEW vn.com.pn.screen.f003Review.dto.HostReviewWithUserDTO (hr.id, us.fullName, hr.content, hr.starRating, hr.createdAt) FROM HostReview hr " +
+                        "INNER JOIN Booking bk ON bk.id = hr.booking.id " +
+                        "INNER JOIN Host ht ON bk.host.id = ht.id " +
+                        "INNER JOIN User us ON bk.user.id = us.id " +
+                        "WHERE ht.id = :id", HostReviewWithUserDTO.class)
+                .setParameter( "id",  hostId)
                 .getResultList();
-
         return postDTOs;
     }
 

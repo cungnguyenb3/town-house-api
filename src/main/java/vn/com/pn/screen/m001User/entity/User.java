@@ -63,6 +63,8 @@ public class User{
 
     private boolean isEnable;
 
+    private boolean status;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),

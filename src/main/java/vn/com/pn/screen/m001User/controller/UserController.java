@@ -20,7 +20,9 @@ import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m001User.dto.*;
+import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.screen.m001User.request.*;
+import vn.com.pn.security.AuthService;
 import vn.com.pn.security.JwtProvider;
 import vn.com.pn.security.JwtUserDetailsServiceImpl;
 import vn.com.pn.screen.m001User.service.UserPrinciple;
@@ -40,6 +42,9 @@ public class UserController {
     private String tokenHeader;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -48,14 +53,13 @@ public class UserController {
     @Autowired
     private JwtUserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private ApplicationContext context;
-
     @ApiOperation(value = "View a list users", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ROOT, method = RequestMethod.GET)
-    public BaseOutput getAll() {
+    public BaseOutput getAll(@RequestParam(defaultValue = "0") Integer pageNo,
+                             @RequestParam(defaultValue = "15") Integer pageSize,
+                             @RequestParam(defaultValue = "id") String sortBy) {
         logger.info("========== UserController.getAll START ==========");
-        BaseOutput response = userService.getAll();
+        BaseOutput response = userService.getAll(pageNo, pageSize, sortBy);
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== UserController.getAll END ==========");
         return response;
@@ -71,13 +75,17 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
     @ApiOperation(value = "Delete an user", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.DELETE)
     public BaseOutput delete(@Valid @PathVariable String id) {
         logger.info("========== UserController.delete START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
         try {
-            BaseOutput response = userService.delete(id);
+            User userLogin = authService.getLoggedUser();
+            BaseOutput response = userService.delete(id, userLogin);
             logger.info("========== UserController.delete END ==========");
             return response;
         } catch (Exception e) {
@@ -208,6 +216,24 @@ public class UserController {
             ForgotPasswordInputDTO forgotPasswordInputDTO = MapperUtil.mapper(request, ForgotPasswordInputDTO.class);
             logger.info("========== UserController.sendForgotPasswordCode END ==========");
             return userService.handleForgotPassword(forgotPasswordInputDTO);
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE);
+            return CommonFunction.failureOutput();
+        }
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header") })
+    @ApiOperation(value = "Get lists booking historis from user", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_BOOKING_HISTORIES, method = RequestMethod.GET)
+    public BaseOutput getListBookingHistories () {
+        try {
+            logger.info("========== UserController.getListBookingHistories START ==========");
+            User userLogin = authService.getLoggedUser();
+            BaseOutput response = userService.getListBookingHistories(userLogin.getId());
+            logger.info("========== UserController.getListBookingHistories END ==========");
+            return response;
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE);
             return CommonFunction.failureOutput();

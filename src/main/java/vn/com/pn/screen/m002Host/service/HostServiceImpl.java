@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.screen.m002Host.dto.HostDTO;
+import vn.com.pn.screen.m002Host.dto.HostSearchDTO;
 import vn.com.pn.screen.m002Host.entity.HostDiscount;
 import vn.com.pn.screen.m006HostCategory.dto.HostDiscountDTO;
 import vn.com.pn.screen.m002Host.dto.HostUpdateDTO;
@@ -95,7 +96,7 @@ public class HostServiceImpl implements HostService {
         logger.info("HostServiceImpl.getAll");
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 
-        Page<Host> pagedResult = hostRepository.findAll(paging);
+        Page<Host> pagedResult = hostRepository.getAllHost(paging);
 
         if (pagedResult.hasContent()) {
             return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
@@ -129,10 +130,28 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
-    public List<Host> search(String searchText, int pageNo) {
+    public BaseOutput search(String searchText, int pageNo) {
         final int HOST_PER_PAGE = 20;
         logger.info("HostServiceImpl.search");
-        return hostRepositoryCustom.search(searchText, pageNo, HOST_PER_PAGE);
+        List<Host> listHostsBySearch = hostRepositoryCustom.search(searchText, pageNo, HOST_PER_PAGE);
+        List<HostSearchDTO> listResultHost = new ArrayList<>();
+
+        for (Host host: listHostsBySearch) {
+            HostSearchDTO hostSearchDTO = new HostSearchDTO();
+            hostSearchDTO.setName(host.getName());
+            hostSearchDTO.setDescription(host.getDescription());
+            hostSearchDTO.setAddress(host.getAddress());
+            hostSearchDTO.setHostAgentName(host.getUser().getFullName());
+            hostSearchDTO.setHostCategoryName(host.getHostCategory().getName());
+            hostSearchDTO.setHostRoomTypeName(host.getHostRoomType().getName());
+            hostSearchDTO.setStandardPriceMondayToThursday(host.getStandardPriceMondayToThursday());
+            hostSearchDTO.setStandardPriceFridayToSunday(host.getStandardPriceFridayToSunday());
+            hostSearchDTO.setAcreage(host.getAcreage());
+            hostSearchDTO.setCityName(host.getHostCity().getName());
+            listResultHost.add(hostSearchDTO);
+        }
+
+        return CommonFunction.successOutput(listResultHost);
     }
 
     @Override
@@ -1429,8 +1448,8 @@ public class HostServiceImpl implements HostService {
         logger.info("HostService.delete");
         Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(()
                 -> new ResourceNotFoundException("Host", "id", hostId));
-
-        hostRepository.deleteHostByHostId(host.getId());
+        host.setStatus(false);
+        hostRepository.save(host);
         Object object = ResponseEntity.ok().build();
         return CommonFunction.successOutput(object);
     }

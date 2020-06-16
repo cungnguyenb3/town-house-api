@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import vn.com.pn.screen.m002Host.entity.Host;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
