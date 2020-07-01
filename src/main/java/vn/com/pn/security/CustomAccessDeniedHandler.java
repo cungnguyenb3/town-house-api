@@ -2,6 +2,7 @@ package vn.com.pn.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         logger.error(LogMessageConstants.INCORRECT_ROLE);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        BaseOutput roleError = CommonFunction.errorLogic(CommonConstants.STATUS.STATUS_ROLE_ERROR,
+        BaseOutput roleError = CommonFunction.errorLogic(CommonConstants.HTTP_STATUS_CODE.FORBIDDEN,
                 ScreenMessageConstants.INCORRECT_ROLE);
         response.getWriter().write(CommonFunction.convertToJSONString(roleError));
     }

@@ -45,16 +45,11 @@ public class ProcedureCheckInController {
     public BaseOutput insert(@Valid @RequestBody ProcedureCheckInRequest request) {
         logger.info("========== ProcedureCheckInController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            ProcedureCheckInDTO procedureCheckInDTO = MapperUtil.mapper(request, ProcedureCheckInDTO.class);
-            BaseOutput response = procedureCheckInService.insert(procedureCheckInDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== ProcedureCheckInController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        ProcedureCheckInDTO procedureCheckInDTO = MapperUtil.mapper(request, ProcedureCheckInDTO.class);
+        BaseOutput response = procedureCheckInService.insert(procedureCheckInDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== ProcedureCheckInController.insert END ==========");
+        return response;
     }
 }

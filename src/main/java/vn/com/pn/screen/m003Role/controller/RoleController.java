@@ -45,15 +45,11 @@ public class RoleController {
     public BaseOutput insert(@Valid @RequestBody RoleRequest request) {
         logger.info("========== RoleController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            RoleDTO roleDTO = MapperUtil.mapper(request, RoleDTO.class);
-            BaseOutput response = roleService.insert(roleDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== RoleController.insert END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        RoleDTO roleDTO = MapperUtil.mapper(request, RoleDTO.class);
+        BaseOutput response = roleService.insert(roleDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== RoleController.insert END ==========");
+        return response;
     }
 }

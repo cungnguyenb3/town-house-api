@@ -45,16 +45,11 @@ public class CurrencyUnitController {
     public BaseOutput insert(@Valid @RequestBody CurrencyUnitRequest request) {
         logger.info("========== CurrencyUnitController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            CurrencyUnitDTO currencyUnitDTO = MapperUtil.mapper(request, CurrencyUnitDTO.class);
-            BaseOutput response = currencyUnitService.insert(currencyUnitDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== CurrencyUnitController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        CurrencyUnitDTO currencyUnitDTO = MapperUtil.mapper(request, CurrencyUnitDTO.class);
+        BaseOutput response = currencyUnitService.insert(currencyUnitDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== CurrencyUnitController.insert END ==========");
+        return response;
     }
 }

@@ -57,15 +57,16 @@ public class HostImageServiceImpl implements HostImageService {
             hostImage.setWebViewLink(hostImageDTO.getWebViewLink());
             return CommonFunction.successOutput(hostImageRepository.save(hostImage));
         } catch (Exception e) {
-            throw new FileStorageException("Could not store file " + hostImageDTO.getFileName() + ". Please try again!", e);
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            throw new FileStorageException("Could not store file " + hostImageDTO.getFileName() + ". Please try again!");
         }
     }
 
     @Override
-    public List<HostImage> storeMultipleFile (List<HostImageDTO> hostImageDTOList) {
+    public List<HostImage> storeMultipleFile(List<HostImageDTO> hostImageDTOList) {
         try {
             List<HostImage> hostImages = new ArrayList<>();
-            for (HostImageDTO hostImageDTO: hostImageDTOList) {
+            for (HostImageDTO hostImageDTO : hostImageDTOList) {
                 Host host = hostRepository.findById(Long.parseLong(hostImageDTO.getHostId())).orElse(null);
                 if (host != null) {
                     String fileSize = CommonFunction.humanReadableByteCountBin(Long.parseLong(hostImageDTO.getFileSize()));
@@ -87,11 +88,11 @@ public class HostImageServiceImpl implements HostImageService {
         }
     }
 
-    public ImageInfo getImageInfo(MultipartFile file){
+    public ImageInfo getImageInfo(MultipartFile file) {
         logger.info("HostImageServiceImpl.getImageInfo");
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         try {
-            if(fileName.contains("..")) {
+            if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
             ImageInfo imageInfo = new ImageInfo();

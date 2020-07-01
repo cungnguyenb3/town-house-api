@@ -6,5 +6,6 @@ import javax.mail.MessagingException;
 
 public interface MailService {
     void sendEmail(String emailAddress, String emailSubject, StringBuilder text) throws MailException;
-    void sendEmailWithAttachment(String emailAddress)  throws MailException, MessagingException;
+
+    void sendEmailWithAttachment(String emailAddress) throws MailException, MessagingException;
 }

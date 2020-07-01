@@ -88,7 +88,6 @@ public class GoogleDriveServiceImpl implements GoogleDriveService {
         return credential;
     }
 
-
     public static Drive getDriveService() {
         Drive service = null;
         try {

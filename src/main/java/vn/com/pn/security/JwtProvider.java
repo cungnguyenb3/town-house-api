@@ -22,7 +22,7 @@ public class JwtProvider {
     private String jwtSecret;
 
     @Value("16061999")
-    private Long jwtExpiration ;
+    private Long jwtExpiration;
 
     public String generateJwtToken(Authentication authentication) {
         final Date createdDate = clock.now();

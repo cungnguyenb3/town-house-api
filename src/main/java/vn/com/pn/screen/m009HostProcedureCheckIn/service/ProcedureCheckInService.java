@@ -5,6 +5,7 @@ import vn.com.pn.common.output.BaseOutput;
 
 public interface ProcedureCheckInService {
     BaseOutput getAll();
+
     BaseOutput insert(ProcedureCheckInDTO procedureCheckInDTO);
 
 }

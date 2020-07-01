@@ -8,6 +8,6 @@ import vn.com.pn.screen.m003Role.entity.RoleName;
 import java.util.Optional;
 
 @Repository
-public interface RoleRepository extends JpaRepository <Role, Long> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByName(RoleName roleName);
 }

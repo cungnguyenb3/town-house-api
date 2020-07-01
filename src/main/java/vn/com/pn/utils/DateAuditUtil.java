@@ -16,9 +16,9 @@ import java.util.Date;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties (
-    value = {"createdAt", "updatedAt"},
-    allowGetters = true
+@JsonIgnoreProperties(
+        value = {"createdAt", "updatedAt"},
+        allowGetters = true
 )
 public abstract class DateAuditUtil implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)

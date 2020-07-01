@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HostSearchDTO {
+    private Long id;
     private String name;
     private String description;
     private String address;

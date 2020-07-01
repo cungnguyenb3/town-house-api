@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class UserPrinciple implements UserDetails{
+public class UserPrinciple implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private User user;

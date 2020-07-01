@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m004HostCity.dto.HostCityDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m004HostCity.entity.HostCity;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class HostCityServiceImpl implements HostCityService{
+public class HostCityServiceImpl implements HostCityService {
     private static Log logger = LogFactory.getLog(HostServiceImpl.class);
 
     @Autowired
@@ -34,13 +35,14 @@ public class HostCityServiceImpl implements HostCityService{
         logger.info("HostCityServiceImpl.insert");
         try {
             HostCity hostCity = new HostCity();
-            if (hostCityDTO.getName() != null && hostCityDTO.getName() != ""){
-                hostCity.setName(hostCityDTO.getName());
+            if (hostCityDTO.getName() == null && hostCityDTO.getName().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập tên thành phố.");
             }
+            hostCity.setName(hostCityDTO.getName());
             return CommonFunction.successOutput(hostCityRepository.save(hostCity));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 }

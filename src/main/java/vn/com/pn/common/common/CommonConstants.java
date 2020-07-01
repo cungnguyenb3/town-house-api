@@ -17,8 +17,9 @@ public class CommonConstants {
     }
 
     public interface HTTP_STATUS_CODE {
-        int SUCCESS = 400;
+        int SUCCESS = 200;
         int BAD_REQUEST = 400;
+        int FORBIDDEN = 403;
     }
 
     /**
@@ -37,8 +38,9 @@ public class CommonConstants {
         String USER_SEND_FORGOT_CODE_VIA_EMAIL = "/users/send-code-via-email";
         String USER_SIGN_UP = "/users/sign-up";
         String USER_SIGN_UP_ADMIN = "/users/sign-up/admin";
-        String USER_SIGN_IN = "users/sign-in";
-        String USER_BOOKING_HISTORIES = "users/booking-histories";
+        String USER_SIGN_IN = "/users/sign-in";
+        String USER_BOOKING_HISTORIES = "/users/booking-histories";
+        String USER_GET_USER_VIA_TOKEN = "/users/get-user-via-token";
 
         // Host controller
         String HOST_ROOT = "/hosts";
@@ -62,7 +64,7 @@ public class CommonConstants {
 
         // Role controller
         String ROLE_ROOT = "/roles";
-        String ROLE_ID= "/roles/{id}";
+        String ROLE_ID = "/roles/{id}";
 
         // Booking controller
         String BOOKING_ROOT = "/bookings";

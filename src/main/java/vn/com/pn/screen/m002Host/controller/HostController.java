@@ -53,24 +53,18 @@ public class HostController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostRequest request) {
         logger.info("========== HostController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            User userLogin = authService.getLoggedUser();
-            HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
-            BaseOutput response = hostService.insert(hostDTO, userLogin);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        User userLogin = authService.getLoggedUser();
+        HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
+        BaseOutput response = hostService.insert(hostDTO, userLogin);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostController.insert END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Search host")
@@ -79,7 +73,7 @@ public class HostController {
         logger.info("========== HostController.search START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(name));
         int pageNo = 0;
-        if (name != null ){
+        if (name != null) {
             pageNo = 1;
         }
         BaseOutput response = hostService.search(name, pageNo);
@@ -103,64 +97,47 @@ public class HostController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Update host discount from agent")
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_DISCOUNT, method = RequestMethod.POST)
-    public BaseOutput updateHostDiscount(@RequestBody HostDiscountRequest request) {
+    public BaseOutput updateHostDiscount(@Valid @RequestBody HostDiscountRequest request) {
         logger.info("========== HostController.updateHostDiscount START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostDiscountDTO hostDiscountDTO = MapperUtil.mapper(request, HostDiscountDTO.class);
-            BaseOutput response = hostService.discountHostPrice(hostDiscountDTO);
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        HostDiscountDTO hostDiscountDTO = MapperUtil.mapper(request, HostDiscountDTO.class);
+        BaseOutput response = hostService.discountHostPrice(hostDiscountDTO);
+        return response;
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Update a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.PUT)
-    public BaseOutput update(@RequestBody HostRequest request) {
+    public BaseOutput update(@Valid @RequestBody HostRequest request) {
         logger.info("========== HostController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostUpdateDTO hostUpdateDTO = MapperUtil.mapper(request, HostUpdateDTO.class);
-            BaseOutput response = hostService.update(hostUpdateDTO);
-            logger.info("========== HostController.update END ==========");
-            return response;
-        }
-        catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        HostUpdateDTO hostUpdateDTO = MapperUtil.mapper(request, HostUpdateDTO.class);
+        BaseOutput response = hostService.update(hostUpdateDTO);
+        logger.info("========== HostController.update END ==========");
+        return response;
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Delete a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.DELETE)
-    public BaseOutput delete(@Valid @PathVariable String id){
+    public BaseOutput delete(@Valid @PathVariable String id) {
         logger.info("========== HostController.delete START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
-        try {
-            BaseOutput response = hostService.delete(id);
-            logger.info("========== HostController.delete END ==========");
-            return response;
-        }
-        catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        BaseOutput response = hostService.delete(id);
+        logger.info("========== HostController.delete END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Get a host by host id", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ID, method = RequestMethod.GET)
-    public ResponseEntity<?> getId (@Valid @PathVariable String id) {
+    public ResponseEntity<?> getId(@Valid @PathVariable String id) {
         logger.info("========== HostController.delete START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
         logger.info("========== HostController.delete END ==========");
@@ -170,7 +147,7 @@ public class HostController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @PreAuthorize("hasRole('ADMIN')")
     @ApiOperation(value = "Approve host by host id", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_APPROVED, method = RequestMethod.PUT)
@@ -178,7 +155,7 @@ public class HostController {
         logger.info("========== HostController.approveHost START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
         logger.info("========== HostController.approveHost END ==========");
-        BaseOutput response = hostService.approve(id);  
+        BaseOutput response = hostService.approve(id);
         return CommonFunction.successOutput(response);
     }
 }

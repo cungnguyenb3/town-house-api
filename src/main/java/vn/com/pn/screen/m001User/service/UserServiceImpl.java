@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,9 @@ import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.exception.ResourceForbiddenException;
 import vn.com.pn.exception.ResourceInternalServerError;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.repository.BookingRepository;
@@ -89,12 +92,13 @@ public class UserServiceImpl implements UserService {
 
 //        Page<User> pagedResult = userRepository.getAllUser(paging);
         Page<User> pagedResult = userRepository.getAllUser(paging);
+        List<User> users = pagedResult.getContent();
 
         if (pagedResult.hasContent()) {
             if (pagedResult.getNumberOfElements() == pageSize) {
                 return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
             } else {
-                return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getNumberOfElements());
+                return CommonFunction.successOutput(users);
             }
         } else {
             return CommonFunction.successOutput(new ArrayList<User>());
@@ -104,28 +108,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseOutput getId(String userId) {
         logger.info("UserServiceImpl.getId");
-            if (StringUtils.isNumeric(userId)) {
-                User user = userRepository.findById(Long.parseLong(userId)).orElse(null);
-                if (user != null){
-                    UserOutputDTO userOutputDTO = MapperUtil.mapper(user, UserOutputDTO.class);
-                    return CommonFunction.successOutput(userOutputDTO);
-                }
-                throw new ResourceNotFoundException("User", "id",userId);
+        if (StringUtils.isNumeric(userId)) {
+            User user = userRepository.findById(Long.parseLong(userId)).orElse(null);
+            if (user != null) {
+                UserOutputDTO userOutputDTO = MapperUtil.mapper(user, UserOutputDTO.class);
+                return CommonFunction.successOutput(userOutputDTO);
             }
-            throw new ResourceInternalServerError("For input string: %s" + userId);
+            throw new ResourceNotFoundException("User", "id", userId);
+        }
+        throw new ResourceInternalServerError("For input string: %s" + userId);
     }
 
     @Override
     public BaseOutput delete(String userId, User userLogin) {
         logger.info("UserServiceImpl.delete");
         User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(()
-                -> new ResourceNotFoundException("User","id", userId));
+                -> new ResourceNotFoundException("User", "id", userId));
         boolean flag = true;
-        for (Role role: user.getRoles()) {
-            if(role.getId() == 1l) {
+        for (Role role : user.getRoles()) {
+            if (role.getId() == 1l) {
                 flag = false;
             }
-            for (Role roleLogin: userLogin.getRoles()) {
+            for (Role roleLogin : userLogin.getRoles()) {
                 if (roleLogin.getId() == 3l || roleLogin.getId() == 4l) {
                     flag = false;
                 }
@@ -140,59 +144,53 @@ public class UserServiceImpl implements UserService {
             Object object = ResponseEntity.ok().build();
             return CommonFunction.successOutput(object);
         }
-        return CommonFunction.errorLogic(403, LogMessageConstants.INCORRECT_ROLE);
+        throw new ResourceForbiddenException("Bạn không có quyền thực hiện chức năng này!");
     }
 
     @Override
-    public BaseOutput insert (UserDTO userDTO, boolean isRegisterAdmin) {
+    public BaseOutput insert(UserDTO userDTO, boolean isRegisterAdmin) {
         logger.info("UserServiceImpl.insert");
-        try {
-            if(userRepository.existsByUsername(userDTO.getUsername())) {
-                return CommonFunction.errorLogic(400,"Fail -> Username is already taken!");
-            }
-            if(userRepository.existsByEmail(userDTO.getEmail())) {
-                return CommonFunction.errorLogic(400,"Fail -> Email is already in use!");
-            }
-            User user = userRepository.save(getInsertUserInfo(userDTO, isRegisterAdmin));
-            sendEmailConfirm(userDTO);
-            return CommonFunction.successOutput(user);
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+
+        if (userRepository.existsByUsername(userDTO.getUsername())) {
+            throw new ResourceInvalidInputException("Username đã được sử dụng");
         }
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new ResourceInvalidInputException("Email đã được sử dụng");
+        }
+        User user = userRepository.save(getInsertUserInfo(userDTO, isRegisterAdmin));
+        sendEmailConfirm(userDTO);
+        return CommonFunction.successOutput(user);
     }
 
     @Override
-    public BaseOutput update(UserUpdateDTO userUpdateDTO) {
+    public BaseOutput update(User user, UserUpdateDTO userUpdateDTO) {
         logger.info("UserServiceImpl.update");
         try {
-            User user = userRepository.findById(Long.parseLong(userUpdateDTO.getId())).orElseThrow(()
-                    -> new ResourceNotFoundException("user", "id", userUpdateDTO.getId()));
-            if (userUpdateDTO.getFullName() != null && userUpdateDTO.getFullName() != ""){
+            if (userUpdateDTO.getFullName() != null && userUpdateDTO.getFullName() != "") {
                 user.setFullName(userUpdateDTO.getFullName());
             }
-            if (userUpdateDTO.getUserName() != null && userUpdateDTO.getUserName() != ""){
+            if (userUpdateDTO.getUserName() != null && userUpdateDTO.getUserName() != "") {
                 user.setUsername(userUpdateDTO.getUserName());
             }
-            if (userUpdateDTO.getEmail() != null && userUpdateDTO.getEmail() != ""){
+            if (userUpdateDTO.getEmail() != null && userUpdateDTO.getEmail() != "") {
                 user.setEmail(userUpdateDTO.getEmail());
             }
-            if (userUpdateDTO.getPhone() != null && userUpdateDTO.getPhone() != ""){
+            if (userUpdateDTO.getPhone() != null && userUpdateDTO.getPhone() != "") {
                 user.setPhone(userUpdateDTO.getPhone());
             }
-            if (userUpdateDTO.getDateOfBirth() != null && userUpdateDTO.getDateOfBirth() != ""){
+            if (userUpdateDTO.getDateOfBirth() != null && userUpdateDTO.getDateOfBirth() != "") {
                 user.setDateOfBirth(CommonFunction.convertStringToDateObject(userUpdateDTO.getDateOfBirth()));
             }
-            if (userUpdateDTO.getNational() != null && userUpdateDTO.getNational() != ""){
+            if (userUpdateDTO.getNational() != null && userUpdateDTO.getNational() != "") {
                 user.setNational(userUpdateDTO.getNational());
             }
-            if (userUpdateDTO.getGender() != null && userUpdateDTO.getGender() != ""){
+            if (userUpdateDTO.getGender() != null && userUpdateDTO.getGender() != "") {
                 user.setGender(userUpdateDTO.getGender());
             }
             return CommonFunction.successOutput(userRepository.save(user));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -200,35 +198,35 @@ public class UserServiceImpl implements UserService {
     public BaseOutput changePassword(UserChangePasswordDTO userChangePasswordDTO) {
         logger.info("UserServiceImpl.changePassword");
         try {
-           User user = userRepository.findById(Long.parseLong(userChangePasswordDTO.getId())).orElseThrow(()
-                    -> new  ResourceNotFoundException("User", "id", userChangePasswordDTO.getId()));
+            User user = userRepository.findById(Long.parseLong(userChangePasswordDTO.getId())).orElseThrow(()
+                    -> new ResourceNotFoundException("User", "id", userChangePasswordDTO.getId()));
             if (userChangePasswordDTO.getCurrentPassword() != null && userChangePasswordDTO.getCurrentPassword() != ""
-                && userChangePasswordDTO.getNewPassword() != null && userChangePasswordDTO.getNewPassword() != ""
+                    && userChangePasswordDTO.getNewPassword() != null && userChangePasswordDTO.getNewPassword() != ""
                     && userChangePasswordDTO.getConfirmNewPassword() != null && userChangePasswordDTO.getConfirmNewPassword() != ""
             ) {
-                if (encoder.matches(userChangePasswordDTO.getCurrentPassword(),user.getPassword())) {
-                    if (userChangePasswordDTO.getNewPassword().equalsIgnoreCase(userChangePasswordDTO.getConfirmNewPassword())){
-                        if (encoder.matches(userChangePasswordDTO.getNewPassword(),user.getPassword())) {
-                            return CommonFunction.errorLogic(400, "New passwords are not allowed to match with the current password ");
+                if (encoder.matches(userChangePasswordDTO.getCurrentPassword(), user.getPassword())) {
+                    if (userChangePasswordDTO.getNewPassword().equalsIgnoreCase(userChangePasswordDTO.getConfirmNewPassword())) {
+                        if (encoder.matches(userChangePasswordDTO.getNewPassword(), user.getPassword())) {
+                            throw new ResourceInvalidInputException("New passwords are not allowed to match with the current password ");
                         }
                         user.setPassword(encoder.encode(userChangePasswordDTO.getNewPassword()));
                         sendEmailRemindForChangedPassword(user);
                         return CommonFunction.successOutput(userRepository.save(user));
                     } else {
                         logger.error("Two new passwords do not match");
-                        return CommonFunction.errorLogic(400,"Two new passwords do not match");
+                        throw new ResourceInvalidInputException("Two new passwords do not match");
                     }
                 } else {
                     logger.error("Current password don't correct");
-                    return CommonFunction.errorLogic(400,"Current password don't correct");
+                    throw new ResourceInvalidInputException("Current password don't correct");
                 }
             } else {
                 logger.error("Please full all field");
-                return CommonFunction.errorLogic(400,"Please full all field");
+                throw new ResourceInvalidInputException("Tất cả các trường không được bỏ trống");
             }
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -237,7 +235,7 @@ public class UserServiceImpl implements UserService {
         logger.info("UserServiceImpl.updateWishListHost");
         try {
             User user = userRepository.findById(Long.parseLong(userUpdateWishListDTO.getId())).orElseThrow(()
-                    -> new  ResourceNotFoundException("User", "id", userUpdateWishListDTO.getId()));
+                    -> new ResourceNotFoundException("User", "id", userUpdateWishListDTO.getId()));
             Set<String> strHostIds = userUpdateWishListDTO.getHostIds();
             Set<Host> hosts = new HashSet<>();
 
@@ -253,9 +251,9 @@ public class UserServiceImpl implements UserService {
 
             //Way 2
             for (String hostId : strHostIds) {
-                if (hostId != null && hostId != ""){
+                if (hostId != null && hostId != "") {
                     Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(()
-                            -> new  ResourceNotFoundException("Host", "id", hostId));
+                            -> new ResourceNotFoundException("Host", "id", hostId));
                     hosts.add(host);
                 }
             }
@@ -263,40 +261,46 @@ public class UserServiceImpl implements UserService {
             return CommonFunction.successOutput(CommonFunction.successOutput(userRepository.save(user)));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
-    private User getInsertUserInfo (UserDTO userDTO, boolean isRegisterAdmin){
+    private User getInsertUserInfo(UserDTO userDTO, boolean isRegisterAdmin) {
         logger.info("UserServiceImpl.getInsertUserInfo");
         User user = new User();
-        if (userDTO.getFullName() != null && userDTO.getFullName() != "") {
-            user.setFullName(userDTO.getFullName());
+        if (userDTO.getFullName() == null || userDTO.getFullName() == "") {
+            throw new ResourceInvalidInputException("Trường họ và tên không được để trống!");
         }
-        if (userDTO.getUsername() != null && userDTO.getUsername() != "") {
-            user.setUsername(userDTO.getUsername());
+        user.setFullName(userDTO.getFullName());
+        if (userDTO.getUsername() == null || userDTO.getUsername() == "") {
+            throw new ResourceInvalidInputException("Trường tên đăng nhập không được để trống!");
         }
-        if (userDTO.getPassword() != null && userDTO.getPassword() != "") {
-            user.setPassword(encoder.encode(userDTO.getPassword()));
+        user.setUsername(userDTO.getUsername());
+        if (userDTO.getPassword() == null || userDTO.getPassword() == "") {
+            throw new ResourceInvalidInputException("Trường mật khẩu không được để trống!");
         }
-        if (userDTO.getEmail() != null && userDTO.getEmail() != "") {
-            user.setEmail(userDTO.getEmail());
+        user.setPassword(encoder.encode(userDTO.getPassword()));
+        if (userDTO.getEmail() == null || userDTO.getEmail() == "") {
+            throw new ResourceInvalidInputException("Trường email không được để trống!");
         }
-        if (userDTO.getPhone() != null && userDTO.getPhone() != "") {
-            user.setPhone(userDTO.getPhone());
+        user.setEmail(userDTO.getEmail());
+        if (userDTO.getPhone() == null || userDTO.getPhone() == "") {
+            throw new ResourceInvalidInputException("Trường số điện thoại không được để trống!");
         }
+        user.setPhone(userDTO.getPhone());
+
         user.setStatus(true);
         user.setEnable(false);
         Set<Role> roles = new HashSet<>();
         if (isRegisterAdmin) {
             Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
+                    .orElseThrow(() -> new RuntimeException("Không thể tìm thấy role này"));
             roles.add(adminRole);
         } else {
             Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find."));
+                    .orElseThrow(() -> new RuntimeException("Không thể tìm thấy role này"));
             Role agentRole = roleRepository.findByName(RoleName.ROLE_HOST_AGENT)
-                    .orElseThrow(() -> new RuntimeException("Fail! -> Cause: Host Agent Role not find."));
+                    .orElseThrow(() -> new RuntimeException("Không thể tìm thấy role này"));
             roles.add(userRole);
             roles.add(agentRole);
         }
@@ -304,7 +308,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private String generateTokenForActiveUser (String username, String password) {
+    private String generateTokenForActiveUser(String username, String password) {
         logger.info("UserServiceImpl.generateTokenForActiveUser");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
@@ -313,16 +317,16 @@ public class UserServiceImpl implements UserService {
         return jwtProvider.generateJwtToken(authentication);
     }
 
-    private void sendEmailConfirm(UserDTO userDTO){
+    private void sendEmailConfirm(UserDTO userDTO) {
         logger.info("UserServiceImpl.sendEmailConfirm");
         try {
             StringBuilder emailContent = new StringBuilder();
 
             String token = generateTokenForActiveUser(userDTO.getUsername(), userDTO.getPassword());
             String emailSubject = "Xác thực địa chỉ email";
-            String localhostUrl = "http://localhost:8080/api/users/activation?token="+token;
+            String localhostUrl = "http://localhost:8080/api/users/activation?token=" + token;
             //For deploy on heroku
-            String herokuUrl = "https://town-house-api-seven-team.herokuapp.com/api/users/activation?token="+token;
+            String herokuUrl = "https://town-house-api-seven-team.herokuapp.com/api/users/activation?token=" + token;
 
 
             emailContent.append("Xin chào " + userDTO.getFullName() + ", \n\n")
@@ -344,12 +348,12 @@ public class UserServiceImpl implements UserService {
         logger.info("UserServiceImpl.enableUser");
         try {
             User user = userRepository.findById(userPrinciple.getUser().getId()).orElseThrow(()
-                    -> new  ResourceNotFoundException("User", "id", userPrinciple.getUser().getId()));
+                    -> new ResourceNotFoundException("User", "id", userPrinciple.getUser().getId()));
             user.setEnable(true);
             return CommonFunction.successOutput(userRepository.save(user));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -357,34 +361,32 @@ public class UserServiceImpl implements UserService {
     public BaseOutput forgotPassword(String email) {
         logger.info("UserServiceImpl.forgotPassword");
         List<User> listUser = new ArrayList<User>(userRepository.findAll());
-        for (User user : listUser) {
-            if (user.getEmail().equalsIgnoreCase(email)) {
-                Date createDate = clock.now();
-                Date expirationDate = new Date(createDate.getTime() + forgotPasswordCodeExpiration * 300);
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("Không tìm thấy user với email: " + email)
+        );
+        Date createDate = clock.now();
+        Date expirationDate = new Date(createDate.getTime() + forgotPasswordCodeExpiration * 300);
 
-                ForgotPasswordCode forgotPasswordCode = new ForgotPasswordCode();
-                forgotPasswordCode.setEmail(email);
-                forgotPasswordCode.setCode(getForgotPasswordCode());
-                forgotPasswordCode.setUsed(false);
-                forgotPasswordCode.setCreateDate(createDate);
-                forgotPasswordCode.setExpirationDate(expirationDate);
-                forgotPasswordCodeRepository.save(forgotPasswordCode);
+        ForgotPasswordCode forgotPasswordCode = new ForgotPasswordCode();
+        forgotPasswordCode.setEmail(email);
+        forgotPasswordCode.setCode(getForgotPasswordCode());
+        forgotPasswordCode.setUsed(false);
+        forgotPasswordCode.setCreateDate(createDate);
+        forgotPasswordCode.setExpirationDate(expirationDate);
+        forgotPasswordCodeRepository.save(forgotPasswordCode);
 
-                String emailSubject = "Yêu cầu đặt lại mật khẩu";
+        String emailSubject = "Yêu cầu đặt lại mật khẩu";
 
-                StringBuilder emailContent = new StringBuilder();
+        StringBuilder emailContent = new StringBuilder();
 
-                emailContent.append("Xin chào " + user.getFullName())
-                        .append(",\n\nMã đặt lại mật khẩu: ")
-                        .append(forgotPasswordCode.getCode())
-                        .append("\n\nCảm ơn bạn dã sử dụng dịch vụ của Town Hose")
-                        .append("\n\nTrân trọng, \nTown house team");
+        emailContent.append("Xin chào " + user.getFullName())
+                .append(",\n\nMã đặt lại mật khẩu: ")
+                .append(forgotPasswordCode.getCode())
+                .append("\n\nCảm ơn bạn dã sử dụng dịch vụ của Town Hose")
+                .append("\n\nTrân trọng, \nTown house team");
 
-                mailService.sendEmail(user.getEmail(), emailSubject, emailContent);
-                return CommonFunction.successOutput(email);
-            }
-        }
-        return CommonFunction.failureOutput();
+        mailService.sendEmail(user.getEmail(), emailSubject, emailContent);
+        return CommonFunction.successOutput(email);
     }
 
     public String getForgotPasswordCode() {
@@ -397,16 +399,16 @@ public class UserServiceImpl implements UserService {
     public BaseOutput handleForgotPassword(ForgotPasswordInputDTO forgotPasswordInputDTO) {
         logger.info("UserServiceImpl.handleForgotPassword");
         List<ForgotPasswordCode> forgotPasswordCodes = forgotPasswordCodeRepository.findAll();
-        for (ForgotPasswordCode forgotPasswordCode: forgotPasswordCodes) {
+        for (ForgotPasswordCode forgotPasswordCode : forgotPasswordCodes) {
             if (forgotPasswordCode.getCode().equalsIgnoreCase(forgotPasswordInputDTO.getCode())) {
                 User user = userRepository.findByEmail(forgotPasswordCode.getEmail()).orElseThrow(()
-                        -> new  ResourceNotFoundException("User", "email", forgotPasswordCode.getEmail()));
-                if (forgotPasswordCode.getExpirationDate().before(clock.now())){
-                    return CommonFunction.errorLogic(400, "Code has been expiration");
+                        -> new ResourceNotFoundException("User", "email", forgotPasswordCode.getEmail()));
+                if (forgotPasswordCode.getExpirationDate().before(clock.now())) {
+                    throw new ResourceInvalidInputException("Code has been expiration");
                 }
                 if (!forgotPasswordCode.isUsed()) {
-                    if (encoder.matches(forgotPasswordInputDTO.getNewPassword(), user.getPassword())){
-                        return CommonFunction.errorLogic(400, "New passwords are not allowed to match with the current password");
+                    if (encoder.matches(forgotPasswordInputDTO.getNewPassword(), user.getPassword())) {
+                        throw new ResourceInvalidInputException("New passwords are not allowed to match with the current password");
                     }
                     if (forgotPasswordInputDTO.getNewPassword().equalsIgnoreCase(forgotPasswordInputDTO.getConfirmNewPassword())) {
                         forgotPasswordCode.setUsed(true);
@@ -414,22 +416,27 @@ public class UserServiceImpl implements UserService {
                         changePassword(user, forgotPasswordInputDTO.getNewPassword());
                         return CommonFunction.successOutput(userRepository.save(user));
                     }
-                    return CommonFunction.errorLogic(400, "Two password's input do not match");
+                    throw new ResourceInvalidInputException("Two password's input do not match");
                 }
-                return CommonFunction.errorLogic(400, "Code has been used");
+                throw new ResourceInvalidInputException("Code has been used");
             }
         }
-        return CommonFunction.errorLogic(404, "Không tìm thấy user");
+        throw new ResourceNotFoundException("Không tìm thấy user");
     }
 
     @Override
     public BaseOutput getListBookingHistories(Long userId) {
-        List<Booking> listBookingHistories = bookingRepository.getListBookingHistory(userId);
-        return CommonFunction.successOutput(listBookingHistories);
+        try {
+            List<Booking> listBookingHistories = bookingRepository.getListBookingHistory(userId);
+            return CommonFunction.successOutput(listBookingHistories);
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            throw new ResourceNotFoundException("Không tìm thấy user với id: " + userId);
+        }
     }
 
 
-    private User changePassword(User user, String newPassword){
+    private User changePassword(User user, String newPassword) {
         user.setPassword(encoder.encode(newPassword));
         return user;
     }

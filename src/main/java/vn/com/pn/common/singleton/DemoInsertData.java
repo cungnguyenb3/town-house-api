@@ -72,14 +72,6 @@ public class DemoInsertData {
         Role roleAgent = roleRepository.findByName(RoleName.ROLE_HOST_AGENT).orElse(null);
         Role roleUser = roleRepository.findByName(RoleName.ROLE_USER).orElse(null);
         User userSuperAdmin = userRepository.findByUsername("townhousersuperadmin").orElse(null);
-        List<CurrencyUnit> currencyUnits = currencyUnitRepository.findAll();
-        List<HostCancellationPolicy> hostCancellationPolicys = hostCancellationPolicyRepository.findAll();
-        List<HostCategory> hostCategorys = hostCategoryRepository.findAll();
-        List<HostCity> hostCities = hostCityRepository.findAll();
-        List<HostRoomType> hostRoomTypes = hostRoomTypeRepository.findAll();
-        List<Language> languages = languageRepository.findAll();
-        List<ProcedureCheckIn> procedureCheckIns = procedureCheckInRepository.findAll();
-        List<Rule> rules = ruleRepository.findAll();
 
         if (roleSuperAdmin == null) {
             Role role = new Role();
@@ -105,7 +97,7 @@ public class DemoInsertData {
             roleRepository.save(role);
         }
 
-        if (userSuperAdmin == null ) {
+        if (userSuperAdmin == null) {
             User user = new User();
             user.setFullName("Super Admin");
             user.setUsername("townhousersuperadmin");
@@ -113,18 +105,21 @@ public class DemoInsertData {
             user.setEmail("townhouseapi1999@gmail.com");
             user.setPhone("0989710452");
             user.setEnable(true);
+            user.setStatus(true);
             Role superAdmin = roleRepository.findByName(RoleName.ROLE_SUPER_ADMIN).orElse(null);
-            user.setRoles(new HashSet<Role>(){{add(superAdmin);}});
+            user.setRoles(new HashSet<Role>() {{
+                add(superAdmin);
+            }});
             userRepository.save(user);
         }
 
-        if (currencyUnits.size() == 0) {
+        if (currencyUnitRepository.checkCurrencyUnitIsEmpty() == null) {
             CurrencyUnit currencyUnitDemo = new CurrencyUnit();
             currencyUnitDemo.setName("VNĐ");
             currencyUnitRepository.save(currencyUnitDemo);
         }
 
-        if (hostCancellationPolicys.size() == 0) {
+        if (hostCancellationPolicyRepository.checkHostCancellationPolicyIsEmpty() == null) {
             HostCancellationPolicy hostCancellationPolicyDemo = new HostCancellationPolicy();
             hostCancellationPolicyDemo.setName("Linh hoạt (Flexible)");
             hostCancellationPolicyDemo.setDescription("Cơ chế: Miễn phí hủy phòng khi khách hàng hủy trước 24h so với " +
@@ -132,7 +127,7 @@ public class DemoInsertData {
             hostCancellationPolicyRepository.save(hostCancellationPolicyDemo);
         }
 
-        if(hostCategorys.size() == 0) {
+        if (hostCategoryRepository.checkHostCategoryIsEmpty() == null) {
             HostCategory hostCategoryDemo = new HostCategory();
             hostCategoryDemo.setName("Homestay");
             hostCategoryDemo.setDescription("Homestay là loại hình du lịch mà khách du lịch sẽ nghỉ, ngủ tại nhà người " +
@@ -141,13 +136,13 @@ public class DemoInsertData {
             hostCategoryRepository.save(hostCategoryDemo);
         }
 
-        if (hostCities.size() == 0) {
+        if (hostCityRepository.checkHostCityIsEmpty() == null) {
             HostCity hostCityDemo = new HostCity();
             hostCityDemo.setName("Hà Nội");
             hostCityRepository.save(hostCityDemo);
         }
 
-        if (hostRoomTypes.size() == 0) {
+        if (hostRoomTypeRepository.checkHostRoomTypeIsEmpty() == null) {
             HostRoomType hostRoomTypeDemo = new HostRoomType();
             hostRoomTypeDemo.setName("Nguyên căn");
             hostRoomTypeDemo.setDescription("Thuê nhà nguyên căn là hình thức thuê cả một căn hộ và được toàn quyền sử dụng căn nhà" +
@@ -156,19 +151,19 @@ public class DemoInsertData {
             hostRoomTypeRepository.save(hostRoomTypeDemo);
         }
 
-        if (languages.size() == 0) {
+        if (languageRepository.checkLanguageIsEmpty() == null) {
             Language languageDemo = new Language();
             languageDemo.setName("Tiếng Việt");
             languageRepository.save(languageDemo);
         }
 
-        if (procedureCheckIns.size() == 0) {
+        if (procedureCheckInRepository.checkProcedureCheckInIsEmpty() == null) {
             ProcedureCheckIn procedureCheckInDemo = new ProcedureCheckIn();
             procedureCheckInDemo.setName("Tự check in");
             procedureCheckInRepository.save(procedureCheckInDemo);
         }
 
-        if (rules.size() == 0) {
+        if (ruleRepository.checkRuleIsEmpty() == null) {
             Rule ruleDemo = new Rule();
             ruleDemo.setName("Không được hút thuốc.");
             ruleRepository.save(ruleDemo);

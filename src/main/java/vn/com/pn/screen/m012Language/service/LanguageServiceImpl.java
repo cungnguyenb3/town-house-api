@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m012Language.dto.LanguageDTO;
 import vn.com.pn.screen.m012Language.dto.LanguageUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class LanguageServiceImpl implements LanguageService{
+public class LanguageServiceImpl implements LanguageService {
     private static Log logger = LogFactory.getLog(HostServiceImpl.class);
 
     @Autowired
@@ -36,13 +37,14 @@ public class LanguageServiceImpl implements LanguageService{
         logger.info("LanguageRepository.insert");
         try {
             Language language = new Language();
-            if (languageDTO.getName() != null && languageDTO.getName() != ""){
-                language.setName(languageDTO.getName());
+            if (languageDTO.getName() == null && languageDTO.getName().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập ngôn ngữ");
             }
+            language.setName(languageDTO.getName());
             return CommonFunction.successOutput(languageRepository.save(language));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -59,7 +61,7 @@ public class LanguageServiceImpl implements LanguageService{
             return CommonFunction.successOutput(languageRepository.save(language));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 }

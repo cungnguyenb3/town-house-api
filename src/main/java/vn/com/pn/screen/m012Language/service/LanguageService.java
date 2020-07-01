@@ -6,7 +6,9 @@ import vn.com.pn.common.output.BaseOutput;
 
 public interface LanguageService {
     BaseOutput getAll();
+
     BaseOutput insert(LanguageDTO languageDTO);
+
     BaseOutput update(LanguageUpdateDTO languageUpdateDTO);
 }
 

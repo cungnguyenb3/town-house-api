@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m003Role.dto.RoleDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m003Role.entity.Role;
@@ -34,8 +35,8 @@ public class RoleServiceImpl implements RoleService {
         logger.info("RoleService.insert");
         try {
             Role role = new Role();
-            if (roleDTO.getName() != null && roleDTO.getName() != ""){
-                switch(roleDTO.getName()) {
+            if (roleDTO.getName() != null && roleDTO.getName() != "") {
+                switch (roleDTO.getName()) {
                     case "admin":
                         role.setName(RoleName.ROLE_ADMIN);
                         break;
@@ -52,7 +53,7 @@ public class RoleServiceImpl implements RoleService {
             return CommonFunction.successOutput(roleRepository.save(role));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 }

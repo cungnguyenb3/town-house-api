@@ -8,11 +8,11 @@ import vn.com.pn.screen.m002Host.entity.DateCanNotBooking;
 import vn.com.pn.screen.m002Host.repository.DateCanNotBookingRepository;
 
 @Service
-public class DateCanNotBookingServiceImpl implements DateCanNotBookingService{
+public class DateCanNotBookingServiceImpl implements DateCanNotBookingService {
     @Autowired
     private DateCanNotBookingRepository dateCanNotBookingRepository;
 
-    public BaseOutput insert(DateCanNotBookingDTO dateCanNotBookingDTO){
+    public BaseOutput insert(DateCanNotBookingDTO dateCanNotBookingDTO) {
         try {
             DateCanNotBooking dateCanNotBooking = new DateCanNotBooking();
             return null;

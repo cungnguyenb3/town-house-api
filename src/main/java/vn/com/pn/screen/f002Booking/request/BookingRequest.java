@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 public class BookingRequest {
     private String hostId;
-    private String checkInDate;
-    private String checkOutDate;
+    private String startDate;
+    private String endDate;
     private String pricePerNight;
     private String nights;
-    private String roomPrice;
+    private String priceWithoutCleanCostsAndServiceCharge;
     private String cleanCosts;
     private String serviceCharge;
     private String totalPrice;

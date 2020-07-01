@@ -15,7 +15,7 @@ public class RandomStringUtil {
 
     public static final String alphanum = upper;
 
-    private final Random random ;
+    private final Random random;
 
     private final char[] symbols;
 

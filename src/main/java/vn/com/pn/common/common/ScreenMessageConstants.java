@@ -8,4 +8,6 @@ public class ScreenMessageConstants {
     public static final String INCORRECT_ROLE = "Người dùng không có quyền thực hiện API này.";
 
     public static final String FAILURE = "API đã thực hiện thất bại.";
+
+    public static final String INVALID_INPUT = "Lỗi input dữ liệu đầu vào.";
 }

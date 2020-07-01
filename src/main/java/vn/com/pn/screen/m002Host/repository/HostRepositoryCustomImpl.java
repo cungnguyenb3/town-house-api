@@ -12,7 +12,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class HostRepositoryCustomImpl implements HostRepositoryCustom{
+public class HostRepositoryCustomImpl implements HostRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -36,7 +36,7 @@ public class HostRepositoryCustomImpl implements HostRepositoryCustom{
 
         FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Host.class);
         jpaQuery.setMaxResults(resultsPerPage);
-        jpaQuery.setFirstResult((pageNo-1) * resultsPerPage);
+        jpaQuery.setFirstResult((pageNo - 1) * resultsPerPage);
 
         return jpaQuery.getResultList();
     }

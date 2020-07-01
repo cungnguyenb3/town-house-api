@@ -32,13 +32,13 @@ import java.util.Set;
 @Getter
 @Entity
 @Indexed
-@Table(name="hosts")
+@Table(name = "hosts")
 public class Host extends DateAuditUtil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Field(index= Index.YES, analyze= Analyze.YES, store= Store.NO)
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     private String name;
 
     @NonNull
@@ -116,7 +116,7 @@ public class Host extends DateAuditUtil {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<HostDiscount> hostDiscounts = new HashSet<>();
 
-    @Field(index= Index.YES, analyze= Analyze.YES, store= Store.NO)
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     private String address;
 
     private String latitude;

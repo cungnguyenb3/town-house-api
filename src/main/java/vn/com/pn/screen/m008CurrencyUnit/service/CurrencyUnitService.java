@@ -5,5 +5,6 @@ import vn.com.pn.common.output.BaseOutput;
 
 public interface CurrencyUnitService {
     BaseOutput getAll();
+
     BaseOutput insert(CurrencyUnitDTO currencyUnitDTO);
 }

@@ -45,16 +45,11 @@ public class HostCityController {
     public BaseOutput insert(@Valid @RequestBody HostCityRequest request) {
         logger.info("========== HostCityController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostCityDTO hostCityDTO = MapperUtil.mapper(request, HostCityDTO.class);
-            BaseOutput response = hostCityService.insert(hostCityDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostCityController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        HostCityDTO hostCityDTO = MapperUtil.mapper(request, HostCityDTO.class);
+        BaseOutput response = hostCityService.insert(hostCityDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostCityController.insert END ==========");
+        return response;
     }
 }

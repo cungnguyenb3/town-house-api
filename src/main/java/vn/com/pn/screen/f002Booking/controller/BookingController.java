@@ -39,7 +39,7 @@ public class BookingController {
     @ApiOperation(value = "View a list bookings", response = BaseOutput.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== BookingController.getAll START ==========");
@@ -51,31 +51,26 @@ public class BookingController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "API request booking", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody BookingRequest request){
+    public BaseOutput insert(@Valid @RequestBody BookingRequest request) {
         logger.info("========== BookingController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            User userLogin = authService.getLoggedUser();
-            BookingDTO bookingDTO = MapperUtil.mapper(request, BookingDTO.class);
-            BaseOutput response = bookingService.insert(bookingDTO, userLogin);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== BookingController.insert END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        User userLogin = authService.getLoggedUser();
+        BookingDTO bookingDTO = MapperUtil.mapper(request, BookingDTO.class);
+        BaseOutput response = bookingService.insert(bookingDTO, userLogin);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== BookingController.insert END ==========");
+        return response;
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Confirm  booking request", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CONFIRM_REQUEST, method = RequestMethod.PUT)
-    public ResponseEntity<?> confirmBookingRequest(@PathVariable String bookingId) {
+    public ResponseEntity<?> confirmBookingRequest(@Valid @PathVariable String bookingId) {
         logger.info("========== BookingController.confirmBookingRequest START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
         User userLogin = authService.getLoggedUser();
@@ -86,10 +81,10 @@ public class BookingController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Booking request successful", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_REQUEST_SUCCESS, method = RequestMethod.PUT)
-    public ResponseEntity<?> bookingRequestSuccess(@PathVariable String bookingId) {
+    public ResponseEntity<?> bookingRequestSuccess(@Valid @PathVariable String bookingId) {
         logger.info("========== BookingController.bookingRequestSuccess START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
         BaseOutput response = bookingService.confirmBookingPaid(bookingId);
@@ -99,21 +94,16 @@ public class BookingController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Api add new booking", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CALCULATE_PRICE, method = RequestMethod.POST)
-    public BaseOutput calculatePrice(@Valid @RequestBody BookingCalculatePriceDTO request){
+    public BaseOutput calculatePrice(@Valid @RequestBody BookingCalculatePriceDTO request) {
         logger.info("========== BookingController.calculatePrice START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            BookingCalculatePriceDTO bookingCalculatePriceDTO = MapperUtil.mapper(request, BookingCalculatePriceDTO.class);
-            BaseOutput response = bookingService.calculatePrice(bookingCalculatePriceDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== BookingController.calculatePrice END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        BookingCalculatePriceDTO bookingCalculatePriceDTO = MapperUtil.mapper(request, BookingCalculatePriceDTO.class);
+        BaseOutput response = bookingService.calculatePrice(bookingCalculatePriceDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== BookingController.calculatePrice END ==========");
+        return response;
     }
 }

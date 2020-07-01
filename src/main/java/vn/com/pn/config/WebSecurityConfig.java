@@ -20,6 +20,7 @@ import vn.com.pn.security.CustomAccessDeniedHandler;
 import vn.com.pn.security.JwtAuthEntryPoint;
 import vn.com.pn.security.JwtAuthTokenFilter;
 import vn.com.pn.security.JwtUserDetailsServiceImpl;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -54,12 +55,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Override
-        protected void configure(HttpSecurity httpSecurity) throws Exception {
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/api/hosts/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/users/**").permitAll()
+                .antMatchers("/thisisnotindex.html","/app.js", "/gs-guide-websocket/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/hosts/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/users/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users/sign-up").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/users/sign-in").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/api/users").hasAnyAuthority("SUPER_ADMIN", "ADMIN")
                 //For test without token in front end
                 .antMatchers("/api/host-categories/**").permitAll()

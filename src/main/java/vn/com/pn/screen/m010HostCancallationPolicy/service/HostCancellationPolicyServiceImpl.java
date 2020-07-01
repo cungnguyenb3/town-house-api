@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m010HostCancallationPolicy.dto.HostCancellationPolicyDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m010HostCancallationPolicy.entity.HostCancellationPolicy;
@@ -34,16 +35,18 @@ public class HostCancellationPolicyServiceImpl implements HostCancellationPolicy
         logger.info("HostCancellationPolicyServiceImpl.insert");
         try {
             HostCancellationPolicy hostCancellationPolicy = new HostCancellationPolicy();
-            if (hostCancellationPolicyDTO.getName() != null && hostCancellationPolicyDTO.getName() != ""){
-                hostCancellationPolicy.setName(hostCancellationPolicyDTO.getName());
+            if (hostCancellationPolicyDTO.getName() == null && hostCancellationPolicyDTO.getName().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập tên chính sách hủy phòng.");
             }
-            if (hostCancellationPolicyDTO.getDescription() != null && hostCancellationPolicyDTO.getDescription() != ""){
-                hostCancellationPolicy.setDescription(hostCancellationPolicyDTO.getDescription());
+            hostCancellationPolicy.setName(hostCancellationPolicyDTO.getName());
+            if (hostCancellationPolicyDTO.getDescription() == null && hostCancellationPolicyDTO.getDescription().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập mô tả chính sách hủy phòng.");
             }
+            hostCancellationPolicy.setDescription(hostCancellationPolicyDTO.getDescription());
             return CommonFunction.successOutput(hostCancellationPolicyRepository.save(hostCancellationPolicy));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 }

@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@Table(name="bookings")
+@Table(name = "bookings")
 public class Booking extends DateAuditUtil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,4 +64,7 @@ public class Booking extends DateAuditUtil {
     private boolean status;
 
     private boolean isPaid;
+
+    @Column(name = "is_cancel")
+    private boolean isCancel;
 }

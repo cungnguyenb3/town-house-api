@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.search.annotations.Indexed;
 import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m003Role.entity.Role;
 
@@ -25,23 +26,17 @@ import vn.com.pn.screen.m003Role.entity.Role;
                 "email"
         })
 })
-public class User{
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min=3, max = 50)
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @NotBlank
-    @Size(min=3, max = 50)
     @Column(nullable = false)
     private String username;
 
-    @NotBlank
-    @Size(max = 50)
     @Email
     @Column(nullable = false)
     private String email;
@@ -57,7 +52,6 @@ public class User{
     private String gender;
 
     @NotBlank
-    @Size(min=6, max = 100)
     @Column(nullable = false)
     private String password;
 

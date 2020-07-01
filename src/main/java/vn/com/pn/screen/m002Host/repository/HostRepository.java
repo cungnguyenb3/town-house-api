@@ -13,12 +13,12 @@ import vn.com.pn.screen.m002Host.entity.Host;
 import javax.transaction.Transactional;
 
 @Repository
-public interface HostRepository extends JpaRepository <Host, Long>,
-    PagingAndSortingRepository<Host, Long> {
+public interface HostRepository extends JpaRepository<Host, Long>,
+        PagingAndSortingRepository<Host, Long> {
 
     @Query(value = "SELECT * FROM hosts WHERE city_id = :city_id",
             nativeQuery = true)
-    Page<Host> findByHostCityId (@Param("city_id") Long hostCity, Pageable pageable);
+    Page<Host> findByHostCityId(@Param("city_id") Long hostCity, Pageable pageable);
 
     @Query(value = "SELECT * FROM hosts WHERE status = true",
             nativeQuery = true)

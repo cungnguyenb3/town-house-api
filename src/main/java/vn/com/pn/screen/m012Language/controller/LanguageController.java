@@ -43,17 +43,12 @@ public class LanguageController {
     public BaseOutput insert(@Valid @RequestBody LanguageRequest request) {
         logger.info("========== LanguageController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            LanguageDTO languageDTO = MapperUtil.mapper(request, LanguageDTO.class);
-            BaseOutput response = languageService.insert(languageDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== LanguageController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        LanguageDTO languageDTO = MapperUtil.mapper(request, LanguageDTO.class);
+        BaseOutput response = languageService.insert(languageDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== LanguageController.insert END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Update a language", response = BaseOutput.class)
@@ -61,16 +56,12 @@ public class LanguageController {
     public BaseOutput update(@Valid @PathVariable String id, @Valid @RequestBody LanguageRequest request) {
         logger.info("========== LanguageController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            LanguageUpdateDTO languageUpdateDTO = MapperUtil.mapper(request, LanguageUpdateDTO.class);
-            languageUpdateDTO.setId(id);
-            BaseOutput response = languageService.update(languageUpdateDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== LanguageController.update END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        LanguageUpdateDTO languageUpdateDTO = MapperUtil.mapper(request, LanguageUpdateDTO.class);
+        languageUpdateDTO.setId(id);
+        BaseOutput response = languageService.update(languageUpdateDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== LanguageController.update END ==========");
+        return response;
     }
 }

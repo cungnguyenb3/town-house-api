@@ -10,6 +10,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.f002Booking.dto.BookingCalculatePriceDTO;
 import vn.com.pn.screen.f002Booking.dto.BookingDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -47,79 +48,88 @@ public class BookingServiceImpl implements BookingService {
     private ScheduledConfig scheduledConfig;
 
     public BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO) {
-        CalculatePriceResult calculatePriceResult = new CalculatePriceResult();
+        try {
+            CalculatePriceResult calculatePriceResult = new CalculatePriceResult();
 
-        LocalDate startDate = LocalDate.parse(bookingCalculatePriceDTO.getStartDate());
-        calculatePriceResult.setStartDate(startDate.toString());
+            LocalDate startDate = LocalDate.parse(bookingCalculatePriceDTO.getStartDate());
+            calculatePriceResult.setStartDate(startDate.toString());
 
-        LocalDate endDate = LocalDate.parse(bookingCalculatePriceDTO.getEndDate());
-        calculatePriceResult.setEndDate(endDate.toString());
+            LocalDate endDate = LocalDate.parse(bookingCalculatePriceDTO.getEndDate());
+            calculatePriceResult.setEndDate(endDate.toString());
 
-        long nights = Days.daysBetween(startDate, endDate).getDays();
-        calculatePriceResult.setNights(nights);
+            long nights = Days.daysBetween(startDate, endDate).getDays();
+            calculatePriceResult.setNights(nights);
 
-        LocalDate currentDate = LocalDate.now();
-        if (endDate.isAfter(startDate)) {
-            if (startDate.isAfter(currentDate) || startDate.isEqual(currentDate)) {
-                if (bookingCalculatePriceDTO.getHostId() != null && bookingCalculatePriceDTO.getHostId() != "") {
-                    Host host = hostRepository.findById(Long.parseLong(bookingCalculatePriceDTO.getHostId())).orElseThrow(()
-                            -> new ResourceNotFoundException("User", "id", bookingCalculatePriceDTO.getHostId()));
-                    if (host != null) {
-                        if (host.isAddChildrenAndInfantIntoMaximumGuest() && host.getNumberOfInfantGuest() != 0) {
-                            calculatePriceResult.setNumberOfInfantGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfInfantGuest()));
-                        } else {
-                            calculatePriceResult.setNumberOfInfantGuest(0);
-                        }
-                        int guests = Integer.parseInt(bookingCalculatePriceDTO.getNumberOfAdultGuest())
-                                + Integer.parseInt(bookingCalculatePriceDTO.getNumberOfChildrenGuest());
-                        calculatePriceResult.setNumberOfAdultGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfAdultGuest()));
-                        calculatePriceResult.setNumberOfChildrenGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfChildrenGuest()));
-                        calculatePriceResult.setHostId(Long.parseLong(bookingCalculatePriceDTO.getHostId()));
-                        calculatePriceResult.setGuests(guests);
-                        if (guests <= 0) {
-                            return CommonFunction.errorLogic(400, "Số lượng khách ít nhất phải lớn hơn 1");
-                        }
-                        if (host.getNumberOfMaximumGuest() >= guests) {
-                            long cleanCosts = host.getCleaningCosts();
-                            calculatePriceResult.setPricePerNight(host.getStandardPriceMondayToThursday());
-                            calculatePriceResult.setCleanCosts(cleanCosts);
-                            long priceBeforeCleanCosts = 0;
-                            long serviceChargeTotal = 0;
-                            long price = 0;
-                            for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-                                if (date.getDayOfWeek() == 5 || date.getDayOfWeek() == 6 || date.getDayOfWeek() == 7) {
-                                    priceBeforeCleanCosts += host.getStandardPriceFridayToSunday();
-                                } else {
-                                    priceBeforeCleanCosts += host.getStandardPriceMondayToThursday();
+            LocalDate currentDate = LocalDate.now();
+            if (endDate.isAfter(startDate)) {
+                if (startDate.isAfter(currentDate) || startDate.isEqual(currentDate)) {
+                    if (bookingCalculatePriceDTO.getHostId() != null && bookingCalculatePriceDTO.getHostId().trim().length() != 0) {
+                        Host host = hostRepository.findById(Long.parseLong(bookingCalculatePriceDTO.getHostId())).orElseThrow(()
+                                -> new ResourceNotFoundException("User", "id", bookingCalculatePriceDTO.getHostId()));
+                        if (host != null) {
+                            if (host.isAddChildrenAndInfantIntoMaximumGuest() && host.getNumberOfInfantGuest() != 0) {
+                                calculatePriceResult.setNumberOfInfantGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfInfantGuest()));
+                            } else {
+                                calculatePriceResult.setNumberOfInfantGuest(0);
+                            }
+                            int guests = Integer.parseInt(bookingCalculatePriceDTO.getNumberOfAdultGuest())
+                                    + Integer.parseInt(bookingCalculatePriceDTO.getNumberOfChildrenGuest());
+                            calculatePriceResult.setNumberOfAdultGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfAdultGuest()));
+                            calculatePriceResult.setNumberOfChildrenGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfChildrenGuest()));
+                            calculatePriceResult.setHostId(Long.parseLong(bookingCalculatePriceDTO.getHostId()));
+                            calculatePriceResult.setGuests(guests);
+                            if (guests <= 0) {
+                                throw new ResourceInvalidInputException("Số lượng khách không được phép ít hơn 1");
+                            }
+                            if (host.getNumberOfMaximumGuest() >= guests) {
+                                long cleanCosts = host.getCleaningCosts();
+                                calculatePriceResult.setPricePerNight(host.getStandardPriceMondayToThursday());
+                                calculatePriceResult.setCleanCosts(cleanCosts);
+                                long priceBeforeCleanCosts = 0;
+                                long serviceChargeTotal = 0;
+                                long price = 0;
+                                for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+                                    if (date.getDayOfWeek() == 5 || date.getDayOfWeek() == 6 || date.getDayOfWeek() == 7) {
+                                        priceBeforeCleanCosts += host.getStandardPriceFridayToSunday();
+                                    } else {
+                                        priceBeforeCleanCosts += host.getStandardPriceMondayToThursday();
+                                    }
                                 }
+                                calculatePriceResult.setPriceWithoutCleanCostsAndServiceCharge(priceBeforeCleanCosts);
+                                if (host.getServiceChargePercent() == 0) {
+                                    price = priceBeforeCleanCosts + cleanCosts;
+                                    calculatePriceResult.setServiceCharge(0l);
+                                    calculatePriceResult.setTotalPrice(price);
+                                    return CommonFunction.successOutput(calculatePriceResult);
+                                }
+                                if (host.getServiceChargePercent() != 0) {
+                                    serviceChargeTotal = (priceBeforeCleanCosts + cleanCosts) * (host.getServiceChargePercent() / 100);
+                                    price = priceBeforeCleanCosts + cleanCosts + serviceChargeTotal;
+                                    calculatePriceResult.setServiceCharge(serviceChargeTotal);
+                                    calculatePriceResult.setTotalPrice(price);
+                                    return CommonFunction.successOutput(calculatePriceResult);
+                                }
+                            } else {
+                                throw new ResourceInvalidInputException("Tổng số lượng khác phải ít hơn hoặc bằng với số " +
+                                        "lượng khách cho phép tối đa: " + host.getNumberOfMaximumGuest());
                             }
-                            calculatePriceResult.setPriceWithoutCleanCostsAndServiceCharge(priceBeforeCleanCosts);
-                            if (host.getServiceChargePercent() == 0) {
-                                price = priceBeforeCleanCosts + cleanCosts;
-                                calculatePriceResult.setServiceCharge(0l);
-                                calculatePriceResult.setTotalPrice(price);
-                                return CommonFunction.successOutput(calculatePriceResult);
-                            }
-                            if (host.getServiceChargePercent() != 0) {
-                                serviceChargeTotal = (priceBeforeCleanCosts + cleanCosts) * (host.getServiceChargePercent() / 100);
-                                price = priceBeforeCleanCosts + cleanCosts + serviceChargeTotal;
-                                calculatePriceResult.setServiceCharge(serviceChargeTotal);
-                                calculatePriceResult.setTotalPrice(price);
-                                return CommonFunction.successOutput(calculatePriceResult);
-                            }
-                        } else {
-                            return CommonFunction.errorLogic(400, "Tổng số lượng khách phải ít hơn " +
-                                    "hoặc bằng với số lượng khách cho phép tối đa: " + host.getNumberOfMaximumGuest());
                         }
+                    } else {
+                        throw new ResourceInvalidInputException("Vui lòng nhập host id");
                     }
+                } else {
+                    throw new ResourceInvalidInputException("Ngày checkin phải say ngày hiện tại");
                 }
             } else {
-                return CommonFunction.errorLogic(400, "Ngày checkin phải sau hoặc bằng với ngày hiện tại!");
+                throw new ResourceInvalidInputException("Ngày checkin phải trước ngày checkout!");
             }
-        } else {
-            return CommonFunction.errorLogic(400, "Ngày checkin phải trước ngày check out!");
+            throw new Exception();
+        } catch (Exception e) {
+            logger.error(ScreenMessageConstants.FAILURE, e);
+            throw new ResourceInvalidInputException("Dữ liệu đầu vào không chính xác");
         }
-        return CommonFunction.failureOutput();
+
+
     }
 
     @Override
@@ -138,8 +148,7 @@ public class BookingServiceImpl implements BookingService {
             sendEmailRequestForHostAgent(booking);
             return CommonFunction.successOutput(bookingRepository.save(booking));
         } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException("Dữ liệu đầu vào không chính xác!");
         }
     }
 
@@ -156,11 +165,11 @@ public class BookingServiceImpl implements BookingService {
         if (userLogin != null) {
             booking.setUser(userLogin);
         }
-        if (bookingDTO.getCheckInDate() != null && bookingDTO.getCheckInDate() != "") {
-            booking.setCheckInDate(CommonFunction.convertStringToDateObject(bookingDTO.getCheckInDate()));
+        if (bookingDTO.getStartDate() != null && bookingDTO.getStartDate() != "") {
+            booking.setCheckInDate(CommonFunction.convertStringToDateObject(bookingDTO.getStartDate()));
         }
-        if (bookingDTO.getCheckOutDate() != null && bookingDTO.getCheckOutDate() != "") {
-            booking.setCheckOutDate(CommonFunction.convertStringToDateObject(bookingDTO.getCheckOutDate()));
+        if (bookingDTO.getEndDate() != null && bookingDTO.getEndDate() != "") {
+            booking.setCheckOutDate(CommonFunction.convertStringToDateObject(bookingDTO.getEndDate()));
         }
         if (bookingDTO.getPricePerNight() != null && bookingDTO.getPricePerNight() != "") {
             booking.setPricePerNight(new Long(bookingDTO.getPricePerNight()));
@@ -174,8 +183,8 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDTO.getTotalPrice() != null && bookingDTO.getTotalPrice() != "") {
             booking.setTotalPrice(new Long(bookingDTO.getTotalPrice()));
         }
-        if (bookingDTO.getRoomPrice() != null && bookingDTO.getRoomPrice() != "") {
-            booking.setRoomPrice(new Long(bookingDTO.getRoomPrice()));
+        if (bookingDTO.getPriceWithoutCleanCostsAndServiceCharge() != null && bookingDTO.getPriceWithoutCleanCostsAndServiceCharge() != "") {
+            booking.setRoomPrice(new Long(bookingDTO.getPriceWithoutCleanCostsAndServiceCharge()));
         }
         if (bookingDTO.getNights() != null && bookingDTO.getNights() != "") {
             booking.setNights(Integer.parseInt(bookingDTO.getNights()));
@@ -192,11 +201,13 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDTO.getNumberOfInfantGuest() != null && bookingDTO.getNumberOfInfantGuest() != "") {
             booking.setNumberOfInfantGuest(Integer.parseInt(bookingDTO.getNumberOfInfantGuest()));
         }
+
         RandomStringUtil randomStringUtil = new RandomStringUtil(6);
         booking.setBookingCode(randomStringUtil.nextString());
         booking.setAcceptedFromHost(false);
         booking.setPaid(false);
         booking.setStatus(false);
+        booking.setCancel(false);
         return booking;
     }
 
@@ -212,7 +223,7 @@ public class BookingServiceImpl implements BookingService {
                 return CommonFunction.successOutput(bookingRepository.save(booking));
             }
         }
-        return CommonFunction.failureOutput();
+        throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
     }
 
     @Override
@@ -225,7 +236,7 @@ public class BookingServiceImpl implements BookingService {
             setCountdownBookingCompleteTime(booking);
             return CommonFunction.successOutput(bookingRepository.save(booking));
         }
-        return CommonFunction.failureOutput();
+        throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
     }
 
     private void sendEmailRequestForUser(Booking booking) {
@@ -462,6 +473,9 @@ public class BookingServiceImpl implements BookingService {
     private void checkIsPaidAndSendEmailBookingFailure(Booking booking) {
         if (!booking.isPaid()) {
             try {
+                booking.setCancel(true);
+                bookingRepository.save(booking);
+
                 String emailSubject = "Đặt phòng tại " + booking.getHost().getName() + " thất bại";
                 StringBuilder emailContent = new StringBuilder();
 

@@ -16,16 +16,19 @@ import vn.com.pn.config.ScheduledConfig;
 import java.text.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.lang.instrument.Instrumentation;
 
 public class CommonFunction {
     private static Log logger = LogFactory.getLog(CommonFunction.class);
+    private static Instrumentation instrumentation;
 
-    public static BaseOutput successOutput(List<?> list){
+    public static BaseOutput successOutput(List<?> list) {
         logger.info("CommonFunction.successOutput");
         BaseOutput output = new BaseOutput();
-        if(list != null && list.size() > 0){
+        if (list != null && list.size() > 0) {
             output.setTotalRecord(list.size());
             output.setData(list);
         } else {
@@ -37,9 +40,9 @@ public class CommonFunction {
         return output;
     }
 
-    public static BaseOutput successOutput(Object data){
+    public static BaseOutput successOutput(Object data) {
         logger.info("CommonFunction.successOutput");
-            BaseOutput output = new BaseOutput();
+        BaseOutput output = new BaseOutput();
         output.setTotalRecord(1);
         output.setData(data);
         output.setStatus(CommonConstants.STATUS.STATUS_SUCCESS);
@@ -47,7 +50,7 @@ public class CommonFunction {
         return output;
     }
 
-    public static BaseOutput successOutput(Object data, int total){
+    public static BaseOutput successOutput(Object data, int total) {
         logger.info("CommonFunction.successOutput");
         BaseOutput output = new BaseOutput();
         output.setTotalRecord(total);
@@ -60,10 +63,11 @@ public class CommonFunction {
     public static BaseOutput failureOutput() {
         logger.info("CommonFunction.failureOutput");
         BaseOutput output = new BaseOutput();
-        output.setStatus(CommonConstants.STATUS.STATUS_FAILURE);
+        output.setStatus(CommonConstants.HTTP_STATUS_CODE.BAD_REQUEST);
         output.setMessage(ScreenMessageConstants.FAILURE);
         return output;
     }
+
     public static BaseOutput errorLogic(int status, Object message) {
         logger.info("CommonFunction.errorLogic");
         BaseOutput output = new BaseOutput();
@@ -86,9 +90,9 @@ public class CommonFunction {
         }
     }
 
-    public static String convertToJSONStringResponse(BaseOutput object){
+    public static String convertToJSONStringResponse(BaseOutput object) {
         logger.info("CommonFunction.convertToJSONString");
-        try{
+        try {
             ObjectMapper mapper = new ObjectMapper();
             return "response status: " + mapper.writeValueAsString(object.getStatus());
         } catch (Exception e) {
@@ -97,7 +101,7 @@ public class CommonFunction {
         }
     }
 
-    public static Date convertStringToDateObject(String inputDate){
+    public static Date convertStringToDateObject(String inputDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date date = dateFormat.parse(inputDate);

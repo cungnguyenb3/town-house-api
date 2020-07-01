@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.f003Review.dto.HostReviewDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.f002Booking.entity.Booking;
@@ -42,7 +43,7 @@ public class HostReviewServiceImpl implements HostReviewService {
     public BaseOutput getAll() {
         logger.info("HostReviewServiceImpl.getAll");
         List<Object> listHostReview = new ArrayList<>(hostReviewRepository.findAll());
-        return  CommonFunction.successOutput(listHostReview);
+        return CommonFunction.successOutput(listHostReview);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class HostReviewServiceImpl implements HostReviewService {
             return baseOutput;
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -63,10 +64,9 @@ public class HostReviewServiceImpl implements HostReviewService {
         try {
             List<?> hostReviews = hostReviewRepositoryCustom.getHostReview(Long.parseLong(hostId));
             return CommonFunction.successOutput(hostReviews);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -74,11 +74,11 @@ public class HostReviewServiceImpl implements HostReviewService {
         logger.info("HostReviewServiceImpl.getInsertHostReviewInfo");
         HostReview hostReview = new HostReview();
 
-        if (hostReviewDTO.getBookingId() != null && hostReviewDTO.getBookingId() != ""){
+        if (hostReviewDTO.getBookingId() != null && hostReviewDTO.getBookingId() != "") {
             Booking booking = bookingRepository.findById(Long.parseLong(hostReviewDTO.getBookingId())).orElseThrow(()
-                    -> new ResourceNotFoundException("Booking","id", hostReviewDTO.getBookingId()));
+                    -> new ResourceNotFoundException("Booking", "id", hostReviewDTO.getBookingId()));
             if (userLogin.getId() != booking.getUser().getId()) {
-                return CommonFunction.errorLogic(400, "Can not review. User login does not " +
+                throw new ResourceInvalidInputException("Can not review. User login does not " +
                         "match with user has booked");
             }
 
@@ -91,7 +91,7 @@ public class HostReviewServiceImpl implements HostReviewService {
             hostReview.setContent(hostReviewDTO.getContent());
         }
         if (hostReviewDTO.getStarRating() != null && hostReviewDTO.getStarRating() != "") {
-            switch (Integer.parseInt(hostReviewDTO.getStarRating())){
+            switch (Integer.parseInt(hostReviewDTO.getStarRating())) {
                 case 1:
                     hostReview.setStarRating(1);
                     hostReview.setOutstanding(false);
@@ -122,12 +122,11 @@ public class HostReviewServiceImpl implements HostReviewService {
     }
 
 
-    private Host changeStarRating (Long hostId, String starRating){
+    private Host changeStarRating(Long hostId, String starRating) {
         logger.info("HostReviewServiceImpl.changeStarRating");
         Host host = hostRepository.findById(hostId).orElseThrow(()
-                -> new ResourceNotFoundException("Host","id", hostId));
-
-        List<Integer> listStarRating = getStarRatingByHost(hostId);
+                -> new ResourceNotFoundException("Host", "id", hostId));
+        List<Integer> listStarRating = hostReviewRepository.findStarRatingByHostId(hostId);
 
         listStarRating.add(Integer.parseInt(starRating));
 
@@ -136,25 +135,15 @@ public class HostReviewServiceImpl implements HostReviewService {
         return host;
     }
 
-    private float calculateAverage(List <Integer> listStarRating) {
+    private float calculateAverage(List<Integer> listStarRating) {
         logger.info("HostReviewServiceImpl.calculateAverage");
         Integer sum = 0;
-        if(!listStarRating.isEmpty()) {
+        if (!listStarRating.isEmpty()) {
             for (Integer star : listStarRating) {
                 sum += star;
             }
             return sum.floatValue() / listStarRating.size();
         }
         return sum;
-    }
-
-    public List<Integer> getStarRatingByHost(Long hostId){
-        logger.info("HostReviewServiceImpl.insert");
-        try {
-            return hostReviewRepository.findStarRatingByHostId(hostId);
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return null;
-        }
     }
 }

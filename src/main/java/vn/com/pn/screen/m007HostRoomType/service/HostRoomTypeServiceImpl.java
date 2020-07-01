@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m007HostRoomType.dto.HostRoomTypeDTO;
 import vn.com.pn.screen.m007HostRoomType.dto.HostRoomTypeUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class HostRoomTypeServiceImpl implements HostRoomTypeService{
+public class HostRoomTypeServiceImpl implements HostRoomTypeService {
     private static Log logger = LogFactory.getLog(HostServiceImpl.class);
 
     @Autowired
@@ -37,16 +38,17 @@ public class HostRoomTypeServiceImpl implements HostRoomTypeService{
         logger.info("HostRoomTypeServiceImpl.insert");
         try {
             HostRoomType hostRoomType = new HostRoomType();
-            if (hostRoomTypeDTO.getName() != null && hostRoomTypeDTO.getName() != ""){
-                hostRoomType.setName(hostRoomTypeDTO.getName());
+            if (hostRoomTypeDTO.getName() == null && hostRoomTypeDTO.getName().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập tên loại phòng!");
             }
-            if (hostRoomTypeDTO.getDescription() != null && hostRoomTypeDTO.getDescription() != ""){
+            hostRoomType.setName(hostRoomTypeDTO.getName());
+            if (hostRoomTypeDTO.getDescription() != null && hostRoomTypeDTO.getDescription() != "") {
                 hostRoomType.setDescription(hostRoomTypeDTO.getDescription());
             }
             return CommonFunction.successOutput(hostRoomTypeRepository.save(hostRoomType));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -56,17 +58,18 @@ public class HostRoomTypeServiceImpl implements HostRoomTypeService{
         try {
             HostRoomType hostRoomType = hostRoomTypeRepository.findById(
                     Long.parseLong(hostRoomTypeUpdateDTO.getId())).orElseThrow(
-            () -> new ResourceNotFoundException("Host Room Type", "id",hostRoomTypeUpdateDTO.getId()));;
-            if (hostRoomTypeUpdateDTO.getName() != null && hostRoomTypeUpdateDTO.getName() != ""){
+                    () -> new ResourceNotFoundException("Host Room Type", "id", hostRoomTypeUpdateDTO.getId()));
+            ;
+            if (hostRoomTypeUpdateDTO.getName() != null && hostRoomTypeUpdateDTO.getName() != "") {
                 hostRoomType.setName(hostRoomTypeUpdateDTO.getName());
             }
-            if (hostRoomTypeUpdateDTO.getDescription() != null && hostRoomTypeUpdateDTO.getDescription() != ""){
+            if (hostRoomTypeUpdateDTO.getDescription() != null && hostRoomTypeUpdateDTO.getDescription() != "") {
                 hostRoomType.setDescription(hostRoomTypeUpdateDTO.getDescription());
             }
             return CommonFunction.successOutput(hostRoomTypeRepository.save(hostRoomType));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 

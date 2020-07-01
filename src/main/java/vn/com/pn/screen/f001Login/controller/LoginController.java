@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.f001Login.request.UserLoginRequest;
 import vn.com.pn.api.response.JwtResponse;
 import vn.com.pn.common.common.CommonConstants;
@@ -21,6 +22,8 @@ import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.exception.ResourceUnauthorizedException;
 import vn.com.pn.screen.m001User.controller.UserController;
+import vn.com.pn.screen.m001User.entity.User;
+import vn.com.pn.security.AuthService;
 import vn.com.pn.security.JwtProvider;
 import vn.com.pn.screen.m001User.service.UserPrinciple;
 
@@ -34,6 +37,9 @@ public class LoginController {
 
     @Value("Authorization")
     private String tokenHeader;
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -58,19 +64,15 @@ public class LoginController {
             UserPrinciple userPrinciple = jwtProvider.getUserFromLogin(authentication);
             logger.info("========== LoginController.login END ==========");
             return ResponseEntity.ok(new JwtResponse(jwt, userPrinciple));
-        }catch (Exception e) {
-            BaseOutput baseOutput = new BaseOutput();
-            baseOutput.setStatus(401);
-            baseOutput.setData(null);
-            baseOutput.setMessage("Tên đăng nhập hoặc mật khẩu không chính xác! ");
-            return ResponseEntity.badRequest().body(baseOutput);
+        } catch (Exception e) {
+            throw new ResourceUnauthorizedException("Tên đăng nhập hoặc mật khẩu không chính xác");
         }
     }
 
     @ApiOperation(value = "Refresh token", response = BaseOutput.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = "/users/refreshToken", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         logger.info("========== LoginController.refreshToken START ==========");
@@ -85,8 +87,18 @@ public class LoginController {
         }
     }
 
-    @ExceptionHandler({ResourceUnauthorizedException.class})
-    public ResponseEntity<String> handleAuthenticationException(ResourceUnauthorizedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    @ApiOperation(value = "Get user via token", response = BaseOutput.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_GET_USER_VIA_TOKEN, method = RequestMethod.GET)
+    public ResponseEntity<?> getUserViaToken() {
+        logger.info("========== LoginController.getUserViaToken START ==========");
+        User userLogin = authService.getLoggedUser();
+        if (userLogin == null) {
+            throw new ResourceNotFoundException("Token nhập vào đã hết hạn hoặc không chính xác!");
+        }
+        logger.info("========== LoginController.getUserViaToken START ==========");
+        return ResponseEntity.ok().body(userLogin);
     }
 }

@@ -45,16 +45,12 @@ public class RuleController {
     public BaseOutput insert(@Valid @RequestBody HostRuleRequest request) {
         logger.info("========== RuleController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostRuleDTO hostRuleDTO = MapperUtil.mapper(request, HostRuleDTO.class);
-            BaseOutput response = ruleService.insert(hostRuleDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== RuleController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        HostRuleDTO hostRuleDTO = MapperUtil.mapper(request, HostRuleDTO.class);
+        BaseOutput response = ruleService.insert(hostRuleDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== RuleController.insert END ==========");
+        return response;
+
     }
 }

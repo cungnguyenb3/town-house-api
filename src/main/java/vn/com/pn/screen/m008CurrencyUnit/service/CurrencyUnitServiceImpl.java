@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m008CurrencyUnit.dto.CurrencyUnitDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m008CurrencyUnit.entity.CurrencyUnit;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CurrencyUnitServiceImpl implements CurrencyUnitService{
+public class CurrencyUnitServiceImpl implements CurrencyUnitService {
     private static Log logger = LogFactory.getLog(HostServiceImpl.class);
 
     @Autowired
@@ -34,13 +35,14 @@ public class CurrencyUnitServiceImpl implements CurrencyUnitService{
         logger.info("CurrencyUnitServiceImpl.insert");
         try {
             CurrencyUnit currencyUnit = new CurrencyUnit();
-            if (currencyUnitDTO.getName() != null && currencyUnitDTO.getName() != ""){
-                currencyUnit.setName(currencyUnitDTO.getName());
+            if (currencyUnitDTO.getName() == null && currencyUnitDTO.getName().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập đơn vị tiền tệ");
             }
+            currencyUnit.setName(currencyUnitDTO.getName());
             return CommonFunction.successOutput(currencyUnitRepository.save(currencyUnit));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 }

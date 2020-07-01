@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m009HostProcedureCheckIn.dto.ProcedureCheckInDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m009HostProcedureCheckIn.entity.ProcedureCheckIn;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProcedureCheckInServiceImpl implements ProcedureCheckInService{
+public class ProcedureCheckInServiceImpl implements ProcedureCheckInService {
     private static Log logger = LogFactory.getLog(HostServiceImpl.class);
 
     @Autowired
@@ -34,13 +35,14 @@ public class ProcedureCheckInServiceImpl implements ProcedureCheckInService{
         logger.info("ProcedureCheckInServiceImpl.insert");
         try {
             ProcedureCheckIn procedureCheckIn = new ProcedureCheckIn();
-            if (procedureCheckInDTO.getName() != null && procedureCheckInDTO.getName() != ""){
-                procedureCheckIn.setName(procedureCheckInDTO.getName());
+            if (procedureCheckInDTO.getName() == null && procedureCheckInDTO.getName().trim().length() == 0) {
+                throw new ResourceInvalidInputException("Vui lòng nhập tên thủ tục check in");
             }
+            procedureCheckIn.setName(procedureCheckInDTO.getName());
             return CommonFunction.successOutput(procedureCheckInRepository.save(procedureCheckIn));
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 }

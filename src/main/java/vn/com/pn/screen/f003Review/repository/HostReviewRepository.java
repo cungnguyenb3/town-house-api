@@ -8,11 +8,11 @@ import vn.com.pn.screen.f003Review.entity.HostReview;
 import java.util.List;
 
 @Repository
-public interface HostReviewRepository extends JpaRepository <HostReview, Long> {
+public interface HostReviewRepository extends JpaRepository<HostReview, Long> {
 
-    @Query(value="SELECT host_reviews.star_rating FROM host_reviews " +
+    @Query(value = "SELECT host_reviews.star_rating FROM host_reviews " +
             "INNER JOIN bookings on host_reviews.booking_id = bookings.id " +
-            "INNER JOIN hosts ON bookings.host_id = hosts.id WHERE hosts.id = ?1", nativeQuery=true)
+            "INNER JOIN hosts ON bookings.host_id = hosts.id WHERE hosts.id = ?1", nativeQuery = true)
     List<Integer> findStarRatingByHostId(long hostId);
 
 //    @Query("SELECT new vn.com.pn.screen.f003Review.dto.HostReviewWithUserDTO(hr.content) FROM HostReview hr \n" +

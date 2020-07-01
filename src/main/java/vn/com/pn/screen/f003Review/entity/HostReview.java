@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name="host_reviews")
+@Table(name = "host_reviews")
 public class HostReview extends DateAuditUtil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

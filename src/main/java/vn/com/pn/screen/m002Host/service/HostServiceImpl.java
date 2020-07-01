@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
+import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
+import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.m002Host.dto.HostDTO;
 import vn.com.pn.screen.m002Host.dto.HostSearchDTO;
 import vn.com.pn.screen.m002Host.entity.HostDiscount;
@@ -136,8 +138,9 @@ public class HostServiceImpl implements HostService {
         List<Host> listHostsBySearch = hostRepositoryCustom.search(searchText, pageNo, HOST_PER_PAGE);
         List<HostSearchDTO> listResultHost = new ArrayList<>();
 
-        for (Host host: listHostsBySearch) {
+        for (Host host : listHostsBySearch) {
             HostSearchDTO hostSearchDTO = new HostSearchDTO();
+            hostSearchDTO.setId(host.getId());
             hostSearchDTO.setName(host.getName());
             hostSearchDTO.setDescription(host.getDescription());
             hostSearchDTO.setAddress(host.getAddress());
@@ -157,34 +160,29 @@ public class HostServiceImpl implements HostService {
     @Override
     public BaseOutput approve(String id) {
         logger.info("HostServiceImpl.approve");
-        try {
-            Host host = hostRepository.findById(
-                    Long.parseLong(id)).orElse(null);
-            if (host != null) {
-                host.setApproved(true);
-                return CommonFunction.successOutput(hostRepository.save(host));
-            }
-            return CommonFunction.failureOutput();
 
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+        Host host = hostRepository.findById(
+                Long.parseLong(id)).orElse(null);
+        if (host != null) {
+            host.setApproved(true);
+            return CommonFunction.successOutput(hostRepository.save(host));
         }
+        throw new ResourceNotFoundException("Không tìm thấy host với id: " + id);
     }
 
     @Override
     public BaseOutput insert(HostDTO hostDTO, User userAgent) {
         logger.info("HostServiceImpl.insert");
         try {
-            if (userAgent.getPhone() != null || !userAgent.getPhone().equalsIgnoreCase("")){
+            if (userAgent.getPhone() != null || !userAgent.getPhone().equalsIgnoreCase("")) {
                 Host host = getInsertHostInfo(hostDTO);
                 host.setUser(userAgent);
                 return CommonFunction.successOutput(hostRepository.save(host));
             }
-            return CommonFunction.errorLogic(400, "Xin vui lòng cập nhật số điện thoại");
+            throw new ResourceInvalidInputException("Xin vui lòng cập nhật số điện thoại");
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -216,26 +214,26 @@ public class HostServiceImpl implements HostService {
                 setCountDownHandleDiscount(localStartDay, hostDiscountDTO, host);
                 setCountdownPreviousPrice(localEndDay, host, hostDiscount);
             }
-            return CommonFunction.errorLogic(400, "Ngày bắt đầu phải lớn hơn ngày hiện tại");
+            throw new ResourceInvalidInputException("Ngày bắt đầu phải lớn hơn ngày hiện tại");
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
-    private void setCountDownHandleDiscount (LocalDateTime startDateTime, HostDiscountDTO hostDiscountDTO, Host host) {
+    private void setCountDownHandleDiscount(LocalDateTime startDateTime, HostDiscountDTO hostDiscountDTO, Host host) {
         Runnable runnable = () -> handleDiscountPrice(hostDiscountDTO, host);
-        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(startDateTime,runnable);
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(startDateTime, runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }
 
-    private void setCountdownPreviousPrice(LocalDateTime endDateTime, Host host, HostDiscount hostDiscount){
+    private void setCountdownPreviousPrice(LocalDateTime endDateTime, Host host, HostDiscount hostDiscount) {
         Runnable runnable = () -> handleBackToPreviousPrice(hostDiscount, host);
-        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(endDateTime,runnable);
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(endDateTime, runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }
 
-    private void handleBackToPreviousPrice (HostDiscount hostDiscount, Host host) {
+    private void handleBackToPreviousPrice(HostDiscount hostDiscount, Host host) {
         host.setStandardPriceMondayToThursday(hostDiscount.getPriceBeforeDiscountMondayToThursday());
         host.setStandardPriceFridayToSunday(hostDiscount.getPriceBeforeDiscountFridayToSunday());
         hostRepository.save(host);
@@ -259,8 +257,7 @@ public class HostServiceImpl implements HostService {
             Host host = getUpdateHostInfo(hostUpdateDTO);
             return CommonFunction.successOutput(host);
         } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+            throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);
         }
     }
 
@@ -347,15 +344,15 @@ public class HostServiceImpl implements HostService {
         if (hostUpdateDTO.getAddress() != null && hostUpdateDTO.getAddress() != "") {
             host.setAddress(hostUpdateDTO.getAddress());
         }
-        if (hostUpdateDTO.getLatitude() != null && hostUpdateDTO.getLatitude() != ""){
+        if (hostUpdateDTO.getLatitude() != null && hostUpdateDTO.getLatitude() != "") {
             host.setLatitude(hostUpdateDTO.getLatitude());
         }
-        if (hostUpdateDTO.getLongitude() != null && hostUpdateDTO.getLongitude() != ""){
+        if (hostUpdateDTO.getLongitude() != null && hostUpdateDTO.getLongitude() != "") {
             host.setLongitude(hostUpdateDTO.getLongitude());
         }
 
         if (hostUpdateDTO.getBedroomCount() != null && hostUpdateDTO.getBedroomCount() != "") {
-                host.setBedroomCount(Integer.parseInt(hostUpdateDTO.getBedroomCount()));
+            host.setBedroomCount(Integer.parseInt(hostUpdateDTO.getBedroomCount()));
         }
         if (hostUpdateDTO.getBed() != null && hostUpdateDTO.getBed() != "") {
             host.setBed(Integer.parseInt(hostUpdateDTO.getBed()));
@@ -931,10 +928,10 @@ public class HostServiceImpl implements HostService {
         if (hostDTO.getAddress() != null && hostDTO.getAddress() != "") {
             host.setAddress(hostDTO.getAddress());
         }
-        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != ""){
+        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != "") {
             host.setLatitude(hostDTO.getLatitude());
         }
-        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != ""){
+        if (hostDTO.getLatitude() != null && hostDTO.getLatitude() != "") {
             host.setLongitude(hostDTO.getLongitude());
         }
         if (hostDTO.getBedroomCount() != null && hostDTO.getBedroomCount() != "") {

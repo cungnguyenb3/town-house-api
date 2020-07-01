@@ -43,50 +43,33 @@ public class HostRoomTypeController {
     public BaseOutput insert(@Valid @RequestBody HostRoomTypeRequest request) {
         logger.info("========== HostRoomTypeController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostRoomTypeDTO hostRoomTypeDTO = MapperUtil.mapper(request, HostRoomTypeDTO.class);
-            BaseOutput response = hostRoomTypeService.insert(hostRoomTypeDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostRoomTypeController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+
+        HostRoomTypeDTO hostRoomTypeDTO = MapperUtil.mapper(request, HostRoomTypeDTO.class);
+        BaseOutput response = hostRoomTypeService.insert(hostRoomTypeDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostRoomTypeController.insert END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Update a host room type", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOM_TYPE_ID, method = RequestMethod.PUT)
     public BaseOutput update(@Valid @PathVariable String id, @Valid @RequestBody HostRoomTypeRequest request) {
         logger.info("========== HostRoomTypeController.update START ==========");
-        try {
-            HostRoomTypeUpdateDTO hostRoomTypeUpdateDTO = MapperUtil.mapper(request, HostRoomTypeUpdateDTO.class);
-            hostRoomTypeUpdateDTO.setId(id);
-            BaseOutput response = hostRoomTypeService.update(hostRoomTypeUpdateDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostRoomTypeController.update END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        HostRoomTypeUpdateDTO hostRoomTypeUpdateDTO = MapperUtil.mapper(request, HostRoomTypeUpdateDTO.class);
+        hostRoomTypeUpdateDTO.setId(id);
+        BaseOutput response = hostRoomTypeService.update(hostRoomTypeUpdateDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostRoomTypeController.update END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Delete a host room type", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOM_TYPE_ID, method = RequestMethod.DELETE)
     public BaseOutput update(@Valid @PathVariable String id) {
         logger.info("========== HostRoomTypeController.delete START ==========");
-        try {
-            BaseOutput response = hostRoomTypeService.delete(id);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostRoomTypeController.update END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        BaseOutput response = hostRoomTypeService.delete(id);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostRoomTypeController.update END ==========");
+        return response;
     }
 }

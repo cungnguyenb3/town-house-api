@@ -67,7 +67,7 @@ public class UserController {
 
     @ApiOperation(value = "Get a user with an Id", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.GET)
-    public ResponseEntity<?> getId(@PathVariable String id) {
+    public ResponseEntity<?> getId(@Valid @PathVariable String id) {
         logger.info("========== UserController.getId START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
         BaseOutput response = userService.getId(id);
@@ -77,21 +77,16 @@ public class UserController {
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Delete an user", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.DELETE)
     public BaseOutput delete(@Valid @PathVariable String id) {
         logger.info("========== UserController.delete START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
-        try {
-            User userLogin = authService.getLoggedUser();
-            BaseOutput response = userService.delete(id, userLogin);
-            logger.info("========== UserController.delete END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        User userLogin = authService.getLoggedUser();
+        BaseOutput response = userService.delete(id, userLogin);
+        logger.info("========== UserController.delete END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Register a new user", response = BaseOutput.class)
@@ -99,41 +94,29 @@ public class UserController {
     public BaseOutput registerUser(@Valid @RequestBody UserRequest request) {
         logger.info("========== UserController.register START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            boolean isRegisterAdmin = false;
-            UserDTO userDTO = MapperUtil.mapper(request,UserDTO.class);
-            BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.register END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        boolean isRegisterAdmin = false;
+        UserDTO userDTO = MapperUtil.mapper(request, UserDTO.class);
+        BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== UserController.register END ==========");
+        return response;
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @ApiOperation(value = "Register a new admin", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_UP_ADMIN, method = RequestMethod.POST)
     public BaseOutput registerAdmin(@Valid @RequestBody UserRequest request) {
         logger.info("========== UserController.registerAdmin START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            boolean isRegisterAdmin = true;
-            UserDTO userDTO = MapperUtil.mapper(request,UserDTO.class);
-            BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.register END ==========");
-            return response;
-
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        boolean isRegisterAdmin = true;
+        UserDTO userDTO = MapperUtil.mapper(request, UserDTO.class);
+        BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== UserController.register END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Change the password", response = BaseOutput.class)
@@ -141,35 +124,28 @@ public class UserController {
     public BaseOutput changePassword(@Valid @PathVariable String id, @RequestBody UserChangePasswordRequest request) {
         logger.info("========== UserController.changePassword START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            UserChangePasswordDTO userChangePasswordDTO = MapperUtil.mapper(request, UserChangePasswordDTO.class);
-            userChangePasswordDTO.setId(id);
-            BaseOutput response = userService.changePassword(userChangePasswordDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.changePassword END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE);
-            return CommonFunction.failureOutput();
-        }
+        UserChangePasswordDTO userChangePasswordDTO = MapperUtil.mapper(request, UserChangePasswordDTO.class);
+        userChangePasswordDTO.setId(id);
+        BaseOutput response = userService.changePassword(userChangePasswordDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== UserController.changePassword END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Update a user profile", response = BaseOutput.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.PUT)
-    public BaseOutput update(@Valid @PathVariable String id, @RequestBody UserUpdateRequest request) {
+    public BaseOutput update(@Valid @RequestBody UserUpdateRequest request) {
         logger.info("========== UserController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            UserUpdateDTO userUpdateDTO = MapperUtil.mapper(request, UserUpdateDTO.class);
-            userUpdateDTO.setId(id);
-            BaseOutput response = userService.update(userUpdateDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.update END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE);
-            return CommonFunction.failureOutput();
-        }
+        UserUpdateDTO userUpdateDTO = MapperUtil.mapper(request, UserUpdateDTO.class);
+        User userLogin = authService.getLoggedUser();
+        BaseOutput response = userService.update(userLogin, userUpdateDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== UserController.update END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Update list host wishlist", response = BaseOutput.class)
@@ -177,18 +153,13 @@ public class UserController {
     public BaseOutput updateHostWishList(@Valid @PathVariable String id, @RequestBody UserUpdateHostWishListRequest request) {
         logger.info("========== UserController.updateHostWishList START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            UserUpdateWishListDTO userUpdateWishListDTO = MapperUtil.mapper(request, UserUpdateWishListDTO.class);
-            userUpdateWishListDTO.setId(id);
-            userUpdateWishListDTO.setHostIds(request.getHostId());
-            BaseOutput response = userService.updateWishListHost(userUpdateWishListDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== UserController.updateHostWishList END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE);
-            return CommonFunction.failureOutput();
-        }
+        UserUpdateWishListDTO userUpdateWishListDTO = MapperUtil.mapper(request, UserUpdateWishListDTO.class);
+        userUpdateWishListDTO.setId(id);
+        userUpdateWishListDTO.setHostIds(request.getHostId());
+        BaseOutput response = userService.updateWishListHost(userUpdateWishListDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== UserController.updateHostWishList END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Active user with send email", response = BaseOutput.class)
@@ -209,39 +180,29 @@ public class UserController {
     }
 
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_UPDATE_PASSWORD_WITH_CODE, method = RequestMethod.PUT)
-    public BaseOutput getForgotPasswordCode (@Valid @RequestBody ForgotPasswordCodeRequest request){
-        try {
-            logger.info("========== UserController.sendForgotPasswordCode START ==========");
-            logger.info("request: " + CommonFunction.convertToJSONString(request));
-            ForgotPasswordInputDTO forgotPasswordInputDTO = MapperUtil.mapper(request, ForgotPasswordInputDTO.class);
-            logger.info("========== UserController.sendForgotPasswordCode END ==========");
-            return userService.handleForgotPassword(forgotPasswordInputDTO);
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE);
-            return CommonFunction.failureOutput();
-        }
+    public BaseOutput getForgotPasswordCode(@Valid @RequestBody ForgotPasswordCodeRequest request) {
+        logger.info("========== UserController.sendForgotPasswordCode START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(request));
+        ForgotPasswordInputDTO forgotPasswordInputDTO = MapperUtil.mapper(request, ForgotPasswordInputDTO.class);
+        logger.info("========== UserController.sendForgotPasswordCode END ==========");
+        return userService.handleForgotPassword(forgotPasswordInputDTO);
     }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
-    @ApiOperation(value = "Get lists booking historis from user", response = BaseOutput.class)
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Get lists booking histories from user", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_BOOKING_HISTORIES, method = RequestMethod.GET)
-    public BaseOutput getListBookingHistories () {
-        try {
-            logger.info("========== UserController.getListBookingHistories START ==========");
-            User userLogin = authService.getLoggedUser();
-            BaseOutput response = userService.getListBookingHistories(userLogin.getId());
-            logger.info("========== UserController.getListBookingHistories END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE);
-            return CommonFunction.failureOutput();
-        }
+    public BaseOutput getListBookingHistories() {
+        logger.info("========== UserController.getListBookingHistories START ==========");
+        User userLogin = authService.getLoggedUser();
+        BaseOutput response = userService.getListBookingHistories(userLogin.getId());
+        logger.info("========== UserController.getListBookingHistories END ==========");
+        return response;
     }
 
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SEND_FORGOT_CODE_VIA_EMAIL, method = RequestMethod.POST)
-    public BaseOutput sendForgotPasswordCode (@Valid @RequestBody UserSendForgotPasswordRequest request){
+    public BaseOutput sendForgotPasswordCode(@Valid @RequestBody UserSendForgotPasswordRequest request) {
         BaseOutput response = userService.forgotPassword(request.getEmail());
         return response;
     }

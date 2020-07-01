@@ -5,5 +5,6 @@ import vn.com.pn.common.output.BaseOutput;
 
 public interface RuleService {
     BaseOutput getAll();
+
     BaseOutput insert(HostRuleDTO hostRuleDTO);
 }

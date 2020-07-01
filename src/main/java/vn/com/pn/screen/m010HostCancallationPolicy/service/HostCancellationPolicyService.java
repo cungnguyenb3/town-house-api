@@ -5,5 +5,6 @@ import vn.com.pn.common.output.BaseOutput;
 
 public interface HostCancellationPolicyService {
     BaseOutput getAll();
+
     BaseOutput insert(HostCancellationPolicyDTO hostCancellationPolicyDTO);
 }

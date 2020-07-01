@@ -45,16 +45,10 @@ public class HostCancellationPolicyController {
     public BaseOutput insert(@Valid @RequestBody HostCancellationPolicyRequest request) {
         logger.info("========== HostCancellationPolicyController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            HostCancellationPolicyDTO hostCancellationPolicyDTO = MapperUtil.mapper(request, HostCancellationPolicyDTO.class);
-            BaseOutput response = hostCancellationPolicyService.insert(hostCancellationPolicyDTO);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostCancellationPolicyController.insert END ==========");
-            return response;
-        }
-        catch (Exception e){
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
-        }
+        HostCancellationPolicyDTO hostCancellationPolicyDTO = MapperUtil.mapper(request, HostCancellationPolicyDTO.class);
+        BaseOutput response = hostCancellationPolicyService.insert(hostCancellationPolicyDTO);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostCancellationPolicyController.insert END ==========");
+        return response;
     }
 }

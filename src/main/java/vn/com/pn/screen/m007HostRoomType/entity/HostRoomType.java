@@ -18,7 +18,7 @@ public class HostRoomType {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description",nullable = false)
+    @Column(name = "description", nullable = false)
     @Lob
     private String description;
 }

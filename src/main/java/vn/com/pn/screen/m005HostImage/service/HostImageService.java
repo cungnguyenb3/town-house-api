@@ -10,9 +10,14 @@ import java.util.List;
 
 public interface HostImageService {
     BaseOutput storeFile(HostImageDTO file);
-    HostImage getFile (String fileId);
+
+    HostImage getFile(String fileId);
+
     ImageInfo getImageInfo(MultipartFile file);
-    BaseOutput deleteFile (String fileId);
-    List<HostImage> storeMultipleFile (List<HostImageDTO> hostImageDTOs);
+
+    BaseOutput deleteFile(String fileId);
+
+    List<HostImage> storeMultipleFile(List<HostImageDTO> hostImageDTOs);
+
     BaseOutput getAllFile();
 }

@@ -19,10 +19,10 @@ import vn.com.pn.common.common.ScreenMessageConstants;
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthEntryPoint.class);
-    
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
-                        		 throws IOException, ServletException {
+            throws IOException, ServletException {
         // This is invoked when user tries to access a secured REST resource without
         // supplying any credentials
         // We should just send a 401 Unauthorized response because there is no 'login

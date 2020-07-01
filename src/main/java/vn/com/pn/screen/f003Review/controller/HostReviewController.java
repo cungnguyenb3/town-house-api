@@ -48,31 +48,26 @@ public class HostReviewController {
     @ApiOperation(value = "Add a host review", response = BaseOutput.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_REVIEW_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody HostReviewRequest request, BindingResult bindingResult){
+    public BaseOutput insert(@Valid @RequestBody HostReviewRequest request, BindingResult bindingResult) {
         logger.info("========== HostReviewController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        try {
-            if (bindingResult.hasErrors()) {
-                return CommonFunction.errorValidateItem(bindingResult);
-            }
-            User userLogin = authService.getLoggedUser();
-            HostReviewDTO hostReviewDTO = MapperUtil.mapper(request, HostReviewDTO.class);
-            BaseOutput response = hostReviewService.insert(hostReviewDTO, userLogin);
-            logger.info(CommonFunction.convertToJSONStringResponse(response));
-            logger.info("========== HostReviewController.insert END ==========");
-            return response;
-        } catch (Exception e) {
-            logger.error(ScreenMessageConstants.FAILURE, e);
-            return CommonFunction.failureOutput();
+        if (bindingResult.hasErrors()) {
+            return CommonFunction.errorValidateItem(bindingResult);
         }
+        User userLogin = authService.getLoggedUser();
+        HostReviewDTO hostReviewDTO = MapperUtil.mapper(request, HostReviewDTO.class);
+        BaseOutput response = hostReviewService.insert(hostReviewDTO, userLogin);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostReviewController.insert END ==========");
+        return response;
     }
 
     @ApiOperation(value = "Get list reviews of host", response = BaseOutput.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header") })
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_REVIEW_GET_BY_HOST_ID, method = RequestMethod.GET)
     public BaseOutput getHostReviewByHostId(@Valid @PathVariable String id) {
         logger.info("========== HostReviewController.insert START ==========");

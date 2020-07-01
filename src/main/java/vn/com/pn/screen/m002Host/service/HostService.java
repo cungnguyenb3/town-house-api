@@ -12,12 +12,20 @@ import java.util.List;
 
 public interface HostService {
     BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy);
+
     BaseOutput insert(HostDTO hostDTO, User user);
-    BaseOutput discountHostPrice (HostDiscountDTO hostDiscountDTO);
+
+    BaseOutput discountHostPrice(HostDiscountDTO hostDiscountDTO);
+
     BaseOutput update(HostUpdateDTO hostUpdateDTO);
+
     BaseOutput delete(String hostId);
+
     BaseOutput getId(String id);
+
     BaseOutput approve(String id);
+
     BaseOutput search(String searchText, int pageNo);
+
     BaseOutput getByCityId(String cityId, Integer pageNo, Integer pageSize, String sortBy);
 }

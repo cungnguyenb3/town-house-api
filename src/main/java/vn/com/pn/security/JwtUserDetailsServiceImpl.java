@@ -36,14 +36,14 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService, AuthServic
         return UserPrinciple.build(user);
     }
 
-    public UserDetails loadUserByUserId(String userId) throws UsernameNotFoundException{
+    public UserDetails loadUserByUserId(String userId) throws UsernameNotFoundException {
         User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", userId));
         return UserPrinciple.build(user);
     }
 
     @Override
-    public User getLoggedUser(){
+    public User getLoggedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return null;
@@ -55,7 +55,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService, AuthServic
         if (!(o instanceof UserPrinciple)) {
             return null;
         }
-        return((UserPrinciple) o).getUser();
+        return ((UserPrinciple) o).getUser();
     }
 
     @Override
