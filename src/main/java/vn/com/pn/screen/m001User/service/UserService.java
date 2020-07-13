@@ -26,4 +26,6 @@ public interface UserService {
     BaseOutput handleForgotPassword(ForgotPasswordInputDTO forgotPasswordInputDTO);
 
     BaseOutput getListBookingHistories(Long userId);
+
+    BaseOutput getListHostByUser(Integer pageNo, Integer pageSize, String sortBy, Long userId);
 }

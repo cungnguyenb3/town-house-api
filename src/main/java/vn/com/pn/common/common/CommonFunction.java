@@ -3,22 +3,18 @@ package vn.com.pn.common.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.validation.BindingResult;
 import vn.com.pn.common.output.BaseOutput;
-import vn.com.pn.config.ScheduledConfig;
+import vn.com.pn.exception.ResourceInvalidInputException;
 
 import java.text.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.lang.instrument.Instrumentation;
 
 public class CommonFunction {
@@ -109,6 +105,18 @@ public class CommonFunction {
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static LocalDate convertStringToLocalDateObject(String inputDate){
+        try {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            dateTimeFormatter = dateTimeFormatter.withLocale(Locale.ENGLISH);
+            LocalDate date = LocalDate.parse(inputDate, dateTimeFormatter);
+            return date;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ResourceInvalidInputException("Date input format must be yyyy-MM-dd");
         }
     }
 

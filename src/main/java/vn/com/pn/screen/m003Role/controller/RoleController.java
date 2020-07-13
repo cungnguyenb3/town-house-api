@@ -31,7 +31,7 @@ public class RoleController {
     private RoleService roleService;
 
     @ApiOperation(value = "View a list roles", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.ROLE_ROOT, method = RequestMethod.GET)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_ROLE_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== RoleController.getAll START ==========");
         BaseOutput response = roleService.getAll();
@@ -41,7 +41,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "Add an role", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.ROLE_ROOT, method = RequestMethod.POST)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_ROLE_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody RoleRequest request) {
         logger.info("========== RoleController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

@@ -91,12 +91,12 @@ public class LoginController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
-    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_GET_USER_VIA_TOKEN, method = RequestMethod.GET)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ME, method = RequestMethod.GET)
     public ResponseEntity<?> getUserViaToken() {
         logger.info("========== LoginController.getUserViaToken START ==========");
         User userLogin = authService.getLoggedUser();
         if (userLogin == null) {
-            throw new ResourceNotFoundException("Token nhập vào đã hết hạn hoặc không chính xác!");
+            throw new ResourceUnauthorizedException("Token nhập vào đã hết hạn hoặc không chính xác!");
         }
         logger.info("========== LoginController.getUserViaToken START ==========");
         return ResponseEntity.ok().body(userLogin);

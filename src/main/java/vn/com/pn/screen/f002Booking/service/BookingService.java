@@ -15,4 +15,6 @@ public interface BookingService {
     BaseOutput confirmBookingRequest(String bookingId, long userId);
 
     BaseOutput confirmBookingPaid(String bookingId);
+
+    BaseOutput getBookingById(long id);
 }

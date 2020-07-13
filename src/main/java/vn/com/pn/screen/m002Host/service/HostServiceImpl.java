@@ -1,5 +1,6 @@
 package vn.com.pn.screen.m002Host.service;
 
+import com.google.api.services.drive.model.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
@@ -11,13 +12,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.exception.ResourceInvalidInputException;
+import vn.com.pn.screen.f004GoogleDrive.service.GoogleDriveService;
 import vn.com.pn.screen.m002Host.dto.HostDTO;
 import vn.com.pn.screen.m002Host.dto.HostSearchDTO;
 import vn.com.pn.screen.m002Host.entity.HostDiscount;
+import vn.com.pn.screen.m005HostImage.dto.HostImageDTO;
+import vn.com.pn.screen.m005HostImage.entity.HostImage;
+import vn.com.pn.screen.m005HostImage.service.HostImageService;
 import vn.com.pn.screen.m006HostCategory.dto.HostDiscountDTO;
 import vn.com.pn.screen.m002Host.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -46,6 +52,7 @@ import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m004HostCity.entity.HostCity;
 import vn.com.pn.screen.m006HostCategory.entity.HostCategory;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -93,6 +100,12 @@ public class HostServiceImpl implements HostService {
     @Autowired
     private ScheduledConfig scheduledConfig;
 
+    @Autowired
+    private GoogleDriveService driveService;
+
+    @Autowired
+    private HostImageService hostImageService;
+
     @Override
     public BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy) {
         logger.info("HostServiceImpl.getAll");
@@ -101,7 +114,7 @@ public class HostServiceImpl implements HostService {
         Page<Host> pagedResult = hostRepository.getAllHost(paging);
 
         if (pagedResult.hasContent()) {
-            return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
+            return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getContent().size());
         } else {
             return CommonFunction.successOutput(new ArrayList<Host>());
         }
@@ -135,7 +148,16 @@ public class HostServiceImpl implements HostService {
     public BaseOutput search(String searchText, int pageNo) {
         final int HOST_PER_PAGE = 20;
         logger.info("HostServiceImpl.search");
+        if (searchText.equalsIgnoreCase("a") || searchText.equalsIgnoreCase("A")) {
+            throw new ResourceNotFoundException("Không có bất kỳ phòng nào");
+        }
+
         List<Host> listHostsBySearch = hostRepositoryCustom.search(searchText, pageNo, HOST_PER_PAGE);
+
+        if (listHostsBySearch == null || listHostsBySearch.size() ==0) {
+            throw new ResourceNotFoundException("Không có bất kỳ phòng nào");
+        }
+
         List<HostSearchDTO> listResultHost = new ArrayList<>();
 
         for (Host host : listHostsBySearch) {
@@ -150,10 +172,12 @@ public class HostServiceImpl implements HostService {
             hostSearchDTO.setStandardPriceMondayToThursday(host.getStandardPriceMondayToThursday());
             hostSearchDTO.setStandardPriceFridayToSunday(host.getStandardPriceFridayToSunday());
             hostSearchDTO.setAcreage(host.getAcreage());
+            hostSearchDTO.setTotalReview(host.getTotalReview());
+            hostSearchDTO.setStars(host.getStars());
+            hostSearchDTO.setHostImages(host.getHostImages());
             hostSearchDTO.setCityName(host.getHostCity().getName());
             listResultHost.add(hostSearchDTO);
         }
-
         return CommonFunction.successOutput(listResultHost);
     }
 
@@ -171,13 +195,14 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
-    public BaseOutput insert(HostDTO hostDTO, User userAgent) {
+    public Host insert(HostDTO hostDTO, User userAgent) {
         logger.info("HostServiceImpl.insert");
         try {
             if (userAgent.getPhone() != null || !userAgent.getPhone().equalsIgnoreCase("")) {
                 Host host = getInsertHostInfo(hostDTO);
                 host.setUser(userAgent);
-                return CommonFunction.successOutput(hostRepository.save(host));
+                hostRepository.save(host);
+                return host;
             }
             throw new ResourceInvalidInputException("Xin vui lòng cập nhật số điện thoại");
         } catch (Exception e) {

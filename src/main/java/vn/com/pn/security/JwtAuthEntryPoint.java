@@ -32,7 +32,8 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         logger.error("Unauthorized error. Message - {}", e.getMessage());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        ResponseEntity<?> loginError = ResponseEntity.badRequest().body(ScreenMessageConstants.NOT_LOGIN);
+        response.setStatus(401);
+        ResponseEntity<?> loginError = ResponseEntity.status(401).body("Token invalid or expired!");
         response.getWriter().write(CommonFunction.convertToJSONString(loginError));
     }
 }

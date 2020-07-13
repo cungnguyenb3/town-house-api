@@ -166,10 +166,10 @@ public class BookingServiceImpl implements BookingService {
             booking.setUser(userLogin);
         }
         if (bookingDTO.getStartDate() != null && bookingDTO.getStartDate() != "") {
-            booking.setCheckInDate(CommonFunction.convertStringToDateObject(bookingDTO.getStartDate()));
+            booking.setCheckInDate(CommonFunction.convertStringToLocalDateObject(bookingDTO.getStartDate()));
         }
         if (bookingDTO.getEndDate() != null && bookingDTO.getEndDate() != "") {
-            booking.setCheckOutDate(CommonFunction.convertStringToDateObject(bookingDTO.getEndDate()));
+            booking.setCheckOutDate(CommonFunction.convertStringToLocalDateObject(bookingDTO.getEndDate()));
         }
         if (bookingDTO.getPricePerNight() != null && bookingDTO.getPricePerNight() != "") {
             booking.setPricePerNight(new Long(bookingDTO.getPricePerNight()));
@@ -239,16 +239,23 @@ public class BookingServiceImpl implements BookingService {
         throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
     }
 
+    @Override
+    public BaseOutput getBookingById(long id) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(
+                () ->new ResourceNotFoundException("Booking", "id", id)
+        );
+
+        return CommonFunction.successOutput(booking);
+    }
+
     private void sendEmailRequestForUser(Booking booking) {
         try {
             String emailSubject = "Bạn đã gửi yêu cầu đặt phòng tại " + booking.getHost().getName();
             StringBuilder emailContent = new StringBuilder();
 
-            Date checkInDateTime = booking.getCheckInDate();
-            java.time.LocalDate checkInDate = checkInDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkInDate= booking.getCheckInDate();
 
-            Date checkOutDateTime = booking.getCheckOutDate();
-            java.time.LocalDate checkOutDate = checkOutDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkOutDate = booking.getCheckOutDate();
 
             String numberOfGuests;
             if (booking.getNumberOfInfantGuest() == 0) {
@@ -311,11 +318,9 @@ public class BookingServiceImpl implements BookingService {
             String emailSubject = "Xác nhận yêu cầu đặt phòng " + booking.getHost().getName();
             StringBuilder emailContent = new StringBuilder();
 
-            Date checkInDateTime = booking.getCheckInDate();
-            java.time.LocalDate checkInDate = checkInDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkInDate = booking.getCheckInDate();
 
-            Date checkOutDateTime = booking.getCheckOutDate();
-            java.time.LocalDate checkOutDate = checkOutDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkOutDate = booking.getCheckOutDate();
 
             String numberOfGuests;
             if (booking.getNumberOfInfantGuest() == 0) {
@@ -379,11 +384,9 @@ public class BookingServiceImpl implements BookingService {
             String emailSubject = "Yêu cầu đặt phòng đã được chủ nhà chấp thuận " + booking.getHost().getName();
             StringBuilder emailContent = new StringBuilder();
 
-            Date checkInDateTime = booking.getCheckInDate();
-            java.time.LocalDate checkInDate = checkInDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkInDate = booking.getCheckInDate();
 
-            Date checkOutDateTime = booking.getCheckOutDate();
-            java.time.LocalDate checkOutDate = checkOutDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkOutDate = booking.getCheckOutDate();
 
             String numberOfGuests;
             if (booking.getNumberOfInfantGuest() == 0) {
@@ -461,7 +464,7 @@ public class BookingServiceImpl implements BookingService {
     private void setCountdownBookingCompleteTime(Booking booking) {
         Runnable runnable = () -> setBookingCompletedAndSendEmailThankful(booking);
 
-        java.time.LocalDate checkOutDate = booking.getCheckOutDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        java.time.LocalDate checkOutDate = booking.getCheckOutDate();
         LocalDateTime date = LocalDateTime.of(checkOutDate.getYear(), checkOutDate.getMonth(), checkOutDate.getDayOfMonth(),
                 booking.getHost().getCheckOutTime().getHour(), booking.getHost().getCheckOutTime().getMinute(),
                 booking.getHost().getCheckOutTime().getSecond());
@@ -479,11 +482,9 @@ public class BookingServiceImpl implements BookingService {
                 String emailSubject = "Đặt phòng tại " + booking.getHost().getName() + " thất bại";
                 StringBuilder emailContent = new StringBuilder();
 
-                Date checkInDateTime = booking.getCheckInDate();
-                java.time.LocalDate checkInDate = checkInDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                java.time.LocalDate checkInDate = booking.getCheckInDate();
 
-                Date checkOutDateTime = booking.getCheckOutDate();
-                java.time.LocalDate checkOutDate = checkOutDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                java.time.LocalDate checkOutDate = booking.getCheckOutDate();
 
                 String numberOfGuests;
                 if (booking.getNumberOfInfantGuest() == 0) {
@@ -547,7 +548,6 @@ public class BookingServiceImpl implements BookingService {
         } catch (MailException mailException) {
             logger.error(ScreenMessageConstants.FAILURE, mailException);
         }
-
     }
 
 
@@ -570,11 +570,10 @@ public class BookingServiceImpl implements BookingService {
                         " 48h sau khi đặt phòng thành công và trước 14 ngày so với thời gian check-in.";
             }
 
-            Date checkInDateTime = booking.getCheckInDate();
-            java.time.LocalDate checkInDate = checkInDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkInDate = booking.getCheckInDate();
 
-            Date checkOutDateTime = booking.getCheckOutDate();
-            java.time.LocalDate checkOutDate = checkOutDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            java.time.LocalDate checkOutDate = booking.getCheckOutDate();
+
             String numberOfGuests;
             if (booking.getNumberOfInfantGuest() == 0) {
                 if (booking.getNumberOfChildrenGuest() == 0) {

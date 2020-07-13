@@ -1,10 +1,13 @@
 package vn.com.pn.screen.m009HostProcedureCheckIn.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,8 +33,12 @@ public class ProcedureCheckInController {
     @Autowired
     private ProcedureCheckInService procedureCheckInService;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list procedure check in", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.PROCEDURE_CHECK_IN_ROOT, method = RequestMethod.GET)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_PROCEDURE_CHECK_IN_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== ProcedureCheckInController.getAll START ==========");
         BaseOutput response = procedureCheckInService.getAll();
@@ -40,8 +47,12 @@ public class ProcedureCheckInController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a new procedure check in", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.PROCEDURE_CHECK_IN_ROOT, method = RequestMethod.POST)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_PROCEDURE_CHECK_IN_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody ProcedureCheckInRequest request) {
         logger.info("========== ProcedureCheckInController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

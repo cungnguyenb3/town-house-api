@@ -1,10 +1,13 @@
 package vn.com.pn.screen.m012Language.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.pn.screen.m012Language.request.LanguageRequest;
 import vn.com.pn.common.common.CommonConstants;
@@ -28,8 +31,12 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list language", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.LANGUAGE_ROOT, method = RequestMethod.GET)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_LANGUAGE_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== LanguageController.getAll START ==========");
         BaseOutput response = languageService.getAll();
@@ -38,8 +45,12 @@ public class LanguageController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a new language", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.LANGUAGE_ROOT, method = RequestMethod.POST)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_LANGUAGE_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody LanguageRequest request) {
         logger.info("========== LanguageController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
@@ -51,8 +62,12 @@ public class LanguageController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Update a language", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.LANGUAGE_ID, method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_LANGUAGE_ID, method = RequestMethod.PUT)
     public BaseOutput update(@Valid @PathVariable String id, @Valid @RequestBody LanguageRequest request) {
         logger.info("========== LanguageController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

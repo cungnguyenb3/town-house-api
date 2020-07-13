@@ -59,14 +59,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/thisisnotindex.html","/app.js", "/gs-guide-websocket/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/hosts/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/host-cities/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/users/activation").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users/sign-up").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users/sign-in").permitAll()
-                .antMatchers(HttpMethod.DELETE, "/api/users").hasAnyAuthority("SUPER_ADMIN", "ADMIN")
-                //For test without token in front end
-                .antMatchers("/api/host-categories/**").permitAll()
 
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()

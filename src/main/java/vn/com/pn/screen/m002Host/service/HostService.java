@@ -1,5 +1,6 @@
 package vn.com.pn.screen.m002Host.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import vn.com.pn.screen.m002Host.dto.HostDTO;
 import vn.com.pn.screen.m002Host.dto.HostSearchDTO;
 import vn.com.pn.screen.m006HostCategory.dto.HostDiscountDTO;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface HostService {
     BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy);
 
-    BaseOutput insert(HostDTO hostDTO, User user);
+    Host insert(HostDTO hostDTO, User user);
 
     BaseOutput discountHostPrice(HostDiscountDTO hostDiscountDTO);
 

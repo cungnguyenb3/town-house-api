@@ -1,5 +1,6 @@
 package vn.com.pn.screen.m002Host.controller;
 
+import com.google.api.services.drive.model.File;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -10,12 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import vn.com.pn.screen.f004GoogleDrive.service.GoogleDriveService;
+import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m002Host.request.HostDiscountRequest;
 import vn.com.pn.screen.m002Host.request.HostRequest;
 import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.screen.m002Host.dto.HostDTO;
+import vn.com.pn.screen.m005HostImage.dto.HostImageDTO;
+import vn.com.pn.screen.m005HostImage.service.HostImageService;
 import vn.com.pn.screen.m006HostCategory.dto.HostDiscountDTO;
 import vn.com.pn.screen.m002Host.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -26,6 +32,7 @@ import vn.com.pn.screen.m002Host.service.HostService;
 import vn.com.pn.utils.MapperUtil;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequestMapping(CommonConstants.API_URL_CONST.ROOT)
@@ -35,6 +42,12 @@ public class HostController {
 
     @Autowired
     private HostService hostService;
+
+    @Autowired
+    private GoogleDriveService driveService;
+
+    @Autowired
+    private HostImageService hostImageService;
 
     @Autowired
     private AuthService authService;
@@ -56,12 +69,22 @@ public class HostController {
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(@Valid @RequestBody HostRequest request) {
+    public BaseOutput insert(HostRequest request, @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         logger.info("========== HostController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         User userLogin = authService.getLoggedUser();
         HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
-        BaseOutput response = hostService.insert(hostDTO, userLogin);
+
+        Host host = hostService.insert(hostDTO, userLogin);
+
+        File fileInput = driveService.uploadFile(file.getContentType(),
+                file.getName(), file.getBytes());
+
+        HostImageDTO hostImageDTO = new HostImageDTO(file.getName(), fileInput.getSize().toString(),
+            fileInput.getMimeType(), fileInput.getWebContentLink(), fileInput.getWebViewLink(), host.getId().toString());
+
+        BaseOutput response = hostImageService.storeFile(hostImageDTO);
+
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== HostController.insert END ==========");
         return response;
@@ -69,14 +92,14 @@ public class HostController {
 
     @ApiOperation(value = "Search host")
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_SEARCH, method = RequestMethod.GET)
-    public BaseOutput search(@RequestParam(value = "name", required = false) String name) {
+    public BaseOutput search(@RequestParam(value = "keyword", required = false) String keyword) {
         logger.info("========== HostController.search START ==========");
-        logger.info("request: " + CommonFunction.convertToJSONString(name));
+        logger.info("request: " + CommonFunction.convertToJSONString(keyword));
         int pageNo = 0;
-        if (name != null) {
+        if (keyword != null) {
             pageNo = 1;
         }
-        BaseOutput response = hostService.search(name, pageNo);
+        BaseOutput response = hostService.search(keyword, pageNo);
         logger.info("========== HostController.search END ==========");
         return response;
     }
@@ -148,9 +171,9 @@ public class HostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @ApiOperation(value = "Approve host by host id", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_APPROVED, method = RequestMethod.PUT)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_APPROVED, method = RequestMethod.PUT)
     public BaseOutput approveHost(@Valid @PathVariable String id) {
         logger.info("========== HostController.approveHost START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));

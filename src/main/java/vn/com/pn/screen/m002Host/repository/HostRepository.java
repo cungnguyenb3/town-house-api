@@ -23,4 +23,10 @@ public interface HostRepository extends JpaRepository<Host, Long>,
     @Query(value = "SELECT * FROM hosts WHERE status = true",
             nativeQuery = true)
     Page<Host> getAllHost(Pageable pageable);
+
+    @Query(value = "SELECT * FROM hosts WHERE status = true and agent_id = :id",
+            nativeQuery = true)
+    Page<Host> getHostByUser(@Param("id") Long id, Pageable pageable);
 }
+
+

@@ -1,10 +1,13 @@
 package vn.com.pn.screen.m004HostCity.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,8 +33,7 @@ public class HostCityController {
     @Autowired
     private HostCityService hostCityService;
 
-    @ApiOperation(value = "View a list host city", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CITY_ROOT, method = RequestMethod.GET)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CITY_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== HostCityController.getAll START ==========");
         BaseOutput response = hostCityService.getAll();
@@ -40,8 +42,12 @@ public class HostCityController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a new host city", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CITY_ROOT, method = RequestMethod.POST)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CITY_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostCityRequest request) {
         logger.info("========== HostCityController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

@@ -10,7 +10,7 @@ import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.screen.m002Host.entity.Host;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -35,9 +35,9 @@ public class Booking extends DateAuditUtil {
 
     private String bookingCode;
 
-    private Date checkInDate;
+    private LocalDate checkInDate;
 
-    private Date checkOutDate;
+    private LocalDate checkOutDate;
 
     private Long pricePerNight;
 

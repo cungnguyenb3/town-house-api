@@ -1,10 +1,13 @@
 package vn.com.pn.screen.m011HostRule.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,8 +33,12 @@ public class RuleController {
     @Autowired
     private RuleService ruleService;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list rules", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.RULE_ROOT, method = RequestMethod.GET)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_RULE_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== RuleController.getAll START ==========");
         BaseOutput response = ruleService.getAll();
@@ -40,8 +47,12 @@ public class RuleController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a new rule", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.RULE_ROOT, method = RequestMethod.POST)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_RULE_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostRuleRequest request) {
         logger.info("========== RuleController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));

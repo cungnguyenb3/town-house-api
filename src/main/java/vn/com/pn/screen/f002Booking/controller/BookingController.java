@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.pn.screen.f002Booking.request.BookingRequest;
 import vn.com.pn.common.common.CommonConstants;
@@ -40,6 +41,7 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== BookingController.getAll START ==========");
@@ -83,7 +85,7 @@ public class BookingController {
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Booking request successful", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_REQUEST_SUCCESS, method = RequestMethod.PUT)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_BOOKING_REQUEST_SUCCESS, method = RequestMethod.PUT)
     public ResponseEntity<?> bookingRequestSuccess(@Valid @PathVariable String bookingId) {
         logger.info("========== BookingController.bookingRequestSuccess START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
@@ -104,6 +106,20 @@ public class BookingController {
         BaseOutput response = bookingService.calculatePrice(bookingCalculatePriceDTO);
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== BookingController.calculatePrice END ==========");
+        return response;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Api get booking by id", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ID, method = RequestMethod.GET)
+    public BaseOutput getBookingById(@Valid @PathVariable long id) {
+        logger.info("========== BookingController.getBookingById START ==========");
+        logger.info("request: " + CommonFunction.convertToJSONString(id));
+        BaseOutput response = bookingService.getBookingById(id);
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== BookingController.getBookingById END ==========");
         return response;
     }
 }

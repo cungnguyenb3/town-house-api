@@ -1,6 +1,8 @@
 package vn.com.pn.screen.m006HostCategory.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +31,12 @@ public class HostCategoryController {
     @Autowired
     private HostCategoryService hostCategoryService;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View list host categories", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ROOT, method = RequestMethod.GET)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CATEGORY_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== HostCategoryController.getAll START ==========");
         BaseOutput response = hostCategoryService.getAll();
@@ -39,8 +45,12 @@ public class HostCategoryController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a host category with id", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ID, method = RequestMethod.GET)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CATEGORY_ID, method = RequestMethod.GET)
     public BaseOutput getById(@Valid @PathVariable String id) {
         logger.info("========== HostCategoryController.getById START ==========");
         BaseOutput response = hostCategoryService.getById(id);
@@ -49,9 +59,12 @@ public class HostCategoryController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a new host category", response = BaseOutput.class)
-    @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ROOT, method = RequestMethod.POST)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CATEGORY_ROOT, method = RequestMethod.POST)
     public BaseOutput insert(@Valid @RequestBody HostCategoryRequest request) {
         logger.info("========== HostCategoryController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
@@ -62,9 +75,12 @@ public class HostCategoryController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Update a host category", response = BaseOutput.class)
-    @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ID, method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CATEGORY_ID, method = RequestMethod.PUT)
     public BaseOutput update(@Valid @PathVariable String id, @Valid @RequestBody HostCategoryRequest request) {
         logger.info("========== HostCategoryController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
@@ -76,9 +92,12 @@ public class HostCategoryController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Delete a host category", response = BaseOutput.class)
-    @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_CATEGORY_ID, method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CATEGORY_ID, method = RequestMethod.DELETE)
     public BaseOutput delete(@Valid @PathVariable String id) {
         logger.info("========== HostCategoryController.delete START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));

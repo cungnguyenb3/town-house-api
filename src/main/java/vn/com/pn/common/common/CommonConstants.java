@@ -28,6 +28,24 @@ public class CommonConstants {
     public interface API_URL_CONST {
         String ROOT = "/api";
 
+        // Admin controller
+        String ADMIN_HOST_CATEGORY_ROOT = "/admin/host-categories";
+        String ADMIN_HOST_CATEGORY_ID = "/admin/host-categories/{id}";
+        String ADMIN_HOST_ROOM_TYPE_ROOT = "/admin/host-room-types";
+        String ADMIN_HOST_ROOM_TYPE_ID = "/admin/host-room-types/{id}";
+        String ADMIN_HOST_CITY_ROOT = "/host-cities";
+        String ADMIN_HOST_CITY_ID = "/admin/host-cities/{id}";
+        String ADMIN_ROLE_ROOT = "/admin/roles";
+        String ADMIN_ROLE_ID = "/admin/roles/{id}";
+        String ADMIN_LANGUAGE_ROOT = "/admin/languages";
+        String ADMIN_LANGUAGE_ID = "/admin/languages/{id}";
+        String ADMIN_RULE_ROOT = "/admin/rules";
+        String ADMIN_CURRENCY_UNIT_ROOT = "/admin/currency-units";
+        String ADMIN_PROCEDURE_CHECK_IN_ROOT = "/admin/procedures-check-in";
+        String ADMIN_HOST_CANCELLATION_POLICY_ROOT = "/admin/host-cancellation-policies";
+        String ADMIN_HOST_APPROVED = "/admin/hosts/approved/{id}";
+        String ADMIN_BOOKING_REQUEST_SUCCESS = "/admin/bookings-request-success/{bookingId}";
+
         // User controller
         String USER_ROOT = "/users";
         String USER_ID = "/users/{id}";
@@ -40,45 +58,26 @@ public class CommonConstants {
         String USER_SIGN_UP_ADMIN = "/users/sign-up/admin";
         String USER_SIGN_IN = "/users/sign-in";
         String USER_BOOKING_HISTORIES = "/users/booking-histories";
-        String USER_GET_USER_VIA_TOKEN = "/users/get-user-via-token";
+        String USER_ME = "/users/me";
+        String USER_HOST = "/users/hosts";
 
         // Host controller
         String HOST_ROOT = "/hosts";
         String HOST_ID = "/hosts/{id}";
         String HOST_DISCOUNT = "/hosts/discount";
-        String HOST_APPROVED = "/hosts/approved/{id}";
         String HOST_SEARCH = "/hosts/search";
         String HOST_GET_BY_CITY = "/hosts/get-by-city-id/{id}";
-
-        // HostCategory controller
-        String HOST_CATEGORY_ROOT = "/host-categories";
-        String HOST_CATEGORY_ID = "/host-categories/{id}";
-
-        // HostRoomType controller
-        String HOST_ROOM_TYPE_ROOT = "/host-room-types";
-        String HOST_ROOM_TYPE_ID = "/host-room-types/{id}";
-
-        // Host City controller
-        String HOST_CITY_ROOT = "/host-cities";
-        String HOST_CITY_ID = "/host-cities/{id}";
-
-        // Role controller
-        String ROLE_ROOT = "/roles";
-        String ROLE_ID = "/roles/{id}";
 
         // Booking controller
         String BOOKING_ROOT = "/bookings";
         String BOOKING_CANCEL = "/bookings-cancel/{id}";
         String BOOKING_CALCULATE_PRICE = "/bookings-calculate-price";
-        String BOOKING_REQUEST_SUCCESS = "/bookings-request-success/{bookingId}";
         String BOOKING_CONFIRM_REQUEST = "/bookings-confirm-request/{bookingId}";
+        String BOOKING_ID = "/booking/{id}";
 
         // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";
         String HOST_REVIEW_GET_BY_HOST_ID = "/host-reviews/get-by-host-id/{id}";
-
-        // Host cancellation policy
-        String HOST_CANCELLATION_POLICY_ROOT = "/host-cancellation-policies";
 
         // Host image
         String HOST_IMAGE_UPLOAD_FILE = "/host-images/upload-file";
@@ -88,17 +87,5 @@ public class CommonConstants {
         String HOST_IMAGE_FILE_ID = "/host-images/{id}";
         String HOST_IMAGE_GET_ALL_FILE = "/host-images";
 
-        // Language
-        String LANGUAGE_ROOT = "/languages";
-        String LANGUAGE_ID = "/languages/{id}";
-
-        // Rule
-        String RULE_ROOT = "/rules";
-
-        // Currency unit
-        String CURRENCY_UNIT_ROOT = "/currency_units";
-
-        // Procedure checkin
-        String PROCEDURE_CHECK_IN_ROOT = "/procedures_check_in";
     }
 }

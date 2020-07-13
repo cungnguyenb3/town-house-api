@@ -106,6 +106,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public BaseOutput getListHostByUser(Integer pageNo, Integer pageSize,
+                                        String sortBy, Long userId) {
+        logger.info("UserServiceImpl.getListHostByUser");
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+        Page<Host> pagedResult = hostRepository.getHostByUser(userId, paging);
+        List<Host> hosts = pagedResult.getContent();
+
+        if (pagedResult.hasContent()) {
+            if (pagedResult.getNumberOfElements() == pageSize) {
+                return CommonFunction.successOutput(pagedResult.getContent(), pagedResult.getSize());
+            } else {
+                return CommonFunction.successOutput(hosts);
+            }
+        } else {
+            return CommonFunction.successOutput(new ArrayList<User>());
+        }
+    }
+
+    @Override
     public BaseOutput getId(String userId) {
         logger.info("UserServiceImpl.getId");
         if (StringUtils.isNumeric(userId)) {

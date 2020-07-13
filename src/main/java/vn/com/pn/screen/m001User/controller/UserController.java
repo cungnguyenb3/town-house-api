@@ -53,6 +53,9 @@ public class UserController {
     @Autowired
     private JwtUserDetailsServiceImpl userDetailsService;
 
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+//                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list users", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -65,6 +68,9 @@ public class UserController {
         return response;
     }
 
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+//                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Get a user with an Id", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.GET)
     public ResponseEntity<?> getId(@Valid @PathVariable String id) {
@@ -79,6 +85,7 @@ public class UserController {
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Delete an user", response = BaseOutput.class)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.DELETE)
     public BaseOutput delete(@Valid @PathVariable String id) {
         logger.info("========== UserController.delete START ==========");
@@ -89,6 +96,9 @@ public class UserController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Register a new user", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_UP, method = RequestMethod.POST)
     public BaseOutput registerUser(@Valid @RequestBody UserRequest request) {
@@ -119,6 +129,9 @@ public class UserController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Change the password", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_CHANGE_PASSWORD, method = RequestMethod.PUT)
     public BaseOutput changePassword(@Valid @PathVariable String id, @RequestBody UserChangePasswordRequest request) {
@@ -148,6 +161,9 @@ public class UserController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Update list host wishlist", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_CHANGE_HOST_WISH_LIST, method = RequestMethod.PUT)
     public BaseOutput updateHostWishList(@Valid @PathVariable String id, @RequestBody UserUpdateHostWishListRequest request) {
@@ -179,6 +195,9 @@ public class UserController {
         }
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_UPDATE_PASSWORD_WITH_CODE, method = RequestMethod.PUT)
     public BaseOutput getForgotPasswordCode(@Valid @RequestBody ForgotPasswordCodeRequest request) {
         logger.info("========== UserController.sendForgotPasswordCode START ==========");
@@ -201,9 +220,28 @@ public class UserController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SEND_FORGOT_CODE_VIA_EMAIL, method = RequestMethod.POST)
     public BaseOutput sendForgotPasswordCode(@Valid @RequestBody UserSendForgotPasswordRequest request) {
         BaseOutput response = userService.forgotPassword(request.getEmail());
+        return response;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Get lists hosts from user", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_HOST, method = RequestMethod.GET)
+    public BaseOutput getListHostByUser(@RequestParam(defaultValue = "0") Integer pageNo,
+                                        @RequestParam(defaultValue = "15") Integer pageSize,
+                                        @RequestParam(defaultValue = "id") String sortBy) {
+        logger.info("========== UserController.getListHostByUser START ==========");
+        User user = authService.getLoggedUser();
+
+        BaseOutput response = userService.getListHostByUser(pageNo, pageSize,sortBy, user.getId());
+
         return response;
     }
 }
