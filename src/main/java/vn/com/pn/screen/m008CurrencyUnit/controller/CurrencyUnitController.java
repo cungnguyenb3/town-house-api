@@ -33,11 +33,7 @@ public class CurrencyUnitController {
     @Autowired
     private CurrencyUnitService currencyUnitService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list currency unit", response = BaseOutput.class)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_CURRENCY_UNIT_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== CurrencyUnitController.getAll START ==========");

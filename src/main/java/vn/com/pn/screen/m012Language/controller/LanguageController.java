@@ -31,11 +31,7 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list language", response = BaseOutput.class)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_LANGUAGE_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== LanguageController.getAll START ==========");

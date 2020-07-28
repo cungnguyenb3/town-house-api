@@ -33,11 +33,7 @@ public class RuleController {
     @Autowired
     private RuleService ruleService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list rules", response = BaseOutput.class)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_RULE_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== RuleController.getAll START ==========");

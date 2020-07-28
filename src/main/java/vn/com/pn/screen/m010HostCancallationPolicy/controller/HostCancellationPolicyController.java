@@ -33,11 +33,7 @@ public class HostCancellationPolicyController {
     @Autowired
     private HostCancellationPolicyService hostCancellationPolicyService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View list host cancellation policies", response = BaseOutput.class)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CANCELLATION_POLICY_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== HostCancellationPolicyController.getAll START ==========");

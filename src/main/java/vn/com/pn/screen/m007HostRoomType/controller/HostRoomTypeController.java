@@ -31,11 +31,7 @@ public class HostRoomTypeController {
     @Autowired
     private HostRoomTypeService hostRoomTypeService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View list host room types", response = BaseOutput.class)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_ROOM_TYPE_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== HostRoomTypeController.getAll START ==========");

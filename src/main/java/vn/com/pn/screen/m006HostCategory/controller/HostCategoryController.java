@@ -31,11 +31,7 @@ public class HostCategoryController {
     @Autowired
     private HostCategoryService hostCategoryService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View list host categories", response = BaseOutput.class)
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_HOST_CATEGORY_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll() {
         logger.info("========== HostCategoryController.getAll START ==========");
