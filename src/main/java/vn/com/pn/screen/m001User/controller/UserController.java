@@ -53,9 +53,6 @@ public class UserController {
     @Autowired
     private JwtUserDetailsServiceImpl userDetailsService;
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-//                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list users", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -68,9 +65,6 @@ public class UserController {
         return response;
     }
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-//                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Get a user with an Id", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.GET)
     public ResponseEntity<?> getId(@Valid @PathVariable String id) {
@@ -96,9 +90,6 @@ public class UserController {
         return response;
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Register a new user", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_UP, method = RequestMethod.POST)
     public BaseOutput registerUser(@Valid @RequestBody UserRequest request) {
