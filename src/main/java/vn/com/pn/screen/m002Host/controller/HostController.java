@@ -77,15 +77,18 @@ public class HostController {
 
         Host host = hostService.insert(hostDTO, userLogin);
 
-        File fileInput = driveService.uploadFile(file.getContentType(),
-                file.getName(), file.getBytes());
+        BaseOutput response = new BaseOutput();
 
-        HostImageDTO hostImageDTO = new HostImageDTO(file.getName(), fileInput.getSize().toString(),
-            fileInput.getMimeType(), fileInput.getWebContentLink(), fileInput.getWebViewLink(), host.getId().toString());
+        if (file != null) {
+            File fileInput = driveService.uploadFile(file.getContentType(),
+                    file.getName(), file.getBytes());
+            HostImageDTO hostImageDTO = new HostImageDTO(file.getName(), fileInput.getSize().toString(),
+                    fileInput.getMimeType(), fileInput.getWebContentLink(), fileInput.getWebViewLink(), host.getId().toString());
 
-        BaseOutput response = hostImageService.storeFile(hostImageDTO);
+            response = hostImageService.storeFile(hostImageDTO);
+        }
 
-        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        response.setData(host);
         logger.info("========== HostController.insert END ==========");
         return response;
     }

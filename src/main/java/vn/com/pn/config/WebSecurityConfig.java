@@ -68,6 +68,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/admin/languages/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/admin/host-cancellation-policies/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/admin/host-cities/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/admin/procedures-check-in/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/admin/host-cities/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/admin/currency-units/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/host-reviews/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/host-images/**").permitAll()

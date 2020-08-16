@@ -40,8 +40,6 @@ public class HostRequest {
 
     private String bathroomCount;
 
-    private String price;
-
     private String standardPriceMondayToThursday;
 
     private String standardPriceFridayToSunday;
