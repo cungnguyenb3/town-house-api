@@ -167,7 +167,7 @@ public class Host extends DateAuditUtil {
     private Integer kitchenCount;
 
     private String checkInInstructions;
-    
+
     private String usingConvenientInstructions;
 
     private boolean isHasGardenView;

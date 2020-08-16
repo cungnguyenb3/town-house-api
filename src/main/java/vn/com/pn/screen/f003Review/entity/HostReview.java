@@ -23,7 +23,6 @@ public class HostReview extends DateAuditUtil {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Booking booking;
 
-    @Lob
     private String content;
 
     @Column(name = "star_rating")

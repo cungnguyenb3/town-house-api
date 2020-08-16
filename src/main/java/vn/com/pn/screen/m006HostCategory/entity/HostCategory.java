@@ -20,6 +20,5 @@ public class HostCategory {
     private String name;
 
     @Column(name = "description", nullable = false)
-    @Lob
     private String description;
 }
