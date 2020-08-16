@@ -42,7 +42,6 @@ public class Host extends DateAuditUtil {
     private String name;
 
     @NonNull
-    @Lob
     private String description;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -167,10 +166,8 @@ public class Host extends DateAuditUtil {
     private Integer bunk;
     private Integer kitchenCount;
 
-    @Lob
     private String checkInInstructions;
-
-    @Lob
+    
     private String usingConvenientInstructions;
 
     private boolean isHasGardenView;
