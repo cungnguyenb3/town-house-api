@@ -7,4 +7,8 @@ public interface HostCityService {
     BaseOutput getAll();
 
     BaseOutput insert(HostCityDTO hostCityDTO);
+
+    BaseOutput update(HostCityDTO dto, String id);
+
+    BaseOutput delete(String id);
 }
