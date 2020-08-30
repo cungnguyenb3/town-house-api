@@ -1,4 +1,4 @@
-package vn.com.pn.screen.f006Notification.entity;
+package vn.com.pn.screen.f002Booking.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Message {
-    private String title;
+@NoArgsConstructor
+public class BookingUserDTO {
     private String name;
+    private String email;
 }

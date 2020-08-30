@@ -98,6 +98,10 @@ public class UserController {
         boolean isRegisterAdmin = false;
         UserDTO userDTO = MapperUtil.mapper(request, UserDTO.class);
         BaseOutput response = userService.insert(userDTO, isRegisterAdmin);
+        if (response.getData() != null && response.getStatus() == 0 && request.getDeviceToken() != null
+        && !request.getDeviceToken().isEmpty() && !request.getDeviceToken().equalsIgnoreCase("string")) {
+            userService.saveDeviceToken(MapperUtil.mapper(response.getData(), User.class), request.getDeviceToken());
+        }
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== UserController.register END ==========");
         return response;

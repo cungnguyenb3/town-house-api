@@ -55,9 +55,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String deviceToken;
+
     private boolean isEnable;
 
     private boolean status;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="user",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserDeviceToken> deviceTokens = new HashSet<UserDeviceToken>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "users_roles",

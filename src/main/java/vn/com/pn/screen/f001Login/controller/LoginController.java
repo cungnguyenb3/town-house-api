@@ -23,6 +23,7 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.exception.ResourceUnauthorizedException;
 import vn.com.pn.screen.m001User.controller.UserController;
 import vn.com.pn.screen.m001User.entity.User;
+import vn.com.pn.screen.m001User.service.UserService;
 import vn.com.pn.security.AuthService;
 import vn.com.pn.security.JwtProvider;
 import vn.com.pn.screen.m001User.service.UserPrinciple;
@@ -47,9 +48,12 @@ public class LoginController {
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private UserService userService;
+
     @ApiOperation(value = "Login with username and password", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_IN, method = RequestMethod.POST)
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserLoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@RequestBody UserLoginRequest loginRequest) {
         logger.info("========== LoginController.login START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(loginRequest));
         try {
@@ -62,6 +66,10 @@ public class LoginController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtProvider.generateJwtToken(authentication);
             UserPrinciple userPrinciple = jwtProvider.getUserFromLogin(authentication);
+            if (userPrinciple != null && loginRequest.getDeviceToken() != null
+                    && !loginRequest.getDeviceToken().isEmpty() && !loginRequest.getDeviceToken().equalsIgnoreCase("string")) {
+                userService.saveDeviceToken(userPrinciple.getUser(), loginRequest.getDeviceToken());
+            }
             logger.info("========== LoginController.login END ==========");
             return ResponseEntity.ok(new JwtResponse(jwt, userPrinciple));
         } catch (Exception e) {
@@ -100,5 +108,15 @@ public class LoginController {
         }
         logger.info("========== LoginController.getUserViaToken START ==========");
         return ResponseEntity.ok().body(userLogin);
+    }
+
+    @ApiOperation(value = "Logout user account", response = BaseOutput.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_OUT, method = RequestMethod.DELETE)
+    public ResponseEntity<?> logout(@RequestParam(required = false) String deviceToken) {
+        logger.info("========== LoginController.logout START ==========");
+        return null;
     }
 }

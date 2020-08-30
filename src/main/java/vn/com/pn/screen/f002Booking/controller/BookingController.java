@@ -122,4 +122,14 @@ public class BookingController {
         logger.info("========== BookingController.getBookingById END ==========");
         return response;
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Api get booking by user", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_USER, method = RequestMethod.GET)
+    public ResponseEntity<?> getBookingByUser() {
+        User userLogin = authService.getLoggedUser();
+        return bookingService.getBookingByCurrentDateAndUser(userLogin.getId());
+    }
 }

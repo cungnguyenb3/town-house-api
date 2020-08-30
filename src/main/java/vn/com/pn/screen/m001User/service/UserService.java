@@ -28,4 +28,6 @@ public interface UserService {
     BaseOutput getListBookingHistories(Long userId);
 
     BaseOutput getListHostByUser(Integer pageNo, Integer pageSize, String sortBy, Long userId);
+
+    void saveDeviceToken(User user, String deviceToken);
 }

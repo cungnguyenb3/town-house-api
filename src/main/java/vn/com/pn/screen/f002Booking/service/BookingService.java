@@ -1,5 +1,6 @@
 package vn.com.pn.screen.f002Booking.service;
 
+import org.springframework.http.ResponseEntity;
 import vn.com.pn.screen.f002Booking.dto.BookingCalculatePriceDTO;
 import vn.com.pn.screen.f002Booking.dto.BookingDTO;
 import vn.com.pn.common.output.BaseOutput;
@@ -17,4 +18,6 @@ public interface BookingService {
     BaseOutput confirmBookingPaid(String bookingId);
 
     BaseOutput getBookingById(long id);
+
+    ResponseEntity<?> getBookingByCurrentDateAndUser(Long userId);
 }

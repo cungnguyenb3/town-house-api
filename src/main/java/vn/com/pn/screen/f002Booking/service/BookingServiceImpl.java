@@ -5,14 +5,14 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.exception.ResourceInvalidInputException;
-import vn.com.pn.screen.f002Booking.dto.BookingCalculatePriceDTO;
-import vn.com.pn.screen.f002Booking.dto.BookingDTO;
+import vn.com.pn.screen.f002Booking.dto.*;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.screen.f002Booking.entity.Booking;
@@ -27,9 +27,7 @@ import vn.com.pn.utils.RandomStringUtil;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -242,7 +240,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BaseOutput getBookingById(long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(
-                () ->new ResourceNotFoundException("Booking", "id", id)
+                () -> new ResourceNotFoundException("Booking", "id", id)
         );
 
         return CommonFunction.successOutput(booking);
@@ -253,7 +251,7 @@ public class BookingServiceImpl implements BookingService {
             String emailSubject = "Bạn đã gửi yêu cầu đặt phòng tại " + booking.getHost().getName();
             StringBuilder emailContent = new StringBuilder();
 
-            java.time.LocalDate checkInDate= booking.getCheckInDate();
+            java.time.LocalDate checkInDate = booking.getCheckInDate();
 
             java.time.LocalDate checkOutDate = booking.getCheckOutDate();
 
@@ -638,5 +636,75 @@ public class BookingServiceImpl implements BookingService {
         } catch (MailException mailException) {
             logger.error(ScreenMessageConstants.FAILURE, mailException);
         }
+    }
+
+    public ResponseEntity<?> getBookingByCurrentDateAndUser(Long userId) {
+        List<Booking> bookings = bookingRepository.getBookingByCurrentDateAndUser(userId);
+        Map<String, Map<String, List<BookingUserResponseDTO>>> bookingResult = new HashMap<>();
+
+        List<String> bookingDates = new ArrayList<>();
+        for (Booking booking : bookings) {
+            if (!bookingDates.contains(booking.getCheckInDate().toString())) {
+                bookingDates.add(booking.getCheckInDate().toString());
+            }
+            if (!bookingDates.contains(booking.getCheckOutDate().toString())) {
+                bookingDates.add(booking.getCheckOutDate().toString());
+            }
+        }
+        for (String bookingDate : bookingDates) {
+            Map<String, List<BookingUserResponseDTO>> bookingResultValue = new HashMap<>();
+            List<BookingUserResponseDTO> bookingCheckIn = new ArrayList<>();
+            for (Booking booking : bookings) {
+                if (bookingDate.equals(booking.getCheckInDate().toString())) {
+                    BookingUserResponseDTO bookingUserRes = new BookingUserResponseDTO();
+                    if (booking.getUser().getFullName() != null && booking.getUser().getEmail() != null){
+                        bookingUserRes.setUser(new BookingUserDTO(booking.getUser().getFullName(), booking.getUser().getEmail()));
+                    }
+                    if (booking.getHost().getName() != null &&
+                            booking.getHost().getHostImages().size() != 0) {
+                        bookingUserRes.setRoom(new BookingRoomDTO(booking.getHost().getName(),
+                                booking.getHost().getHostImages().iterator().next().getWebContentLink()));
+                    }
+                    if (booking.getGuests() != null) {
+                        bookingUserRes.setGuests(booking.getGuests());
+                    }
+                    if (booking.getNights() != null) {
+                        bookingUserRes.setNight(booking.getNights());
+                    }
+                    bookingCheckIn.add(bookingUserRes);
+                }
+            }
+            if (bookingCheckIn != null && bookingCheckIn.size() != 0) {
+                bookingResultValue.put("checkin", bookingCheckIn);
+            }
+
+            List<BookingUserResponseDTO> bookingCheckOut = new ArrayList<>();
+            for (Booking booking : bookings) {
+                if (bookingDate.equals(booking.getCheckOutDate().toString())) {
+                    BookingUserResponseDTO bookingUserRes = new BookingUserResponseDTO();
+                    if (booking.getUser().getFullName() != null && booking.getUser().getEmail() != null){
+                        bookingUserRes.setUser(new BookingUserDTO(booking.getUser().getFullName(), booking.getUser().getEmail()));
+                    }
+                    if (booking.getHost().getName() != null &&
+                            booking.getHost().getHostImages().size() != 0) {
+                        bookingUserRes.setRoom(new BookingRoomDTO(booking.getHost().getName(),
+                                booking.getHost().getHostImages().iterator().next().getWebContentLink()));
+                    }
+                    if (booking.getGuests() != null) {
+                        bookingUserRes.setGuests(booking.getGuests());
+                    }
+                    if (booking.getNights() != null) {
+                        bookingUserRes.setNight(booking.getNights());
+                    }
+                    bookingCheckOut.add(bookingUserRes);
+                }
+            }
+            if (bookingCheckOut != null && bookingCheckOut.size() != 0) {
+                bookingResultValue.put("checkout", bookingCheckOut);
+            }
+
+            bookingResult.put(bookingDate, bookingResultValue);
+        }
+        return ResponseEntity.ok(bookingResult);
     }
 }

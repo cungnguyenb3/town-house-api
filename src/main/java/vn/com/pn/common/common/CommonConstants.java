@@ -57,6 +57,7 @@ public class CommonConstants {
         String USER_SIGN_UP = "/users/sign-up";
         String USER_SIGN_UP_ADMIN = "/users/sign-up/admin";
         String USER_SIGN_IN = "/users/sign-in";
+        String USER_SIGN_OUT = "/users/sign-out";
         String USER_BOOKING_HISTORIES = "/users/booking-histories";
         String USER_ME = "/users/me";
         String USER_HOST = "/users/hosts";
@@ -74,6 +75,7 @@ public class CommonConstants {
         String BOOKING_CALCULATE_PRICE = "/bookings-calculate-price";
         String BOOKING_CONFIRM_REQUEST = "/bookings-confirm-request/{bookingId}";
         String BOOKING_ID = "/booking/{id}";
+        String BOOKING_USER = "/booking/users";
 
         // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";

@@ -34,8 +34,12 @@ import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.repository.BookingRepository;
 import vn.com.pn.screen.m001User.entity.ForgotPasswordCode;
+import vn.com.pn.screen.m001User.entity.Token;
+import vn.com.pn.screen.m001User.entity.UserDeviceToken;
 import vn.com.pn.screen.m001User.repository.ForgotPasswordCodeRepository;
 import vn.com.pn.screen.m001User.dto.*;
+import vn.com.pn.screen.m001User.repository.TokenRepository;
+import vn.com.pn.screen.m001User.repository.UserDeviceTokenRepository;
 import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.m003Role.repository.RoleRepository;
 import vn.com.pn.screen.m001User.repository.UserRepository;
@@ -84,6 +88,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private UserDeviceTokenRepository deviceTokenRepository;
+
+    @Autowired
+    private TokenRepository tokenRepository;
 
     @Override
     public BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy) {
@@ -473,5 +483,18 @@ public class UserServiceImpl implements UserService {
                 .append("\n\nTrân trọng, \nTown house team");
         mailService.sendEmail(user.getEmail(), emailSubject, emailContent);
         return user;
+    }
+
+    @Override
+    public void saveDeviceToken(User user, String deviceToken) {
+        Set<UserDeviceToken> deviceTokens = new HashSet<>();
+        UserDeviceToken userDeviceToken = new UserDeviceToken(deviceToken);
+        userDeviceToken.setUser(user);
+        deviceTokenRepository.save(userDeviceToken);
+    }
+
+    public void storeToken(Token token) {
+        logger.info("TokenServiceImpl.storeToken");
+        tokenRepository.save(token);
     }
 }
