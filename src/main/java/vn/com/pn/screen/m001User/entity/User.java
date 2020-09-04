@@ -61,7 +61,6 @@ public class User {
 
     private boolean status;
 
-    @JsonIgnore
     @OneToMany(mappedBy="user",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UserDeviceToken> deviceTokens = new HashSet<UserDeviceToken>();
 
