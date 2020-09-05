@@ -510,7 +510,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void logout(UserLogoutRequest request) {
+    public void logout(UserLogoutRequest request, String token) {
+        tokenRepository.deleteDeviceToken(token);
         deviceTokenRepository.deleteDeviceToken(request.getDeviceToken());
     }
 }

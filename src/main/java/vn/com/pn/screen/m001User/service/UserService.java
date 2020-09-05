@@ -36,5 +36,5 @@ public interface UserService {
 
     void saveToken(String jwt, Long userId, Date expiredDate);
 
-    void logout(UserLogoutRequest request);
+    void logout(UserLogoutRequest request, String token);
 }

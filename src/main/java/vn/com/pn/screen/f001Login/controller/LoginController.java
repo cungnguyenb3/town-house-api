@@ -128,9 +128,11 @@ public class LoginController {
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_OUT, method = RequestMethod.POST)
-    public ResponseEntity<?> logout(@RequestBody UserLogoutRequest request) {
+    public ResponseEntity<?> logout(@RequestHeader(name="Authorization") String tokenHeader, @RequestBody UserLogoutRequest request) {
         logger.info("========== LoginController.logout START ==========");
-        userService.logout(request);
+        String bearer = "Bearer ";
+
+        userService.logout(request, tokenHeader.substring(bearer.length()));
         return ResponseEntity.ok().body("User logout successfully");
     }
 }
