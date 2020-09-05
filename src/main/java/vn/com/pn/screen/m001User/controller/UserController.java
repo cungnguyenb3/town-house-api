@@ -21,6 +21,7 @@ import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m001User.dto.*;
 import vn.com.pn.screen.m001User.entity.User;
+import vn.com.pn.screen.m001User.repository.UserRepository;
 import vn.com.pn.screen.m001User.request.*;
 import vn.com.pn.security.AuthService;
 import vn.com.pn.security.JwtProvider;

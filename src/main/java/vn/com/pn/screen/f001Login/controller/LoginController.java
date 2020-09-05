@@ -23,6 +23,7 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.exception.ResourceUnauthorizedException;
 import vn.com.pn.screen.m001User.controller.UserController;
 import vn.com.pn.screen.m001User.entity.User;
+import vn.com.pn.screen.m001User.repository.UserRepository;
 import vn.com.pn.screen.m001User.service.UserService;
 import vn.com.pn.security.AuthService;
 import vn.com.pn.security.JwtProvider;
@@ -50,6 +51,9 @@ public class LoginController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @ApiOperation(value = "Login with username and password", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_SIGN_IN, method = RequestMethod.POST)
@@ -102,7 +106,7 @@ public class LoginController {
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ME, method = RequestMethod.GET)
     public ResponseEntity<?> getUserViaToken() {
         logger.info("========== LoginController.getUserViaToken START ==========");
-        User userLogin = authService.getLoggedUser();
+        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
         if (userLogin == null) {
             throw new ResourceUnauthorizedException("Token nhập vào đã hết hạn hoặc không chính xác!");
         }

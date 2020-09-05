@@ -55,8 +55,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String deviceToken;
-
     private boolean isEnable;
 
     private boolean status;

@@ -140,8 +140,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isNumeric(userId)) {
             User user = userRepository.findById(Long.parseLong(userId)).orElse(null);
             if (user != null) {
-                UserOutputDTO userOutputDTO = MapperUtil.mapper(user, UserOutputDTO.class);
-                return CommonFunction.successOutput(userOutputDTO);
+                return CommonFunction.successOutput(user);
             }
             throw new ResourceNotFoundException("User", "id", userId);
         }
