@@ -74,6 +74,4 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "host_id"))
     private Set<Host> hosts = new HashSet<>();
-
-
 }

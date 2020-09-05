@@ -3,6 +3,9 @@ package vn.com.pn.screen.m001User.service;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m001User.dto.*;
 import vn.com.pn.screen.m001User.entity.User;
+import vn.com.pn.screen.m001User.request.UserLogoutRequest;
+
+import java.util.Date;
 
 public interface UserService {
     BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy);
@@ -30,4 +33,8 @@ public interface UserService {
     BaseOutput getListHostByUser(Integer pageNo, Integer pageSize, String sortBy, Long userId);
 
     void saveDeviceToken(User user, String deviceToken);
+
+    void saveToken(String jwt, Long userId, Date expiredDate);
+
+    void logout(UserLogoutRequest request);
 }

@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
@@ -40,6 +41,7 @@ import vn.com.pn.screen.m001User.repository.ForgotPasswordCodeRepository;
 import vn.com.pn.screen.m001User.dto.*;
 import vn.com.pn.screen.m001User.repository.TokenRepository;
 import vn.com.pn.screen.m001User.repository.UserDeviceTokenRepository;
+import vn.com.pn.screen.m001User.request.UserLogoutRequest;
 import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.m003Role.repository.RoleRepository;
 import vn.com.pn.screen.m001User.repository.UserRepository;
@@ -52,6 +54,7 @@ import vn.com.pn.screen.f005Gmail.service.MailService;
 import vn.com.pn.utils.MapperUtil;
 
 
+import javax.persistence.Lob;
 import java.util.*;
 
 @Service
@@ -492,8 +495,22 @@ public class UserServiceImpl implements UserService {
         deviceTokenRepository.save(userDeviceToken);
     }
 
-    public void storeToken(Token token) {
+    @Override
+    public void saveToken(String jwt, Long userId, Date expiredDate) {
         logger.info("TokenServiceImpl.storeToken");
+        Token token = new Token();
+        token.setTokenId(jwt);
+        token.setExpiredDate(expiredDate);
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            token.setUser(user);
+        }
         tokenRepository.save(token);
+    }
+
+    @Transactional
+    @Override
+    public void logout(UserLogoutRequest request) {
+        deviceTokenRepository.deleteDeviceToken(request.getDeviceToken());
     }
 }

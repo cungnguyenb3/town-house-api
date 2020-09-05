@@ -21,7 +21,7 @@ public class JwtProvider {
     @Value("jwtPnSecretKey")
     private String jwtSecret;
 
-    @Value("16061999")
+    @Value("36000")
     private Long jwtExpiration;
 
     public String generateJwtToken(Authentication authentication) {
