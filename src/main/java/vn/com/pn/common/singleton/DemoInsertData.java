@@ -6,18 +6,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import vn.com.pn.screen.m007HostRoomType.entity.HostRoomType;
-import vn.com.pn.screen.m008CurrencyUnit.entity.CurrencyUnit;
-import vn.com.pn.screen.m008CurrencyUnit.repository.CurrencyUnitRepository;
-import vn.com.pn.screen.m009HostProcedureCheckIn.entity.ProcedureCheckIn;
-import vn.com.pn.screen.m010HostCancallationPolicy.entity.HostCancellationPolicy;
-import vn.com.pn.screen.m010HostCancallationPolicy.repository.HostCancellationPolicyRepository;
 import vn.com.pn.screen.m006HostCategory.repository.HostCategoryRepository;
 import vn.com.pn.screen.m004HostCity.repository.HostCityRepository;
 import vn.com.pn.screen.m007HostRoomType.repository.HostRoomTypeRepository;
 import vn.com.pn.screen.m011HostRule.entity.Rule;
 import vn.com.pn.screen.m012Language.entity.Language;
 import vn.com.pn.screen.m012Language.repository.LanguageRepository;
-import vn.com.pn.screen.m009HostProcedureCheckIn.repository.ProcedureCheckInRepository;
 import vn.com.pn.screen.m003Role.repository.RoleRepository;
 import vn.com.pn.screen.m011HostRule.repository.RuleRepository;
 import vn.com.pn.screen.m001User.repository.UserRepository;
@@ -39,12 +33,6 @@ public class DemoInsertData {
     private UserRepository userRepository;
 
     @Autowired
-    private CurrencyUnitRepository currencyUnitRepository;
-
-    @Autowired
-    private HostCancellationPolicyRepository hostCancellationPolicyRepository;
-
-    @Autowired
     private HostCategoryRepository hostCategoryRepository;
 
     @Autowired
@@ -55,9 +43,6 @@ public class DemoInsertData {
 
     @Autowired
     private LanguageRepository languageRepository;
-
-    @Autowired
-    private ProcedureCheckInRepository procedureCheckInRepository;
 
     @Autowired
     private RuleRepository ruleRepository;
@@ -113,20 +98,6 @@ public class DemoInsertData {
             userRepository.save(user);
         }
 
-        if (currencyUnitRepository.checkCurrencyUnitIsEmpty() == null) {
-            CurrencyUnit currencyUnitDemo = new CurrencyUnit();
-            currencyUnitDemo.setName("VNĐ");
-            currencyUnitRepository.save(currencyUnitDemo);
-        }
-
-        if (hostCancellationPolicyRepository.checkHostCancellationPolicyIsEmpty() == null) {
-            HostCancellationPolicy hostCancellationPolicyDemo = new HostCancellationPolicy();
-            hostCancellationPolicyDemo.setName("Linh hoạt (Flexible)");
-            hostCancellationPolicyDemo.setDescription("Cơ chế: Miễn phí hủy phòng khi khách hàng hủy trước 24h so với " +
-                    "giờ nhận phòng. Hoàn lại 50% giá trị đơn đặt phòng khi khách hàng hủy trong vòng 24h so với giờ nhận phòng.");
-            hostCancellationPolicyRepository.save(hostCancellationPolicyDemo);
-        }
-
         if (hostCategoryRepository.checkHostCategoryIsEmpty() == null) {
             HostCategory hostCategoryDemo = new HostCategory();
             hostCategoryDemo.setName("Homestay");
@@ -155,12 +126,6 @@ public class DemoInsertData {
             Language languageDemo = new Language();
             languageDemo.setName("Tiếng Việt");
             languageRepository.save(languageDemo);
-        }
-
-        if (procedureCheckInRepository.checkProcedureCheckInIsEmpty() == null) {
-            ProcedureCheckIn procedureCheckInDemo = new ProcedureCheckIn();
-            procedureCheckInDemo.setName("Tự check in");
-            procedureCheckInRepository.save(procedureCheckInDemo);
         }
 
         if (ruleRepository.checkRuleIsEmpty() == null) {

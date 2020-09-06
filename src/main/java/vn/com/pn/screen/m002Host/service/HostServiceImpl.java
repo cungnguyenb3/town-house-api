@@ -1,6 +1,5 @@
 package vn.com.pn.screen.m002Host.service;
 
-import com.google.api.services.drive.model.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
@@ -30,13 +29,8 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.m007HostRoomType.entity.HostRoomType;
-import vn.com.pn.screen.m008CurrencyUnit.entity.CurrencyUnit;
-import vn.com.pn.screen.m008CurrencyUnit.repository.CurrencyUnitRepository;
 import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.m002Host.repository.HostRepositoryCustom;
-import vn.com.pn.screen.m009HostProcedureCheckIn.entity.ProcedureCheckIn;
-import vn.com.pn.screen.m010HostCancallationPolicy.entity.HostCancellationPolicy;
-import vn.com.pn.screen.m010HostCancallationPolicy.repository.HostCancellationPolicyRepository;
 import vn.com.pn.screen.m006HostCategory.repository.HostCategoryRepository;
 import vn.com.pn.screen.m004HostCity.repository.HostCityRepository;
 import vn.com.pn.screen.m002Host.repository.HostDiscountRepository;
@@ -44,7 +38,6 @@ import vn.com.pn.screen.m007HostRoomType.repository.HostRoomTypeRepository;
 import vn.com.pn.screen.m011HostRule.entity.Rule;
 import vn.com.pn.screen.m012Language.entity.Language;
 import vn.com.pn.screen.m012Language.repository.LanguageRepository;
-import vn.com.pn.screen.m009HostProcedureCheckIn.repository.ProcedureCheckInRepository;
 import vn.com.pn.screen.m011HostRule.repository.RuleRepository;
 import vn.com.pn.screen.m001User.repository.UserRepository;
 import vn.com.pn.screen.m001User.entity.User;
@@ -75,15 +68,6 @@ public class HostServiceImpl implements HostService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private HostCancellationPolicyRepository hostCancellationPolicyRepository;
-
-    @Autowired
-    private ProcedureCheckInRepository procedureCheckInRepository;
-
-    @Autowired
-    private CurrencyUnitRepository currencyUnitRepository;
 
     @Autowired
     private RuleRepository ruleRepository;
@@ -318,31 +302,6 @@ public class HostServiceImpl implements HostService {
                     Long.parseLong(hostUpdateDTO.getHostCityId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCity", "id", hostUpdateDTO.getHostCityId()));
             host.setHostCity(hostCity);
-        }
-        if (hostUpdateDTO.getHostCancellationPolicyId() != null && hostUpdateDTO.getHostCancellationPolicyId() != "") {
-            HostCancellationPolicy hostCancellationPolicy = hostCancellationPolicyRepository.findById(
-                    Long.parseLong(hostUpdateDTO.getHostCancellationPolicyId())).orElseThrow(()
-                    -> new ResourceNotFoundException("HostCancellationPolicy", "id", hostUpdateDTO.getHostCancellationPolicyId()));
-            host.setHostCancellationPolicy(hostCancellationPolicy);
-        }
-
-        if (hostUpdateDTO.getProcedureCheckInId() != null && hostUpdateDTO.getProcedureCheckInId() != "") {
-            ProcedureCheckIn procedureCheckIn = procedureCheckInRepository.findById(
-                    Long.parseLong(hostUpdateDTO.getProcedureCheckInId())).orElseThrow(()
-                    -> new ResourceNotFoundException("ProcedureCheckIn", "id", hostUpdateDTO.getProcedureCheckInId()));
-            host.setProcedureCheckIn(procedureCheckIn);
-        }
-        if (hostUpdateDTO.getCurrencyUnitId() != null && hostUpdateDTO.getCurrencyUnitId() != "") {
-            CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Long.parseLong(hostUpdateDTO.getCurrencyUnitId())).orElseThrow(()
-                    -> new ResourceNotFoundException("CurrencyUnit", "id", hostUpdateDTO.getCurrencyUnitId()));
-            host.setCurrencyUnit(currencyUnit);
-        }
-        if (hostUpdateDTO.getCurrencyUnitId() != null && hostUpdateDTO.getCurrencyUnitId() != "") {
-            CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Long.parseLong(hostUpdateDTO.getCurrencyUnitId())).orElseThrow(()
-                    -> new ResourceNotFoundException("CurrencyUnit", "id", hostUpdateDTO.getCurrencyUnitId()));
-            host.setCurrencyUnit(currencyUnit);
         }
         if (hostUpdateDTO.getRuleIds() != null && !hostUpdateDTO.getRuleIds().isEmpty()) {
             Set<String> ruleIdSet = hostUpdateDTO.getRuleIds();
@@ -902,31 +861,6 @@ public class HostServiceImpl implements HostService {
                     Long.parseLong(hostDTO.getHostCityId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCity", "id", hostDTO.getHostCityId()));
             host.setHostCity(hostCity);
-        }
-        if (hostDTO.getHostCancellationPolicyId() != null && hostDTO.getHostCancellationPolicyId() != "") {
-            HostCancellationPolicy hostCancellationPolicy = hostCancellationPolicyRepository.findById(
-                    Long.parseLong(hostDTO.getHostCancellationPolicyId())).orElseThrow(()
-                    -> new ResourceNotFoundException("HostCancellationPolicy", "id", hostDTO.getHostCancellationPolicyId()));
-            host.setHostCancellationPolicy(hostCancellationPolicy);
-        }
-
-        if (hostDTO.getProcedureCheckInId() != null && hostDTO.getProcedureCheckInId() != "") {
-            ProcedureCheckIn procedureCheckIn = procedureCheckInRepository.findById(
-                    Long.parseLong(hostDTO.getProcedureCheckInId())).orElseThrow(()
-                    -> new ResourceNotFoundException("ProcedureCheckIn", "id", hostDTO.getProcedureCheckInId()));
-            host.setProcedureCheckIn(procedureCheckIn);
-        }
-        if (hostDTO.getCurrencyUnitId() != null && hostDTO.getCurrencyUnitId() != "") {
-            CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Long.parseLong(hostDTO.getCurrencyUnitId())).orElseThrow(()
-                    -> new ResourceNotFoundException("CurrencyUnit", "id", hostDTO.getCurrencyUnitId()));
-            host.setCurrencyUnit(currencyUnit);
-        }
-        if (hostDTO.getCurrencyUnitId() != null && hostDTO.getCurrencyUnitId() != "") {
-            CurrencyUnit currencyUnit = currencyUnitRepository.findById(
-                    Long.parseLong(hostDTO.getCurrencyUnitId())).orElseThrow(()
-                    -> new ResourceNotFoundException("CurrencyUnit", "id", hostDTO.getCurrencyUnitId()));
-            host.setCurrencyUnit(currencyUnit);
         }
         if (hostDTO.getRuleIds() != null && !hostDTO.getRuleIds().isEmpty()) {
             Set<String> ruleIdSet = hostDTO.getRuleIds();

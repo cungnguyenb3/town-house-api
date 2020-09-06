@@ -554,20 +554,6 @@ public class BookingServiceImpl implements BookingService {
             String emailSubject = "Đặt phòng thành công";
             StringBuilder emailContent = new StringBuilder();
 
-            String cancellationPolicy = null;
-            if (booking.getHost().getHostCancellationPolicy().getId() == 1) {
-                cancellationPolicy = "\nBạn sẽ được hủy phòng miễn phí trong vòng 48h sau khi đặt phòng " +
-                        "thành công và trước 1 ngày so với thời gian check-in.";
-            }
-            if (booking.getHost().getHostCancellationPolicy().getId() == 2) {
-                cancellationPolicy = "\nBạn sẽ được hủy phòng miễn phí trong vòng 48h sau khi đặt phòng " +
-                        "thành công và trước 5 ngày so với thời gian check-in.";
-            }
-            if (booking.getHost().getHostCancellationPolicy().getId() == 3) {
-                cancellationPolicy = "\nBạn sẽ được hoàn lại  50% số tiền đã trả khi huỷ phòng trong vòng" +
-                        " 48h sau khi đặt phòng thành công và trước 14 ngày so với thời gian check-in.";
-            }
-
             java.time.LocalDate checkInDate = booking.getCheckInDate();
 
             java.time.LocalDate checkOutDate = booking.getCheckOutDate();
@@ -613,7 +599,6 @@ public class BookingServiceImpl implements BookingService {
                     .append("\nEmail: " + booking.getUser().getEmail())
                     .append("\nPhone: " + booking.getUser().getPhone())
                     .append("\n------------------------------------------------------------------------------------------")
-                    .append(cancellationPolicy)
                     .append("\nHướng dẫn nhận phòng: " + booking.getHost().getCheckInInstructions())
                     .append("\nThời gian check in trong vòng từ " + booking.getHost().getEarliestCheckIn()
                             + " đến " + booking.getHost().getCheckOutTime() + ".")

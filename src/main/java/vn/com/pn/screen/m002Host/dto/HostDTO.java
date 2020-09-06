@@ -18,12 +18,6 @@ public class HostDTO {
 
     private String hostCityId;
 
-    private String hostCancellationPolicyId;
-
-    private String procedureCheckInId;
-
-    private String currencyUnitId;
-
     private Set<String> ruleIds;
 
     private Set<String> languageIds;

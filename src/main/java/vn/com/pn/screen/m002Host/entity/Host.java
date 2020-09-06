@@ -16,9 +16,6 @@ import vn.com.pn.screen.m004HostCity.entity.HostCity;
 import vn.com.pn.screen.m005HostImage.entity.HostImage;
 import vn.com.pn.screen.m006HostCategory.entity.HostCategory;
 import vn.com.pn.screen.m007HostRoomType.entity.HostRoomType;
-import vn.com.pn.screen.m008CurrencyUnit.entity.CurrencyUnit;
-import vn.com.pn.screen.m009HostProcedureCheckIn.entity.ProcedureCheckIn;
-import vn.com.pn.screen.m010HostCancallationPolicy.entity.HostCancellationPolicy;
 import vn.com.pn.screen.m011HostRule.entity.Rule;
 import vn.com.pn.screen.m012Language.entity.Language;
 import vn.com.pn.utils.DateAuditUtil;
@@ -67,24 +64,6 @@ public class Host extends DateAuditUtil {
     @JoinColumn(name = "city_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private HostCity hostCity;
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cancellation_policy_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private HostCancellationPolicy hostCancellationPolicy;
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "procedures_check_in_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private ProcedureCheckIn procedureCheckIn;
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "currency_unit_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private CurrencyUnit currencyUnit;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "hosts_rules",

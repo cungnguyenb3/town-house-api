@@ -28,7 +28,8 @@ public class MomoService {
         dto.setPartnerCode(MomoConstants.PARTNER_CODE);
         dto.setPartnerRefId(request.getOrderId());
         dto.setCustomerNumber(request.getPhoneNumber());
-//        dto.setAppData();
+        dto.setAppData(request.getData());
+
 
         HttpEntity<String> httpEntity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
 //        BaseOutput result = restTemplate.postForObject(testUrl, httpEntity, BaseOutput.class);
@@ -37,4 +38,6 @@ public class MomoService {
         return null;
     }
 
+//    private String hashRequestPayment(String partnerCode, String partnerRefId, String amount, String partnerName,
+//                                      String )
 }
