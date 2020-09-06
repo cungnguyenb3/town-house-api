@@ -5,10 +5,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import vn.com.pn.screen.m007HostRoomType.entity.HostRoomType;
 import vn.com.pn.screen.m006HostCategory.repository.HostCategoryRepository;
 import vn.com.pn.screen.m004HostCity.repository.HostCityRepository;
-import vn.com.pn.screen.m007HostRoomType.repository.HostRoomTypeRepository;
 import vn.com.pn.screen.m011HostRule.entity.Rule;
 import vn.com.pn.screen.m012Language.entity.Language;
 import vn.com.pn.screen.m012Language.repository.LanguageRepository;
@@ -37,9 +35,6 @@ public class DemoInsertData {
 
     @Autowired
     private HostCityRepository hostCityRepository;
-
-    @Autowired
-    private HostRoomTypeRepository hostRoomTypeRepository;
 
     @Autowired
     private LanguageRepository languageRepository;
@@ -111,15 +106,6 @@ public class DemoInsertData {
             HostCity hostCityDemo = new HostCity();
             hostCityDemo.setName("Hà Nội");
             hostCityRepository.save(hostCityDemo);
-        }
-
-        if (hostRoomTypeRepository.checkHostRoomTypeIsEmpty() == null) {
-            HostRoomType hostRoomTypeDemo = new HostRoomType();
-            hostRoomTypeDemo.setName("Nguyên căn");
-            hostRoomTypeDemo.setDescription("Thuê nhà nguyên căn là hình thức thuê cả một căn hộ và được toàn quyền sử dụng căn nhà" +
-                    " đó. Việc thuê nhà nguyên căn phù hợp với gia đình hoặc một nhóm bạn muốn có một môi trường sống" +
-                    " riêng tư theo ý mình.");
-            hostRoomTypeRepository.save(hostRoomTypeDemo);
         }
 
         if (languageRepository.checkLanguageIsEmpty() == null) {

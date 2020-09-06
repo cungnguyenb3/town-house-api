@@ -18,8 +18,6 @@ public class HostUpdateDTO {
 
     private String hostCategoryId;
 
-    private String hostRoomTypeId;
-
     private String hostCityId;
 
     private Set<String> ruleIds;

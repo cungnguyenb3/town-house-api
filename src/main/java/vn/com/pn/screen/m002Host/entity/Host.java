@@ -15,7 +15,6 @@ import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.screen.m004HostCity.entity.HostCity;
 import vn.com.pn.screen.m005HostImage.entity.HostImage;
 import vn.com.pn.screen.m006HostCategory.entity.HostCategory;
-import vn.com.pn.screen.m007HostRoomType.entity.HostRoomType;
 import vn.com.pn.screen.m011HostRule.entity.Rule;
 import vn.com.pn.screen.m012Language.entity.Language;
 import vn.com.pn.utils.DateAuditUtil;
@@ -52,12 +51,6 @@ public class Host extends DateAuditUtil {
     @JoinColumn(name = "category_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private HostCategory hostCategory;
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "host_room_type_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private HostRoomType hostRoomType;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

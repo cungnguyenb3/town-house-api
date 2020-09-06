@@ -28,13 +28,11 @@ import vn.com.pn.screen.m002Host.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.exception.ResourceNotFoundException;
-import vn.com.pn.screen.m007HostRoomType.entity.HostRoomType;
 import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.m002Host.repository.HostRepositoryCustom;
 import vn.com.pn.screen.m006HostCategory.repository.HostCategoryRepository;
 import vn.com.pn.screen.m004HostCity.repository.HostCityRepository;
 import vn.com.pn.screen.m002Host.repository.HostDiscountRepository;
-import vn.com.pn.screen.m007HostRoomType.repository.HostRoomTypeRepository;
 import vn.com.pn.screen.m011HostRule.entity.Rule;
 import vn.com.pn.screen.m012Language.entity.Language;
 import vn.com.pn.screen.m012Language.repository.LanguageRepository;
@@ -59,9 +57,6 @@ public class HostServiceImpl implements HostService {
 
     @Autowired
     private HostCategoryRepository hostCategoryRepository;
-
-    @Autowired
-    private HostRoomTypeRepository hostRoomTypeRepository;
 
     @Autowired
     private HostCityRepository hostCityRepository;
@@ -152,7 +147,6 @@ public class HostServiceImpl implements HostService {
             hostSearchDTO.setAddress(host.getAddress());
             hostSearchDTO.setHostAgentName(host.getUser().getFullName());
             hostSearchDTO.setHostCategoryName(host.getHostCategory().getName());
-            hostSearchDTO.setHostRoomTypeName(host.getHostRoomType().getName());
             hostSearchDTO.setStandardPriceMondayToThursday(host.getStandardPriceMondayToThursday());
             hostSearchDTO.setStandardPriceFridayToSunday(host.getStandardPriceFridayToSunday());
             hostSearchDTO.setAcreage(host.getAcreage());
@@ -290,12 +284,6 @@ public class HostServiceImpl implements HostService {
                     Long.parseLong(hostUpdateDTO.getHostCategoryId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCategory", "id", hostUpdateDTO.getHostCategoryId()));
             host.setHostCategory(hostCategory);
-        }
-        if (hostUpdateDTO.getHostRoomTypeId() != null && hostUpdateDTO.getHostRoomTypeId() != "") {
-            HostRoomType hostRoomType = hostRoomTypeRepository.findById(
-                    Long.parseLong(hostUpdateDTO.getHostRoomTypeId())).orElseThrow(()
-                    -> new ResourceNotFoundException("HostRoomType", "id", hostUpdateDTO.getHostRoomTypeId()));
-            host.setHostRoomType(hostRoomType);
         }
         if (hostUpdateDTO.getHostCityId() != null && hostUpdateDTO.getHostCityId() != "") {
             HostCity hostCity = hostCityRepository.findById(
@@ -849,12 +837,6 @@ public class HostServiceImpl implements HostService {
                     Long.parseLong(hostDTO.getHostCategoryId())).orElseThrow(()
                     -> new ResourceNotFoundException("HostCategory", "id", hostDTO.getHostCategoryId()));
             host.setHostCategory(hostCategory);
-        }
-        if (hostDTO.getHostRoomTypeId() != null && hostDTO.getHostRoomTypeId() != "") {
-            HostRoomType hostRoomType = hostRoomTypeRepository.findById(
-                    Long.parseLong(hostDTO.getHostRoomTypeId())).orElseThrow(()
-                    -> new ResourceNotFoundException("HostRoomType", "id", hostDTO.getHostRoomTypeId()));
-            host.setHostRoomType(hostRoomType);
         }
         if (hostDTO.getHostCityId() != null && hostDTO.getHostCityId() != "") {
             HostCity hostCity = hostCityRepository.findById(
