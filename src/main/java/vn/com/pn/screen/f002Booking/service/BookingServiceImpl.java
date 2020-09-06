@@ -63,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
                 if (startDate.isAfter(currentDate) || startDate.isEqual(currentDate)) {
                     if (bookingCalculatePriceDTO.getHostId() != null && bookingCalculatePriceDTO.getHostId().trim().length() != 0) {
                         Host host = hostRepository.findById(Long.parseLong(bookingCalculatePriceDTO.getHostId())).orElseThrow(()
-                                -> new ResourceNotFoundException("User", "id", bookingCalculatePriceDTO.getHostId()));
+                                -> new ResourceNotFoundException("Host", "id", bookingCalculatePriceDTO.getHostId()));
                         if (host != null) {
                             if (host.isAddChildrenAndInfantIntoMaximumGuest() && host.getNumberOfInfantGuest() != 0) {
                                 calculatePriceResult.setNumberOfInfantGuest(Integer.parseInt(bookingCalculatePriceDTO.getNumberOfInfantGuest()));

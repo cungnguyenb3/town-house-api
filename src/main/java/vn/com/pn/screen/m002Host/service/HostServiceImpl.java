@@ -889,9 +889,14 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getStandardPriceFridayToSunday() != null && hostDTO.getStandardPriceFridayToSunday() != "") {
             host.setStandardPriceFridayToSunday(Long.parseLong(hostDTO.getStandardPriceFridayToSunday()));
+        } else {
+            host.setStandardPriceFridayToSunday(host.getStandardPriceMondayToThursday());
         }
         if (hostDTO.getCleaningCosts() != null && hostDTO.getCleaningCosts() != "") {
             host.setCleaningCosts(Long.parseLong(hostDTO.getCleaningCosts()));
+        }
+        else {
+            host.setCleaningCosts(0l);
         }
         if (hostDTO.getAdultCostsIncrease() != null && hostDTO.getAdultCostsIncrease() != "") {
             host.setAdultCostsIncrease(Long.parseLong(hostDTO.getAdultCostsIncrease()));
@@ -901,6 +906,8 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getServiceChargePercent() != null && hostDTO.getServiceChargePercent() != "") {
             host.setServiceChargePercent(Byte.parseByte(hostDTO.getServiceChargePercent()));
+        } else {
+            host.setServiceChargePercent((byte) 0);
         }
         if (hostDTO.getWeeklyDiscount() != null && hostDTO.getWeeklyDiscount() != "") {
             host.setWeeklyDiscount(Short.parseShort(hostDTO.getWeeklyDiscount()));
@@ -936,6 +943,8 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getNumberOfInfantGuest() != null && hostDTO.getNumberOfInfantGuest() != "") {
             host.setNumberOfInfantGuest(Integer.parseInt(hostDTO.getNumberOfInfantGuest()));
+        } else {
+            host.setNumberOfInfantGuest(0);
         }
         if (hostDTO.getIsAddChildrenAndInfantIntoMaximumGuest() != null
                 && hostDTO.getIsAddChildrenAndInfantIntoMaximumGuest() != "") {
@@ -945,6 +954,8 @@ public class HostServiceImpl implements HostService {
             if (hostDTO.getIsAddChildrenAndInfantIntoMaximumGuest().equals("1")) {
                 host.setAddChildrenAndInfantIntoMaximumGuest(true);
             }
+        } else {
+            host.setAddChildrenAndInfantIntoMaximumGuest(false);
         }
         if (hostDTO.getNumberOfMinimumNight() != null && hostDTO.getNumberOfMinimumNight() != "") {
             host.setNumberOfMinimumNight(Integer.parseInt(hostDTO.getNumberOfMinimumNight()));
