@@ -74,7 +74,7 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
-    @ApiOperation(value = "Confirm  booking request", response = BaseOutput.class)
+    @ApiOperation(value = "Accept booking for host agent", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CONFIRM_REQUEST, method = RequestMethod.PUT)
     public ResponseEntity<?> confirmBookingRequest(@Valid @PathVariable String bookingId) {
         logger.info("========== BookingController.confirmBookingRequest START ==========");
@@ -88,7 +88,7 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
-    @ApiOperation(value = "Booking request successful", response = BaseOutput.class)
+    @ApiOperation(value = "Set booking is paid or not", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_BOOKING_REQUEST_SUCCESS, method = RequestMethod.PUT)
     public ResponseEntity<?> bookingRequestSuccess(@Valid @PathVariable String bookingId) {
         logger.info("========== BookingController.bookingRequestSuccess START ==========");
@@ -130,10 +130,20 @@ public class BookingController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
-    @ApiOperation(value = "Api get booking by user", response = BaseOutput.class)
-    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_USER, method = RequestMethod.GET)
-    public ResponseEntity<?> getBookingByUser() {
+    @ApiOperation(value = "Api get booking by user for calendar", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_USER_CALENDER, method = RequestMethod.GET)
+    public ResponseEntity<?> getBookingCalendarByUser() {
         User userLogin = authService.getLoggedUser();
         return bookingService.getBookingByCurrentDateAndUser(userLogin.getId());
     }
+
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+//                    required = true, dataType = "string", paramType = "header")})
+//    @ApiOperation(value = "Api get all booking by user user agent", response = BaseOutput.class)
+//    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_USER, method = RequestMethod.GET)
+//    public ResponseEntity<?> getAllBookingByHostAgent() {
+//        User userLogin = authService.getLoggedUser();
+//        return bookingService.getBookingByCurrentDateAndUser(userLogin.getId());
+//    }
 }

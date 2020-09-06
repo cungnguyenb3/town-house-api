@@ -877,13 +877,17 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getBedroomCount() != null && hostDTO.getBedroomCount() != "") {
             host.setBedroomCount(Integer.parseInt(hostDTO.getBedroomCount()));
+        } else {
+            host.setBedroomCount(0);
         }
         if (hostDTO.getBed() != null && hostDTO.getBed() != "") {
             host.setBed(Integer.parseInt(hostDTO.getBed()));
+        } else {
+            host.setBed(0);
         }
         if (hostDTO.getBathroomCount() != null && hostDTO.getBathroomCount() != "") {
             host.setBathroomCount(Integer.parseInt(hostDTO.getBathroomCount()));
-        }
+        } host.setBathroomCount(0);
         if (hostDTO.getStandardPriceMondayToThursday() != null && hostDTO.getStandardPriceMondayToThursday() != "") {
             host.setStandardPriceMondayToThursday(Long.parseLong(hostDTO.getStandardPriceMondayToThursday()));
         }
@@ -900,9 +904,13 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getAdultCostsIncrease() != null && hostDTO.getAdultCostsIncrease() != "") {
             host.setAdultCostsIncrease(Long.parseLong(hostDTO.getAdultCostsIncrease()));
+        } else {
+            host.setAdultCostsIncrease(0l);
         }
         if (hostDTO.getChildrenCostsIncrease() != null && hostDTO.getChildrenCostsIncrease() != "") {
             host.setChildrenCostsIncrease(Long.parseLong(hostDTO.getChildrenCostsIncrease()));
+        } else {
+            host.setChildrenCostsIncrease(0l);
         }
         if (hostDTO.getServiceChargePercent() != null && hostDTO.getServiceChargePercent() != "") {
             host.setServiceChargePercent(Byte.parseByte(hostDTO.getServiceChargePercent()));
@@ -911,15 +919,18 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getWeeklyDiscount() != null && hostDTO.getWeeklyDiscount() != "") {
             host.setWeeklyDiscount(Short.parseShort(hostDTO.getWeeklyDiscount()));
+        } else {
+            host.setWeeklyDiscount((short) 0);
         }
         if (hostDTO.getMonthlyDiscount() != null && hostDTO.getMonthlyDiscount() != "") {
             host.setMonthlyDiscount(Short.parseShort(hostDTO.getMonthlyDiscount()));
+        } else {
+            host.setMonthlyDiscount((short) 0);
         }
         if (hostDTO.getEarlyBirdDiscount() != null && hostDTO.getEarlyBirdDiscount() != "") {
             host.setEarlyBirdDiscount(Short.parseShort(hostDTO.getEarlyBirdDiscount()));
-        }
-        if (hostDTO.getDaysPriorToBooking() != null && hostDTO.getDaysPriorToBooking() != "") {
-            host.setDaysPriorToBooking(Short.parseShort(hostDTO.getDaysPriorToBooking()));
+        } else {
+            host.setEarlyBirdDiscount((short) 0);
         }
         if (hostDTO.getDaysPriorToBooking() != null && hostDTO.getDaysPriorToBooking() != "") {
             host.setDaysPriorToBooking(Short.parseShort(hostDTO.getDaysPriorToBooking()));
@@ -940,6 +951,8 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getNumberOfChildrenGuest() != null && hostDTO.getNumberOfChildrenGuest() != "") {
             host.setNumberOfChildrenGuest(Integer.parseInt(hostDTO.getNumberOfChildrenGuest()));
+        } else {
+            host.setNumberOfChildrenGuest(0);
         }
         if (hostDTO.getNumberOfInfantGuest() != null && hostDTO.getNumberOfInfantGuest() != "") {
             host.setNumberOfInfantGuest(Integer.parseInt(hostDTO.getNumberOfInfantGuest()));

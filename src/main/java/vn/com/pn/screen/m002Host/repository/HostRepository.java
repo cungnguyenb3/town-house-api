@@ -20,7 +20,7 @@ public interface HostRepository extends JpaRepository<Host, Long>,
             nativeQuery = true)
     Page<Host> findByHostCityId(@Param("city_id") Long hostCity, Pageable pageable);
 
-    @Query(value = "SELECT * FROM hosts WHERE status = true",
+    @Query(value = "SELECT * FROM hosts WHERE status = true ORDER BY created_at DESC",
             nativeQuery = true)
     Page<Host> getAllHost(Pageable pageable);
 

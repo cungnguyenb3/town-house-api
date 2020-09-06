@@ -74,8 +74,9 @@ public class CommonConstants {
         String BOOKING_CANCEL = "/bookings-cancel/{id}";
         String BOOKING_CALCULATE_PRICE = "/bookings-calculate-price";
         String BOOKING_CONFIRM_REQUEST = "/bookings-confirm-request/{bookingId}";
-        String BOOKING_ID = "/booking/{id}";
-        String BOOKING_USER = "/booking/users";
+        String BOOKING_ID = "/bookings/{id}";
+        String BOOKING_USER_CALENDER = "/bookings/users/calendar";
+        String BOOKING_USER = "/bookings/users";
 
         // Host review controller
         String HOST_REVIEW_ROOT = "/host-reviews";
