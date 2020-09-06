@@ -69,24 +69,13 @@ public class HostController {
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Add a host", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_ROOT, method = RequestMethod.POST)
-    public BaseOutput insert(HostRequest request, @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+    public BaseOutput insert(@RequestBody HostRequest request) throws IOException {
         logger.info("========== HostController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         User userLogin = authService.getLoggedUser();
         HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
-
         Host host = hostService.insert(hostDTO, userLogin);
-
         BaseOutput response = new BaseOutput();
-
-        if (file != null) {
-            File fileInput = driveService.uploadFile(file.getContentType(),
-                    file.getName(), file.getBytes());
-            HostImageDTO hostImageDTO = new HostImageDTO(file.getName(), fileInput.getSize().toString(),
-                    fileInput.getMimeType(), fileInput.getWebContentLink(), fileInput.getWebViewLink(), host.getId().toString());
-
-            response = hostImageService.storeFile(hostImageDTO);
-        }
 
         response.setData(host);
         logger.info("========== HostController.insert END ==========");

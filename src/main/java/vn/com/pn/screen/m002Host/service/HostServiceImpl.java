@@ -1007,9 +1007,11 @@ public class HostServiceImpl implements HostService {
         if (hostDTO.getNumberOfStandardGuest() != null && hostDTO.getNumberOfStandardGuest() != "") {
             host.setNumberOfStandardGuest(Integer.parseInt(hostDTO.getNumberOfStandardGuest()));
         }
-        if (hostDTO.getNumberOfMaximumGuest() != null && hostDTO.getNumberOfMaximumGuest() != "") {
-            host.setNumberOfMaximumGuest(Integer.parseInt(hostDTO.getNumberOfMaximumGuest()));
+        if (hostDTO.getNumberOfMaximumGuest() == null && hostDTO.getNumberOfMaximumGuest() == "") {
+            throw new ResourceInvalidInputException("Number of maximum guest must not blank");
         }
+        host.setNumberOfMaximumGuest(Integer.parseInt(hostDTO.getNumberOfMaximumGuest()));
+
         if (hostDTO.getNumberOfAdultGuest() != null && hostDTO.getNumberOfAdultGuest() != "") {
             host.setNumberOfAdultGuest(Integer.parseInt(hostDTO.getNumberOfAdultGuest()));
         }
