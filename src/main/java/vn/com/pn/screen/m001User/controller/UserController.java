@@ -54,6 +54,9 @@ public class UserController {
     @Autowired
     private JwtUserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @ApiOperation(value = "View a list users", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ROOT, method = RequestMethod.GET)
     public BaseOutput getAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -85,7 +88,7 @@ public class UserController {
     public BaseOutput delete(@Valid @PathVariable String id) {
         logger.info("========== UserController.delete START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(id));
-        User userLogin = authService.getLoggedUser();
+        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
         BaseOutput response = userService.delete(id, userLogin);
         logger.info("========== UserController.delete END ==========");
         return response;
@@ -150,7 +153,7 @@ public class UserController {
         logger.info("========== UserController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         UserUpdateDTO userUpdateDTO = MapperUtil.mapper(request, UserUpdateDTO.class);
-        User userLogin = authService.getLoggedUser();
+        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
         BaseOutput response = userService.update(userLogin, userUpdateDTO);
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== UserController.update END ==========");

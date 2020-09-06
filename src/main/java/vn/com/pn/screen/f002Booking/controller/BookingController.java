@@ -19,6 +19,7 @@ import vn.com.pn.screen.f002Booking.dto.BookingDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.screen.m001User.controller.UserController;
+import vn.com.pn.screen.m001User.repository.UserRepository;
 import vn.com.pn.security.AuthService;
 import vn.com.pn.screen.f002Booking.service.BookingService;
 import vn.com.pn.utils.MapperUtil;
@@ -36,6 +37,9 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @ApiOperation(value = "View a list bookings", response = BaseOutput.class)
     @ApiImplicitParams({
@@ -59,7 +63,7 @@ public class BookingController {
     public BaseOutput insert(@Valid @RequestBody BookingRequest request) {
         logger.info("========== BookingController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        User userLogin = authService.getLoggedUser();
+        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
         BookingDTO bookingDTO = MapperUtil.mapper(request, BookingDTO.class);
         BaseOutput response = bookingService.insert(bookingDTO, userLogin);
         logger.info(CommonFunction.convertToJSONStringResponse(response));

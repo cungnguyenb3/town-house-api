@@ -17,6 +17,7 @@ import vn.com.pn.screen.f003Review.dto.HostReviewDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.screen.m001User.controller.UserController;
+import vn.com.pn.screen.m001User.repository.UserRepository;
 import vn.com.pn.security.AuthService;
 import vn.com.pn.screen.f003Review.service.HostReviewService;
 import vn.com.pn.utils.MapperUtil;
@@ -34,6 +35,9 @@ public class HostReviewController {
 
     @Autowired
     private HostReviewService hostReviewService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @ApiOperation(value = "View a list host reviews", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_REVIEW_ROOT, method = RequestMethod.GET)
@@ -56,7 +60,7 @@ public class HostReviewController {
         if (bindingResult.hasErrors()) {
             return CommonFunction.errorValidateItem(bindingResult);
         }
-        User userLogin = authService.getLoggedUser();
+        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
         HostReviewDTO hostReviewDTO = MapperUtil.mapper(request, HostReviewDTO.class);
         BaseOutput response = hostReviewService.insert(hostReviewDTO, userLogin);
         logger.info(CommonFunction.convertToJSONStringResponse(response));

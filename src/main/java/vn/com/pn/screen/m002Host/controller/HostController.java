@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.com.pn.screen.f004GoogleDrive.service.GoogleDriveService;
+import vn.com.pn.screen.m001User.repository.UserRepository;
 import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m002Host.request.HostDiscountRequest;
 import vn.com.pn.screen.m002Host.request.HostRequest;
@@ -50,6 +51,9 @@ public class HostController {
     private HostImageService hostImageService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private AuthService authService;
 
     @ApiOperation(value = "View a list hosts", response = BaseOutput.class)
@@ -72,7 +76,7 @@ public class HostController {
     public BaseOutput insert(@RequestBody HostRequest request) throws IOException {
         logger.info("========== HostController.insert START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
-        User userLogin = authService.getLoggedUser();
+        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
         HostDTO hostDTO = MapperUtil.mapper(request, HostDTO.class);
         Host host = hostService.insert(hostDTO, userLogin);
         BaseOutput response = new BaseOutput();

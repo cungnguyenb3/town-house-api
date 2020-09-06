@@ -89,5 +89,7 @@ public class CommonConstants {
         String HOST_IMAGE_FILE_ID = "/host-images/{id}";
         String HOST_IMAGE_GET_ALL_FILE = "/host-images";
 
+        // Momo
+        String MOMO_BASIC_INFO = "/momo/basic-info";
     }
 }
