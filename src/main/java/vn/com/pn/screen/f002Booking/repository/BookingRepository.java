@@ -18,6 +18,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getBookingByCurrentDateAndUser(Long userId);
 
     @Query(value = "SELECT * FROM bookings INNER JOIN hosts ON hosts.id = bookings.host_id" +
-            " AND hosts.agent_id = ?1", nativeQuery = true)
+            " AND hosts.agent_id = ?1 order by bookings.created_at DESC", nativeQuery = true)
     List<Booking> getBookingByAgentId(Long userId);
 }

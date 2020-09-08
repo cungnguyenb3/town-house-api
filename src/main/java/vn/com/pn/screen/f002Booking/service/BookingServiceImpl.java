@@ -23,8 +23,10 @@ import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.f002Booking.repository.BookingRepository;
 import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.f005Gmail.service.MailService;
+import vn.com.pn.utils.MapperUtil;
 import vn.com.pn.utils.RandomStringUtil;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -696,6 +698,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BaseOutput getAllBookingFromAgent(long userId) {
         List<Booking> bookingList = bookingRepository.getBookingByAgentId(userId);
-        return CommonFunction.successOutput(bookingList);
+        List<BookingResDTO> bookingResDTOS = new ArrayList<>();
+        for (Booking booking : bookingList) {
+            BookingResDTO bookingResDTO = MapperUtil.mapper(booking, BookingResDTO.class);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            bookingResDTO.setCreateDate(formatter.format(booking.getCreatedAt()));
+            bookingResDTOS.add(bookingResDTO);
+        }
+        return CommonFunction.successOutput(bookingResDTOS);
     }
 }
