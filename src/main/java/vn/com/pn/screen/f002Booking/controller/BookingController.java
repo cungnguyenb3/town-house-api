@@ -137,13 +137,13 @@ public class BookingController {
         return bookingService.getBookingByCurrentDateAndUser(userLogin.getId());
     }
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-//                    required = true, dataType = "string", paramType = "header")})
-//    @ApiOperation(value = "Api get all booking by user user agent", response = BaseOutput.class)
-//    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_USER, method = RequestMethod.GET)
-//    public ResponseEntity<?> getAllBookingByHostAgent() {
-//        User userLogin = authService.getLoggedUser();
-//        return bookingService.getBookingByCurrentDateAndUser(userLogin.getId());
-//    }
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Api get all booking by user user agent", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_USER, method = RequestMethod.GET)
+    public ResponseEntity<?> getAllBookingByHostAgent() {
+        User userLogin = authService.getLoggedUser();
+        return bookingService.getBookingByCurrentDateAndUser(userLogin.getId());
+    }
 }

@@ -10,6 +10,6 @@ public class MomoBasicInfoRequest {
     private String message;
     private String data;
     private String phoneNumber;
-    private String bookingId;
+    private String bookingCode;
     private String amount;
 }

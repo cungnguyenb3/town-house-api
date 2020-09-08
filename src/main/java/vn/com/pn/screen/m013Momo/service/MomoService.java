@@ -33,7 +33,7 @@ public class MomoService {
 
         RequestPaymentDTO dto = new RequestPaymentDTO();
         dto.setPartnerCode(MomoConstants.PARTNER_CODE);
-        dto.setPartnerRefId(request.getBookingId());
+        dto.setPartnerRefId(request.getBookingCode());
         dto.setCustomerNumber(request.getPhoneNumber());
         dto.setAppData(request.getData());
 

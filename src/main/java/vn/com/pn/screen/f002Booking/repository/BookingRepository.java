@@ -16,4 +16,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             " OR DATE(bookings.check_out_date) = CURRENT_DATE OR DATE(bookings.check_out_date) > CURRENT_DATE" +
             " AND hosts.agent_id = ?1", nativeQuery = true)
     List<Booking> getBookingByCurrentDateAndUser(Long userId);
+
+    @Query(value = "SELECT * FROM bookings INNER JOIN hosts ON hosts.id = bookings.host_id" +
+            " AND hosts.agent_id = ?1", nativeQuery = true)
+    List<Booking> getBookingByAgentId(Long userId);
 }
