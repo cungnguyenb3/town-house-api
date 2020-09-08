@@ -37,6 +37,7 @@ public class Parameter {
     public static String MOMO_TRANS_ID = "momoTransId";
     public static String PAYMENT_CODE = "paymentCode";
     public static String DATE = "responseTime";
+    public static String RESPONSE_TIME = "responseTime";
 
     public static Double VERSION = 2.0;
     public static Integer APP_PAY_TYPE = 3;
