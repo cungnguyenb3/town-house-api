@@ -466,7 +466,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     private User changePassword(User user, String newPassword) {
         user.setPassword(encoder.encode(newPassword));
         return user;

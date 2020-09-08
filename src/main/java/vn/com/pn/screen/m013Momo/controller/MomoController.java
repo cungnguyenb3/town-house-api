@@ -25,8 +25,7 @@ public class MomoController {
 
     @RequestMapping(value = CommonConstants.API_URL_CONST.MOMO_BASIC_INFO, method = RequestMethod.POST)
     public ResponseEntity<?> getBasicInfo(@RequestBody MomoBasicInfoRequest request) throws JsonProcessingException {
-        momoService.sendRequestPayment(request);
-        return ResponseEntity.ok("OK");
+        return momoService.sendRequestPayment(request);
     }
 
     @RequestMapping(value = CommonConstants.API_URL_CONST.MOMO_GET_BASIC_INFO, method = RequestMethod.GET)

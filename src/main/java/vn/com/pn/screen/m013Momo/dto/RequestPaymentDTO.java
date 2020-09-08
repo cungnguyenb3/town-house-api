@@ -13,7 +13,7 @@ public class RequestPaymentDTO {
     private String appData;
     private String hash;
     private Double version;
-    private String payType;
+    private Integer payType;
     private String description;
     private Json extra_data;
 }
