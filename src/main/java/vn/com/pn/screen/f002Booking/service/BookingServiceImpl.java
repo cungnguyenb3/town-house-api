@@ -693,8 +693,9 @@ public class BookingServiceImpl implements BookingService {
         return ResponseEntity.ok(bookingResult);
     }
 
-    public BaseOutput getAllBookingFromAgent(Long userId) {
-
-        return null;
+    @Override
+    public BaseOutput getAllBookingFromAgent(long userId) {
+        List<Booking> bookingList = bookingRepository.getBookingByAgentId(userId);
+        return CommonFunction.successOutput(bookingList);
     }
 }

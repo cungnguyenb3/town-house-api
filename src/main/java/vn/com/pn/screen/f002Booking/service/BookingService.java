@@ -20,4 +20,6 @@ public interface BookingService {
     BaseOutput getBookingById(long id);
 
     ResponseEntity<?> getBookingByCurrentDateAndUser(Long userId);
+
+    BaseOutput getAllBookingFromAgent(long userId);
 }

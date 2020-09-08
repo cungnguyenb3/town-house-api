@@ -17,6 +17,8 @@ import vn.com.pn.screen.m013Momo.repository.MomoBasicRequestRepository;
 import vn.com.pn.screen.m013Momo.request.MomoBasicInfoRequest;
 import vn.com.pn.utils.MapperUtil;
 
+import javax.persistence.Lob;
+
 @Service
 public class MomoService {
 
@@ -45,5 +47,4 @@ public class MomoService {
     public BaseOutput getAllMomoBasicRequest() {
         return CommonFunction.successOutput(momoBasicRequestRepository.findAll());
     }
-
 }
