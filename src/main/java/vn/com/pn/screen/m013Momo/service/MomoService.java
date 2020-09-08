@@ -3,6 +3,8 @@ package vn.com.pn.screen.m013Momo.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +15,7 @@ import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.m013Momo.common.MomoConstants;
 import vn.com.pn.screen.m013Momo.common.Parameter;
+import vn.com.pn.screen.m013Momo.controller.MomoController;
 import vn.com.pn.screen.m013Momo.dto.RequestPaymentDTO;
 import vn.com.pn.screen.m013Momo.entity.MomoBasicRequest;
 import vn.com.pn.screen.m013Momo.repository.MomoBasicRequestRepository;
@@ -27,6 +30,7 @@ import java.util.Map;
 
 @Service
 public class MomoService {
+    private static Log logger = LogFactory.getLog(MomoService.class);
 
     @Autowired
     private MomoBasicRequestRepository momoBasicRequestRepository;
@@ -48,7 +52,10 @@ public class MomoService {
         dto.setVersion(MomoConstants.VERSION);
         dto.setPayType(3);
 
-        LogUtils.info(dto);
+        Gson gson = new Gson();
+        String jsonStr = gson.toJson(dto);
+
+        logger.info(jsonStr);
         momoBasicRequestRepository.save(MapperUtil.mapper(request, MomoBasicRequest.class));
 
 //        HttpEntity<String> httpEntity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
