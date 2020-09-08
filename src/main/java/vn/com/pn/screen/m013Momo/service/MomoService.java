@@ -54,13 +54,12 @@ public class MomoService {
         dto.setVersion(MomoConstants.VERSION);
         dto.setPayType(3);
 
-        Gson gson = new Gson();
-        String jsonStr = gson.toJson(dto);
-
-        logger.info(jsonStr);
+        logger.info(dto.toString());
         momoBasicRequestRepository.save(MapperUtil.mapper(request, MomoBasicRequest.class));
 
-//        HttpEntity<String> httpEntity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
+        HttpEntity<String> httpEntity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
+        String result = restTemplate.postForObject(MomoConstants.MOMO_SANDBOX_DOMAIN + "/pay/app", httpEntity, String.class);
+        logger.info(result);
         return ResponseEntity.ok(dto);
     }
 
