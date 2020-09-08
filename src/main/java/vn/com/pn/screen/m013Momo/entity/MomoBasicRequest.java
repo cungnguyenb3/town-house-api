@@ -17,6 +17,7 @@ public class MomoBasicRequest {
     private String message;
     @Lob
     private String data;
+    private String description;
     private String phoneNumber;
     private String bookingCode;
     private String amount;

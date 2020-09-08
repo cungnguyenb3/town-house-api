@@ -48,7 +48,9 @@ public class MomoService {
         dto.setPartnerRefId(request.getBookingCode());
         dto.setCustomerNumber(request.getPhoneNumber());
         dto.setAppData(request.getData());
-        dto.setHash(hashRsaJsonString(request.getBookingCode(), request.getAmount(), null, null, null));
+        dto.setDescription(request.getDescription());
+        dto.setHash(hashRsaJsonString(request.getBookingCode(), request.getAmount(), request.getDescription(),
+                null, null, null));
         dto.setVersion(MomoConstants.VERSION);
         dto.setPayType(3);
 
@@ -66,7 +68,7 @@ public class MomoService {
         return CommonFunction.successOutput(momoBasicRequestRepository.findAll());
     }
 
-    private String hashRsaJsonString(String partnerRefId, String amount,
+    private String hashRsaJsonString(String partnerRefId, String amount, String description,
                      String partnerTransId, String storeId, String storeName) {
         try {
             Map<String, Object> rawData = new HashMap<>();
@@ -74,6 +76,7 @@ public class MomoService {
             rawData.put(Parameter.PARTNER_REF_ID, partnerRefId);
             rawData.put(Parameter.AMOUNT, amount);
             rawData.put(Parameter.PARTNER_NAME, MomoConstants.PARTNER_NAME);
+            rawData.put(Parameter.DESCRIPTION, description);
             if (partnerTransId != null && !partnerTransId.isEmpty()) {
                 rawData.put(Parameter.PARTNER_TRANS_ID, partnerTransId);
             }

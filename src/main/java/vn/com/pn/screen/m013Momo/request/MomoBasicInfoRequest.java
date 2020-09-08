@@ -12,4 +12,5 @@ public class MomoBasicInfoRequest {
     private String phoneNumber;
     private String bookingCode;
     private String amount;
+    private String description;
 }
