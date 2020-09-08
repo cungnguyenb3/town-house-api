@@ -115,12 +115,14 @@ public class LoginController {
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ME, method = RequestMethod.GET)
     public ResponseEntity<?> getUserViaToken() {
         logger.info("========== LoginController.getUserViaToken START ==========");
-        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
-        if (userLogin == null) {
+        if (authService.getLoggedUser() == null) {
             throw new ResourceUnauthorizedException("Token nhập vào đã hết hạn hoặc không chính xác!");
         }
-        logger.info("========== LoginController.getUserViaToken START ==========");
-        return ResponseEntity.ok().body(userLogin);
+        else {
+            User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
+            return ResponseEntity.ok().body(userLogin);
+        }
+
     }
 
     @ApiOperation(value = "Logout user account", response = BaseOutput.class)
