@@ -3,10 +3,7 @@ package vn.com.pn.screen.m013Momo.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,6 +15,7 @@ public class MomoBasicRequest {
 
     private String status;
     private String message;
+    @Lob
     private String data;
     private String phoneNumber;
     private String bookingCode;
