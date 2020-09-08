@@ -70,10 +70,10 @@ public class MomoService {
         momoBasicRequestRepository.save(MapperUtil.mapper(request, MomoBasicRequest.class));
 
         HttpEntity<String> httpEntity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
-        MomoFirstResponse result = restTemplate.postForObject(MomoConstants.MOMO_SANDBOX_DOMAIN + "/pay/app", httpEntity, MomoFirstResponse.class);
+        String result = restTemplate.postForObject(MomoConstants.MOMO_SANDBOX_DOMAIN + "/pay/app", httpEntity, String.class);
         logger.info(result);
-        momoFirstResponseRepository.save(result);
-        return ResponseEntity.ok(result);
+//        momoFirstResponseRepository.save(result);
+        return ResponseEntity.ok("Request successfully");
     }
 
     public BaseOutput getAllMomoBasicRequest() {
