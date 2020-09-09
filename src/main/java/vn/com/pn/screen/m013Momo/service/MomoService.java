@@ -121,7 +121,6 @@ public class MomoService {
                 "&" + Parameter.AMOUNT + "=" + request.getAmount() +
                 "&" + Parameter.MESSAGE + "=" + request.getMessage() +
                 "&" + Parameter.MOMO_TRANS_ID + "=" + request.getMomoTransId() +
-                "&" + Parameter.PARTNER_TRANS_ID + "=" + request.getPartnerTransId() +
                 "&" + Parameter.PARTNER_CODE + "=" + request.getPartnerCode() +
                 "&" + Parameter.PARTNER_REF_ID + "=" + request.getPartnerRefId() +
                 "&" + Parameter.PARTNER_TRANS_ID + "=" + request.getPartnerTransId() +
