@@ -9,15 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.exception.MoMoException;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.repository.BookingRepository;
 import vn.com.pn.screen.m013Momo.common.MomoConstants;
 import vn.com.pn.screen.m013Momo.common.Parameter;
+import vn.com.pn.screen.m013Momo.dto.MomoConfirmDTO;
 import vn.com.pn.screen.m013Momo.dto.MomoIPNResponseDTO;
 import vn.com.pn.screen.m013Momo.dto.RequestPaymentDTO;
 import vn.com.pn.screen.m013Momo.entity.MomoBasicRequest;
@@ -34,6 +37,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +53,9 @@ public class MomoService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private ScheduledConfig scheduledConfig;
 
     public ResponseEntity<?> sendRequestPayment(MomoBasicInfoRequest request) throws JsonProcessingException {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -161,9 +168,51 @@ public class MomoService {
                     "&" + Parameter.STATUS + "=" + momoIPNResponseDTO.getStatus();
             String signatureResponse = Encoder.signHmacSHA256(rawDateResponse, MomoConstants.SECRET_KEY);
             momoIPNResponseDTO.setSignature(signatureResponse);
+
+            sendConfirmRequest(request.getPartnerCode(), request.getPartnerRefId(), request.getMomoTransId());
             return momoIPNResponseDTO;
         } else {
             throw new MoMoException("Wrong signature from MoMo side - please contact with us");
         }
+    }
+
+    private void sendConfirmRequest(String partnerCode, String partnerRefId, String momoTransId){
+        logger.info("MomoService.sendConfirmRequest");
+        Runnable runnable = () -> {
+            logger.info("sendConfirmRequest.runnable");
+            String requestType = "capture";
+            String requestId = String.valueOf(System.currentTimeMillis());
+
+            MomoConfirmDTO momoConfirmDTO = new MomoConfirmDTO();
+            momoConfirmDTO.setPartnerCode(partnerCode);
+            momoConfirmDTO.setPartnerRefId(partnerRefId);
+            momoConfirmDTO.setRequestType(requestType);
+            momoConfirmDTO.setRequestId(requestId);
+            momoConfirmDTO.setMomoTransId(momoTransId);
+
+            try {
+                String rawData = Parameter.PARTNER_CODE + "=" + partnerCode +
+                        "&" + Parameter.PARTNER_REF_ID + "=" + partnerRefId +
+                        "&" + Parameter.REQUEST_TYPE + "=" + requestType +
+                        "&" + Parameter.REQUEST_ID + "=" + requestId +
+                        "&" + Parameter.MOMO_TRANS_ID + "=" + momoTransId;
+
+                String signature = Encoder.signHmacSHA256(rawData, MomoConstants.SECRET_KEY);
+                momoConfirmDTO.setSignature(signature);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            logger.info(momoConfirmDTO);
+        };
+
+        LocalDateTime now = LocalDateTime.now();
+        now.plusSeconds(5);
+
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(now, runnable);
+        scheduledConfig.configureTasks(setUpCronTask);
     }
 }
