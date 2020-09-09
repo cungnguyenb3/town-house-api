@@ -114,7 +114,7 @@ public class MomoService {
     }
 
     public MomoIPNResponseDTO validateIPN(MomoIpnPaymentRequest request) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, MoMoException {
-
+        logger.info("MomoService.validateIPN");
         String rawData =
                       Parameter.ACCESS_KEY + "=" + request.getAccessKey() +
                 "&" + Parameter.AMOUNT + "=" + request.getAmount() +
@@ -131,10 +131,10 @@ public class MomoService {
 
         String signature = Encoder.signHmacSHA256(rawData, MomoConstants.SECRET_KEY);
 
-        MomoFirstResponse momoFirstResponse = momoFirstResponseRepository.findByTransid(request.getMomoTransId()).orElseThrow(
-                () ->   new ResourceNotFoundException("TranId", "id", request.getMomoTransId()));
+//        MomoFirstResponse momoFirstResponse = momoFirstResponseRepository.findByTransid(request.getMomoTransId()).orElseThrow(
+//                () ->   new ResourceNotFoundException("TranId", "id", request.getMomoTransId()));
 
-        if (signature.equals(momoFirstResponse.getSignature())) {
+        if (signature.equals(request.getSignature())) {
             MomoIPNResponseDTO momoIPNResponseDTO = new MomoIPNResponseDTO();
             momoIPNResponseDTO.setStatus(request.getStatus());
             momoIPNResponseDTO.setMessage(request.getMessage());
@@ -143,7 +143,6 @@ public class MomoService {
             momoIPNResponseDTO.setMomoTransId(request.getMomoTransId());
             momoIPNResponseDTO.setSignature(signature);
             return momoIPNResponseDTO;
-
         } else {
             throw new MoMoException("Wrong signature from MoMo side - please contact with us");
         }
