@@ -15,4 +15,18 @@ public class RequestPaymentDTO {
     private Double version;
     private Integer payType;
     private String description;
+
+    @Override
+    public String toString() {
+        return "RequestPaymentDTO{" +
+                "partnerCode='" + partnerCode + '\'' +
+                ", partnerRefId='" + partnerRefId + '\'' +
+                ", customerNumber='" + customerNumber + '\'' +
+                ", appData='" + appData + '\'' +
+                ", hash='" + hash + '\'' +
+                ", version=" + version +
+                ", payType=" + payType +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
