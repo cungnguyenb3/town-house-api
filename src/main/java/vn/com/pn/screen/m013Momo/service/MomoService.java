@@ -180,6 +180,13 @@ public class MomoService {
         logger.info("MomoService.sendConfirmRequest");
         Runnable runnable = () -> {
             logger.info("sendConfirmRequest.runnable");
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Content-Type", "application/json");
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            RestTemplate restTemplate = new RestTemplate();
+
             String requestType = "capture";
             String requestId = String.valueOf(System.currentTimeMillis());
 
@@ -206,13 +213,21 @@ public class MomoService {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            logger.info(momoConfirmDTO);
+
+            HttpEntity<String> httpEntity = null;
+            try {
+                httpEntity = new HttpEntity<>(mapper.writeValueAsString(momoConfirmDTO), httpHeaders);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            MomoFirstResponse result = restTemplate.postForObject(MomoConstants.MOMO_SANDBOX_DOMAIN + "/pay/confirm", httpEntity, MomoFirstResponse.class);
+
+            logger.info(result);
         };
 
         LocalDateTime now = LocalDateTime.now();
-        now.plusMinutes(1);
 
-        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(now.plusSeconds(30), runnable);
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(now.plusSeconds(10), runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }
 }
