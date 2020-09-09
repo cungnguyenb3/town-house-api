@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "SELECT * FROM bookings WHERE user_id = ?1 order by created_at DESC", nativeQuery = true)
@@ -20,4 +21,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "SELECT * FROM bookings INNER JOIN hosts ON hosts.id = bookings.host_id" +
             " AND hosts.agent_id = ?1 order by bookings.created_at DESC", nativeQuery = true)
     List<Booking> getBookingByAgentId(Long userId);
+
+    Optional<Booking> findByBookingCode(String bookingCode);
 }

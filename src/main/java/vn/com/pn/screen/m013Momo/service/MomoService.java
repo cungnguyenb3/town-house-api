@@ -14,10 +14,10 @@ import org.springframework.web.client.RestTemplate;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.exception.MoMoException;
-import vn.com.pn.exception.ResourceNotFoundException;
+import vn.com.pn.screen.f002Booking.entity.Booking;
+import vn.com.pn.screen.f002Booking.repository.BookingRepository;
 import vn.com.pn.screen.m013Momo.common.MomoConstants;
 import vn.com.pn.screen.m013Momo.common.Parameter;
-import vn.com.pn.screen.m013Momo.controller.MomoController;
 import vn.com.pn.screen.m013Momo.dto.MomoIPNResponseDTO;
 import vn.com.pn.screen.m013Momo.dto.RequestPaymentDTO;
 import vn.com.pn.screen.m013Momo.entity.MomoBasicRequest;
@@ -46,6 +46,9 @@ public class MomoService {
 
     @Autowired
     private MomoFirstResponseRepository momoFirstResponseRepository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     public ResponseEntity<?> sendRequestPayment(MomoBasicInfoRequest request) throws JsonProcessingException {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -129,21 +132,35 @@ public class MomoService {
                 "&" + Parameter.STORE_ID + "=" + request.getStoreId() +
                 "&" + Parameter.TRANS_TYPE + "=" + request.getTransType();
         logger.info("rawDataIPN: " + rawData);
-        String signature = Encoder.signHmacSHA256(rawData, MomoConstants.SECRET_KEY);
 
+        String signature = Encoder.signHmacSHA256(rawData, MomoConstants.SECRET_KEY);
         logger.info("signature: " + signature);
-//        MomoFirstResponse momoFirstResponse = momoFirstResponseRepository.findByTransid(request.getMomoTransId()).orElseThrow(
-//                () ->   new ResourceNotFoundException("TranId", "id", request.getMomoTransId()));
 
         if (signature.equals(request.getSignature())) {
             logger.info("Successfull");
             MomoIPNResponseDTO momoIPNResponseDTO = new MomoIPNResponseDTO();
+
+            Booking booking = bookingRepository.findByBookingCode(request.getPartnerRefId()).orElse(null);
+            if (booking == null) {
+                momoIPNResponseDTO.setStatus(400);
+                return momoIPNResponseDTO;
+            }
+            booking.setPaid(true);
+            bookingRepository.save(booking);
+
             momoIPNResponseDTO.setStatus(request.getStatus());
             momoIPNResponseDTO.setMessage(request.getMessage());
             momoIPNResponseDTO.setAmount(request.getAmount());
             momoIPNResponseDTO.setPartnerRefId(request.getPartnerRefId());
             momoIPNResponseDTO.setMomoTransId(request.getMomoTransId());
-            momoIPNResponseDTO.setSignature(signature);
+
+            String rawDateResponse = Parameter.AMOUNT + "=" + momoIPNResponseDTO.getAmount() +
+                    "&" + Parameter.MESSAGE + "=" + momoIPNResponseDTO.getMessage() +
+                    "&" + Parameter.MOMO_TRANS_ID + "=" + momoIPNResponseDTO.getMomoTransId() +
+                    "&" + Parameter.PARTNER_REF_ID + "=" + momoIPNResponseDTO.getPartnerRefId() +
+                    "&" + Parameter.STATUS + "=" + momoIPNResponseDTO.getStatus();
+            String signatureResponse = Encoder.signHmacSHA256(rawDateResponse, MomoConstants.SECRET_KEY);
+            momoIPNResponseDTO.setSignature(signatureResponse);
             return momoIPNResponseDTO;
         } else {
             throw new MoMoException("Wrong signature from MoMo side - please contact with us");
