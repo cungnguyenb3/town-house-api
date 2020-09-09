@@ -210,9 +210,9 @@ public class MomoService {
         };
 
         LocalDateTime now = LocalDateTime.now();
-        now.plusSeconds(5);
+        now.plusMinutes(1);
 
-        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(now, runnable);
+        ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(now.plusSeconds(30), runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }
 }
