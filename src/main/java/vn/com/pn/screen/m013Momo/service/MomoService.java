@@ -220,7 +220,7 @@ public class MomoService {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            MomoFirstResponse result = restTemplate.postForObject(MomoConstants.MOMO_SANDBOX_DOMAIN + "/pay/confirm", httpEntity, MomoFirstResponse.class);
+            String result = restTemplate.postForObject(MomoConstants.MOMO_SANDBOX_DOMAIN + "/pay/confirm", httpEntity, String.class);
 
             logger.info(result);
         };
