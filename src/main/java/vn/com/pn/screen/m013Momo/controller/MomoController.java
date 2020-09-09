@@ -42,6 +42,7 @@ public class MomoController {
 
     @RequestMapping(value = CommonConstants.API_URL_CONST.MOMO_PAYMENT_CONFIRM, method = RequestMethod.POST)
     public MomoIPNResponseDTO paymentConfirm(@RequestBody MomoIpnPaymentRequest request) throws MoMoException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+        logger.info("------------- MomoController.paymentConfirm -------------");
         return momoService.validateIPN(request);
     }
 }

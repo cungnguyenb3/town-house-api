@@ -15,7 +15,7 @@ public class MomoIpnPaymentRequest {
     private String momoTransId;
     private Integer status;
     private String message;
-    private String responseTime;
+    private Long responseTime;
     private String storeId;
     private String signature;
 }
