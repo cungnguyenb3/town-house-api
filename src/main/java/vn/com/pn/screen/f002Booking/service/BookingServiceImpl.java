@@ -1,5 +1,6 @@
 package vn.com.pn.screen.f002Booking.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.Days;
@@ -17,6 +18,7 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.entity.CalculatePriceResult;
+import vn.com.pn.screen.f006Notification.dto.FCMDataRequestDto;
 import vn.com.pn.screen.f006Notification.service.FCMPushNotificationService;
 import vn.com.pn.screen.m001User.entity.UserDeviceToken;
 import vn.com.pn.screen.m002Host.entity.Host;
@@ -154,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
             if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
                 for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
                     fcmService.pushNotification(userDeviceToken.getDeviceToken(),
-                            "Đang có booking kìa bà con ơi, tên thượng đế là: " + booking.getUser().getFullName());
+                            "Bạn nhận được thông báo booking mới từ người dùng: " + booking.getUser().getFullName());
                 }
             }
             return CommonFunction.successOutput(bookingRepository.save(booking));
@@ -223,7 +225,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BaseOutput confirmBookingRequest(String bookingId, long userId) {
+    public BaseOutput confirmBookingRequest(String bookingId, long userId) throws JsonProcessingException {
         Booking booking = bookingRepository.findById(Long.parseLong(bookingId))
                 .orElse(null);
         System.out.println(booking.getHost().getUser().getId());
@@ -231,6 +233,13 @@ public class BookingServiceImpl implements BookingService {
             if (userId == booking.getHost().getUser().getId()) {
                 booking.setAcceptedFromHost(true);
                 sendEmailBookingConfirmForUser(booking);
+                if (booking.getUser().getDeviceTokens() != null && booking.getUser().getDeviceTokens().size() != 0) {
+                    String mess = "Yêu cầu đặt phòng của bạn đã được chủ nhà chấp thuận. Vui lòng " +
+                            "thanh toán để hoàn tất yêu cầu đặt phòng";
+                    for (UserDeviceToken userDeviceToken : booking.getUser().getDeviceTokens()) {
+                        fcmService.pushNotification(userDeviceToken.getDeviceToken(), mess);
+                    }
+                }
                 return CommonFunction.successOutput(bookingRepository.save(booking));
             }
         }

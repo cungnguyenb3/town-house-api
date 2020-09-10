@@ -8,7 +8,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import vn.com.pn.screen.f006Notification.dto.FCMDataRequestDto;
 import vn.com.pn.screen.f006Notification.dto.FCMRequestDto;
+
+import java.util.List;
 
 @Service
 public class FCMPushNotificationService {
@@ -38,5 +41,32 @@ public class FCMPushNotificationService {
         HttpEntity<String> httpEntity = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
         String result = restTemplate.postForObject(androidFcmUrl, httpEntity, String.class);
         return result;
+    }
+
+    public void pushNotification(List<String> deviceTokens, FCMDataRequestDto object) throws JsonProcessingException {
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", "key=" + androidFcmKey);
+        httpHeaders.set("Content-Type", "application/json");
+
+        mapper = new ObjectMapper();
+
+        RestTemplate restTemplate = new RestTemplate();
+        FCMRequestDto dto = new FCMRequestDto();
+
+        dto.setData(object);
+
+        deviceTokens.stream().forEach(item ->{
+            dto.setTo(item);
+            try {
+                HttpEntity<String> httpEntity = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
+                LOGGER.info("pushNotification httpEntity: "+httpEntity);
+                String response = restTemplate.postForObject(androidFcmUrl, httpEntity, String.class);
+                LOGGER.info("pushNotification response: "+response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
     }
 }

@@ -1,5 +1,6 @@
 package vn.com.pn.screen.f002Booking.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import vn.com.pn.screen.f002Booking.dto.BookingCalculatePriceDTO;
 import vn.com.pn.screen.f002Booking.dto.BookingDTO;
@@ -13,7 +14,7 @@ public interface BookingService {
 
     BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO);
 
-    BaseOutput confirmBookingRequest(String bookingId, long userId);
+    BaseOutput confirmBookingRequest(String bookingId, long userId) throws JsonProcessingException;
 
     BaseOutput confirmBookingPaid(String bookingId);
 
