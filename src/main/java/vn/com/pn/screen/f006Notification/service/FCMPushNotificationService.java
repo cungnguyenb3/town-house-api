@@ -14,12 +14,12 @@ import vn.com.pn.screen.f006Notification.dto.FCMRequestDto;
 public class FCMPushNotificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FCMPushNotificationService.class);
 
-    private String androidFcmKey = "AAAATzxDdxo:APA91bGhnSfHUU6cpJGXyLM3xuPmWAGKRGDdc7S64gIOBDqHYIU5yelcGIXveImLYmT6vjdct5T9Cr8_Ry1lMsuYonsR1x4Kcq3qx1XreNu_YKd2HthsDDRrGnflNEssgFOZSHG84Nuv";
+    private String androidFcmKey = "AAAATzxDdxo:APA91bHtUCvAgqiLcOt_69M5VRssBAc_qYFsN0lFLThj0bgLEYY7zXW4pjp0nxKBkMBFJGw69Pnk8lbTx7GMdKUte0GNDpYRh0Wr29_Im0lEz475N-ggJuQfIB1INKwKWU5YS7SbFzDB";
     private String androidFcmUrl = "https://fcm.googleapis.com/fcm/send";
 
     private ObjectMapper mapper;
 
-    public void pushNotification(String deviceToken, String content) throws JsonProcessingException {
+    public String pushNotification(String deviceToken, String content) throws JsonProcessingException {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Authorization", "key=" + androidFcmKey);
@@ -33,8 +33,10 @@ public class FCMPushNotificationService {
         FCMRequestDto dto = new FCMRequestDto();
         dto.setTo(deviceToken);
         dto.getData().setBody(content);
+        dto.getNotification().setBody(content);
 
         HttpEntity<String> httpEntity = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
-        restTemplate.postForObject(androidFcmUrl, httpEntity, String.class);
+        String result = restTemplate.postForObject(androidFcmUrl, httpEntity, String.class);
+        return result;
     }
 }

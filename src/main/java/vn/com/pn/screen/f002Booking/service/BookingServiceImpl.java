@@ -151,9 +151,11 @@ public class BookingServiceImpl implements BookingService {
             Booking booking = getInsertBookingInfo(bookingDTO, userLogin);
             sendEmailRequestForUser(booking);
             sendEmailRequestForHostAgent(booking);
-            for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
-                fcmService.pushNotification(userDeviceToken.getDeviceToken(),
-                        "Đang có booking kìa bà con ơi " + booking.getUser().getFullName());
+            if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
+                for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
+                    fcmService.pushNotification(userDeviceToken.getDeviceToken(),
+                            "Đang có booking kìa bà con ơi, tên thượng đế là: " + booking.getUser().getFullName());
+                }
             }
             return CommonFunction.successOutput(bookingRepository.save(booking));
         } catch (Exception e) {

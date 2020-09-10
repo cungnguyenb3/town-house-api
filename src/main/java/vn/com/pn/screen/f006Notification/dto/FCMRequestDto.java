@@ -10,7 +10,8 @@ import java.util.List;
 @Setter
 @ToString
 public class FCMRequestDto {
-    private FCMDataRequestDto data = new FCMDataRequestDto(); ;
+    private FCMDataRequestDto data = new FCMDataRequestDto();
+    private FCMNotificationDTO notification = new FCMNotificationDTO();
     private String to;
     private List<String> tos;
 }
