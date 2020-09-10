@@ -17,6 +17,8 @@ import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.entity.CalculatePriceResult;
+import vn.com.pn.screen.f006Notification.service.FCMPushNotificationService;
+import vn.com.pn.screen.m001User.entity.UserDeviceToken;
 import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.exception.ResourceNotFoundException;
@@ -46,6 +48,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     private ScheduledConfig scheduledConfig;
+
+    @Autowired
+    private FCMPushNotificationService fcmService;
 
     public BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO) {
         try {
@@ -146,6 +151,10 @@ public class BookingServiceImpl implements BookingService {
             Booking booking = getInsertBookingInfo(bookingDTO, userLogin);
             sendEmailRequestForUser(booking);
             sendEmailRequestForHostAgent(booking);
+            for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
+                fcmService.pushNotification(userDeviceToken.getDeviceToken(),
+                        "Đang có booking kìa bà con ơi " + booking.getUser().getFullName());
+            }
             return CommonFunction.successOutput(bookingRepository.save(booking));
         } catch (Exception e) {
             throw new ResourceInvalidInputException("Dữ liệu đầu vào không chính xác!");

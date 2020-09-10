@@ -14,7 +14,7 @@ import vn.com.pn.screen.f006Notification.dto.FCMRequestDto;
 public class FCMPushNotificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FCMPushNotificationService.class);
 
-    private String androidFcmKey = "AAAADkvfv60:APA91bH7ov0bkxqVfpyhdjWxY_eFVp2nF04UsofcotOUW_jyy5fzKQpBq7sbFOpqg2nkn4G4AV1qblyDwap-evePpLR_SEvK5nKQ07LNbRNtJS3Dd4NPwbU9zT-i-WI_6HUlC20Dw49s";
+    private String androidFcmKey = "AAAATzxDdxo:APA91bGhnSfHUU6cpJGXyLM3xuPmWAGKRGDdc7S64gIOBDqHYIU5yelcGIXveImLYmT6vjdct5T9Cr8_Ry1lMsuYonsR1x4Kcq3qx1XreNu_YKd2HthsDDRrGnflNEssgFOZSHG84Nuv";
     private String androidFcmUrl = "https://fcm.googleapis.com/fcm/send";
 
     private ObjectMapper mapper;
