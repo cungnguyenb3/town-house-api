@@ -8,8 +8,8 @@ import lombok.Setter;
 public class MomoIPNResponseDTO {
     private Integer status;
     private String message;
-    private Long amount;
     private String partnerRefId;
     private String momoTransId;
+    private Long amount;
     private String signature;
 }

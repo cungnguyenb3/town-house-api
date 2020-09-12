@@ -157,9 +157,9 @@ public class MomoService {
 
             momoIPNResponseDTO.setStatus(request.getStatus());
             momoIPNResponseDTO.setMessage(request.getMessage());
-            momoIPNResponseDTO.setAmount(request.getAmount());
             momoIPNResponseDTO.setPartnerRefId(request.getPartnerRefId());
             momoIPNResponseDTO.setMomoTransId(request.getMomoTransId());
+            momoIPNResponseDTO.setAmount(request.getAmount());
 
             String rawDateResponse = Parameter.AMOUNT + "=" + momoIPNResponseDTO.getAmount() +
                     "&" + Parameter.MESSAGE + "=" + momoIPNResponseDTO.getMessage() +
