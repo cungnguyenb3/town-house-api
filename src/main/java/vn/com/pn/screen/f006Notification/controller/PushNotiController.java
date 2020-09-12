@@ -17,6 +17,6 @@ public class PushNotiController {
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@RequestParam String deviceToken, @RequestParam String content) throws JsonProcessingException {
-        return firebaseService.pushNotification(deviceToken, content);
+        return firebaseService.pushNotification(deviceToken, null,  content);
     }
 }
