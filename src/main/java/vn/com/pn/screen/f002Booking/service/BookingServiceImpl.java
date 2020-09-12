@@ -158,20 +158,20 @@ public class BookingServiceImpl implements BookingService {
             Booking booking = getInsertBookingInfo(bookingDTO, userLogin);
             sendEmailRequestForUser(booking);
             sendEmailRequestForHostAgent(booking);
-            pushNotification(booking, "Yêu cầu đặt phòng", "Bạn vừa nhận được yêu cầu đặt phòng "
-                    + booking.getHost().getName() + " từ người dùng " + booking.getUser().getFullName());
+            pushNotification(booking.getHost().getUser(), "Yêu cầu đặt phòng", "Bạn vừa nhận được yêu cầu đặt phòng "
+                    + booking.getHost().getName() + " từ người dùng " + booking.getUser().getFullName() + ".");
             return CommonFunction.successOutput(bookingRepository.save(booking));
         } catch (Exception e) {
             throw new ResourceInvalidInputException("Dữ liệu đầu vào không chính xác!");
         }
     }
 
-    private void pushNotification(Booking booking, String title, String message) throws JsonProcessingException {
-        if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
-            for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
+    private void pushNotification(User user, String title, String message) throws JsonProcessingException {
+        if (user.getDeviceTokens() != null && user.getDeviceTokens().size() != 0) {
+            for (UserDeviceToken userDeviceToken : user.getDeviceTokens()) {
                 fcmService.pushNotification(userDeviceToken.getDeviceToken(), title, message);
                 Notification notification = new Notification(title, message, false);
-                notification.setUser(booking.getHost().getUser());
+                notification.setUser(user);
                 notificationRepository.save(notification);
             }
         }
@@ -245,8 +245,8 @@ public class BookingServiceImpl implements BookingService {
             if (userId == booking.getHost().getUser().getId()) {
                 booking.setAcceptedFromHost(true);
                 sendEmailBookingConfirmForUser(booking);
-                pushNotification(booking, "Yêu cầu đã được chấp thuận", "Yêu cầu đặt phòng của bạn đã được " +
-                        "chủ nhà chấp thuận. Vui lòng thanh toán để hoàn tất yêu cầu đặt phòng");
+                pushNotification(booking.getUser(), "Yêu cầu đã được chấp thuận", "Yêu cầu đặt phòng của bạn đã được " +
+                        "chủ nhà chấp thuận. Vui lòng thanh toán để hoàn tất yêu cầu đặt phòng" + ".");
                 return CommonFunction.successOutput(bookingRepository.save(booking));
             }
         }
