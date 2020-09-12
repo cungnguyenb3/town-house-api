@@ -7,14 +7,16 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import vn.com.pn.screen.m001User.entity.User;
+import vn.com.pn.utils.DateAuditUtil;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Notification {
+public class Notification extends DateAuditUtil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,5 +37,10 @@ public class Notification {
         this.title = title;
         this.content = content;
         this.isRead = isRead;
+    }
+
+    @PrePersist
+    public void autoGenerateValueCreatedAt() {
+        this.setCreatedAt(new Date());
     }
 }

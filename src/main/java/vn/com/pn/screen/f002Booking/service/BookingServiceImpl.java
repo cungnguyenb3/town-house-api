@@ -172,6 +172,7 @@ public class BookingServiceImpl implements BookingService {
                 fcmService.pushNotification(userDeviceToken.getDeviceToken(), title, message);
                 Notification notification = new Notification(title, message, false);
                 notification.setUser(user);
+                notification.setUpdatedAt(new Date());
                 notificationRepository.save(notification);
             }
         }
