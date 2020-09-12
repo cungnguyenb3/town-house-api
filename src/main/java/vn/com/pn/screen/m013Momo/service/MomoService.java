@@ -169,7 +169,7 @@ public class MomoService {
             String signatureResponse = Encoder.signHmacSHA256(rawDateResponse, MomoConstants.SECRET_KEY);
             momoIPNResponseDTO.setSignature(signatureResponse);
 
-//            sendConfirmRequest(request.getPartnerCode(), request.getPartnerRefId(), request.getMomoTransId());
+            sendConfirmRequest(request.getPartnerCode(), request.getPartnerRefId(), request.getMomoTransId());
             return momoIPNResponseDTO;
         } else {
             throw new MoMoException("Wrong signature from MoMo side - please contact with us");
