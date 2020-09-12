@@ -34,7 +34,7 @@ public class PushNotiController {
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@RequestParam String deviceToken, @RequestParam String content) throws JsonProcessingException {
-        return firebaseService.pushNotification(deviceToken, null,  content);
+        return firebaseService.pushNotification(deviceToken, null,  content, null);
     }
 
     @ApiImplicitParams({
@@ -46,6 +46,17 @@ public class PushNotiController {
         logger.info("========== UserController.getListHostByUser START ==========");
         User user = authService.getLoggedUser();
         BaseOutput response = notificationService.getNotificationByUser(user.getId());
+        return response;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Get lists hosts specific user", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.NOTIFICATION_USER_ID, method = RequestMethod.PUT)
+    public BaseOutput getNotificationByUser(@PathVariable Long id) {
+        logger.info("========== UserController.getListHostByUser START ==========");
+        BaseOutput response = notificationService.setNotificationIsRead(id);
         return response;
     }
 }

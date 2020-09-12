@@ -97,5 +97,6 @@ public class CommonConstants {
 
         //Notification
         String NOTIFICATION_USER = "notifications/users";
+        String NOTIFICATION_USER_ID = "notifications/users/{id}";
     }
 }

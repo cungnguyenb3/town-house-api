@@ -5,4 +5,5 @@ import vn.com.pn.screen.m001User.entity.User;
 
 public interface NotificationService {
     BaseOutput getNotificationByUser(Long userId);
+    BaseOutput setNotificationIsRead(Long notificationId);
 }

@@ -169,11 +169,11 @@ public class BookingServiceImpl implements BookingService {
     private void pushNotification(User user, String title, String message) throws JsonProcessingException {
         if (user.getDeviceTokens() != null && user.getDeviceTokens().size() != 0) {
             for (UserDeviceToken userDeviceToken : user.getDeviceTokens()) {
-                fcmService.pushNotification(userDeviceToken.getDeviceToken(), title, message);
                 Notification notification = new Notification(title, message, false);
                 notification.setUser(user);
                 notification.setUpdatedAt(new Date());
                 notificationRepository.save(notification);
+                fcmService.pushNotification(userDeviceToken.getDeviceToken(), title, message, String.valueOf(notification.getId()));
             }
         }
     }

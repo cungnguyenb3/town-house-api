@@ -8,6 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class FCMDataRequestDto {
+    private String id;
     private String title = "Town house";
     private String body;
 }
