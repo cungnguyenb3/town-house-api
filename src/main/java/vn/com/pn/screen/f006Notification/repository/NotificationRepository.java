@@ -7,5 +7,5 @@ import vn.com.pn.screen.m001User.entity.User;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByUser(User user);
+    List<Notification> findByUserOrderByCreatedAt(User user);
 }

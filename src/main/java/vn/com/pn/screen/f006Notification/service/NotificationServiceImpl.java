@@ -25,7 +25,7 @@ public class NotificationServiceImpl implements NotificationService{
     public BaseOutput getNotificationByUser(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
-            List<Notification> notifications = notificationRepository.findByUser(user);
+            List<Notification> notifications = notificationRepository.findByUserOrderByCreatedAt(user);
             return CommonFunction.successOutput(notifications);
         }
         return null;
