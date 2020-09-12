@@ -504,12 +504,10 @@ public class BookingServiceImpl implements BookingService {
     private void setCountdownBookingCompleteTime(Booking booking) {
         Runnable runnable = () -> setBookingCompletedAndSendEmailThankful(booking);
 
-        java.time.LocalDate checkOutDate = booking.getCheckOutDate();
-        LocalDateTime date = LocalDateTime.of(checkOutDate.getYear(), checkOutDate.getMonth(), checkOutDate.getDayOfMonth(),
-                booking.getHost().getCheckOutTime().getHour(), booking.getHost().getCheckOutTime().getMinute(),
+        LocalDateTime date = LocalDateTime.of(booking.getCheckOutDate().getYear(), booking.getCheckOutDate().getMonth(),
+                booking.getCheckOutDate().getDayOfMonth(), booking.getHost().getCheckOutTime().getHour(),
+                booking.getHost().getCheckOutTime().getMinute(),
                 booking.getHost().getCheckOutTime().getSecond());
-        logger.info(date);
-        logger.info(date.toString());
         ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(date, runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }

@@ -981,12 +981,18 @@ public class HostServiceImpl implements HostService {
         }
         if (hostDTO.getEarliestCheckIn() != null && hostDTO.getEarliestCheckIn() != "") {
             host.setEarliestCheckIn(LocalTime.parse(hostDTO.getEarliestCheckIn()));
+        } else {
+            host.setEarliestCheckIn(LocalTime.parse("13:00"));
         }
         if (hostDTO.getLatestCheckIn() != null && hostDTO.getLatestCheckIn() != "") {
             host.setLatestCheckIn(LocalTime.parse(hostDTO.getLatestCheckIn()));
+        } else {
+            host.setLatestCheckIn(LocalTime.parse("22:00"));
         }
         if (hostDTO.getCheckOutTime() != null && hostDTO.getCheckOutTime() != "") {
             host.setCheckOutTime(LocalTime.parse(hostDTO.getCheckOutTime()));
+        } else {
+            host.setCheckOutTime(LocalTime.parse("12:00"));
         }
         if (hostDTO.getJapaneseCushion() != null && hostDTO.getJapaneseCushion() != "") {
             host.setJapaneseCushion(Integer.parseInt(hostDTO.getJapaneseCushion()));
