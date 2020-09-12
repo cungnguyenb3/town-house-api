@@ -1,5 +1,6 @@
 package vn.com.pn.screen.f002Booking.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -76,7 +77,7 @@ public class BookingController {
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Accept booking for host agent", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CONFIRM_REQUEST, method = RequestMethod.PUT)
-    public ResponseEntity<?> confirmBookingRequest(@Valid @PathVariable String bookingId) {
+    public ResponseEntity<?> confirmBookingRequest(@Valid @PathVariable String bookingId) throws JsonProcessingException {
         logger.info("========== BookingController.confirmBookingRequest START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
         User userLogin = authService.getLoggedUser();
@@ -90,7 +91,7 @@ public class BookingController {
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Set booking is paid or not", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.ADMIN_BOOKING_REQUEST_SUCCESS, method = RequestMethod.PUT)
-    public ResponseEntity<?> bookingRequestSuccess(@Valid @PathVariable String bookingId) {
+    public ResponseEntity<?> bookingRequestSuccess(@Valid @PathVariable String bookingId) throws JsonProcessingException {
         logger.info("========== BookingController.bookingRequestSuccess START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(bookingId));
         BaseOutput response = bookingService.confirmBookingPaid(bookingId);

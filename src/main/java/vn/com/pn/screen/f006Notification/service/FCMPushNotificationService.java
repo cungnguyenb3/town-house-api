@@ -22,7 +22,7 @@ public class FCMPushNotificationService {
 
     private ObjectMapper mapper;
 
-    public String pushNotification(String deviceToken, String content) throws JsonProcessingException {
+    public String pushNotification(String deviceToken, String title, String content) throws JsonProcessingException {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Authorization", "key=" + androidFcmKey);
@@ -35,6 +35,10 @@ public class FCMPushNotificationService {
         RestTemplate restTemplate = new RestTemplate();
         FCMRequestDto dto = new FCMRequestDto();
         dto.setTo(deviceToken);
+        if (title != null && !title.isEmpty()) {
+            dto.getData().setTitle(title);
+            dto.getNotification().setTitle(title);
+        }
         dto.getData().setBody(content);
         dto.getNotification().setBody(content);
 

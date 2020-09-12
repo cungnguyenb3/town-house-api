@@ -16,7 +16,7 @@ public interface BookingService {
 
     BaseOutput confirmBookingRequest(String bookingId, long userId) throws JsonProcessingException;
 
-    BaseOutput confirmBookingPaid(String bookingId);
+    BaseOutput confirmBookingPaid(String bookingId) throws JsonProcessingException;
 
     BaseOutput getBookingById(long id);
 

@@ -19,6 +19,8 @@ import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.entity.CalculatePriceResult;
 import vn.com.pn.screen.f006Notification.dto.FCMDataRequestDto;
+import vn.com.pn.screen.f006Notification.entity.Notification;
+import vn.com.pn.screen.f006Notification.repository.NotificationRepository;
 import vn.com.pn.screen.f006Notification.service.FCMPushNotificationService;
 import vn.com.pn.screen.m001User.entity.UserDeviceToken;
 import vn.com.pn.screen.m002Host.entity.Host;
@@ -53,6 +55,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     private FCMPushNotificationService fcmService;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO) {
         try {
@@ -153,15 +158,22 @@ public class BookingServiceImpl implements BookingService {
             Booking booking = getInsertBookingInfo(bookingDTO, userLogin);
             sendEmailRequestForUser(booking);
             sendEmailRequestForHostAgent(booking);
-            if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
-                for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
-                    fcmService.pushNotification(userDeviceToken.getDeviceToken(),
-                            "Bạn nhận được thông báo booking mới từ người dùng: " + booking.getUser().getFullName());
-                }
-            }
+            pushNotification(booking, "Yêu cầu đặt phòng", "Bạn vừa nhận được yêu cầu đặt phòng "
+                    + booking.getHost().getName() + " từ người dùng " + booking.getUser().getFullName());
             return CommonFunction.successOutput(bookingRepository.save(booking));
         } catch (Exception e) {
             throw new ResourceInvalidInputException("Dữ liệu đầu vào không chính xác!");
+        }
+    }
+
+    private void pushNotification(Booking booking, String title, String message) throws JsonProcessingException {
+        if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
+            for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
+                fcmService.pushNotification(userDeviceToken.getDeviceToken(), title, message);
+                Notification notification = new Notification(title, message, false);
+                notification.setUser(booking.getHost().getUser());
+                notificationRepository.save(notification);
+            }
         }
     }
 
@@ -233,13 +245,8 @@ public class BookingServiceImpl implements BookingService {
             if (userId == booking.getHost().getUser().getId()) {
                 booking.setAcceptedFromHost(true);
                 sendEmailBookingConfirmForUser(booking);
-                if (booking.getUser().getDeviceTokens() != null && booking.getUser().getDeviceTokens().size() != 0) {
-                    String mess = "Yêu cầu đặt phòng của bạn đã được chủ nhà chấp thuận. Vui lòng " +
-                            "thanh toán để hoàn tất yêu cầu đặt phòng";
-                    for (UserDeviceToken userDeviceToken : booking.getUser().getDeviceTokens()) {
-                        fcmService.pushNotification(userDeviceToken.getDeviceToken(), mess);
-                    }
-                }
+                pushNotification(booking, "Yêu cầu đã được chấp thuận", "Yêu cầu đặt phòng của bạn đã được " +
+                        "chủ nhà chấp thuận. Vui lòng thanh toán để hoàn tất yêu cầu đặt phòng");
                 return CommonFunction.successOutput(bookingRepository.save(booking));
             }
         }
@@ -247,13 +254,25 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BaseOutput confirmBookingPaid(String bookingId) {
+    public BaseOutput confirmBookingPaid(String bookingId) throws JsonProcessingException {
         Booking booking = bookingRepository.findById(Long.parseLong(bookingId))
                 .orElse(null);
         if (booking != null) {
             booking.setPaid(true);
             sendEmailBookingSuccess(booking);
             setCountdownBookingCompleteTime(booking);
+//            if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
+//                for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
+//                    fcmService.pushNotification(userDeviceToken.getDeviceToken(),
+//                            "Bạn nhận được thông báo booking mới từ người dùng: " + booking.getUser().getFullName());
+//                }
+//            }
+//            if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
+//                for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
+//                    fcmService.pushNotification(userDeviceToken.getDeviceToken(),
+//                            "Bạn nhận được thông báo booking mới từ người dùng: " + booking.getUser().getFullName());
+//                }
+//            }
             return CommonFunction.successOutput(bookingRepository.save(booking));
         }
         throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
