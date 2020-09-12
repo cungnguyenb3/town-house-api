@@ -94,5 +94,8 @@ public class CommonConstants {
         String MOMO_BASIC_INFO = "/momo/basic-info";
         String MOMO_GET_BASIC_INFO = "/momo/basic-info-request";
         String MOMO_PAYMENT_CONFIRM = "/momo/payment/confirm";
+
+        //Notification
+        String NOTIFICATION_USER = "notifications/users";
     }
 }

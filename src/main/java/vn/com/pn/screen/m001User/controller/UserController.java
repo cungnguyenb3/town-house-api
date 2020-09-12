@@ -19,6 +19,7 @@ import vn.com.pn.common.common.CommonConstants;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.common.output.BaseOutput;
+import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.m001User.dto.*;
 import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.screen.m001User.repository.UserRepository;
@@ -149,11 +150,13 @@ public class UserController {
             @ApiImplicitParam(name = "Authorization", value = "Authorization token",
                     required = true, dataType = "string", paramType = "header")})
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_ID, method = RequestMethod.PUT)
-    public BaseOutput update(@Valid @RequestBody UserUpdateRequest request) {
+    public BaseOutput update(@PathVariable String id, @RequestBody UserUpdateRequest request) {
         logger.info("========== UserController.update START ==========");
         logger.info("request: " + CommonFunction.convertToJSONString(request));
         UserUpdateDTO userUpdateDTO = MapperUtil.mapper(request, UserUpdateDTO.class);
-        User userLogin = userRepository.findById(authService.getLoggedUser().getId()).orElse(null);
+        User userLogin = userRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", id)
+        );
         BaseOutput response = userService.update(userLogin, userUpdateDTO);
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== UserController.update END ==========");
