@@ -508,7 +508,8 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime date = LocalDateTime.of(checkOutDate.getYear(), checkOutDate.getMonth(), checkOutDate.getDayOfMonth(),
                 booking.getHost().getCheckOutTime().getHour(), booking.getHost().getCheckOutTime().getMinute(),
                 booking.getHost().getCheckOutTime().getSecond());
-
+        logger.info(date);
+        logger.info(date.toString());
         ScheduledTaskRegistrar setUpCronTask = CommonFunction.setUpCronTask(date, runnable);
         scheduledConfig.configureTasks(setUpCronTask);
     }
