@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import vn.com.pn.common.common.CommonConstants;
+import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.exception.MoMoException;
 import vn.com.pn.screen.m001User.controller.UserController;
@@ -42,7 +43,10 @@ public class MomoController {
 
     @RequestMapping(value = CommonConstants.API_URL_CONST.MOMO_PAYMENT_CONFIRM, method = RequestMethod.POST)
     public MomoIPNResponseDTO paymentConfirm(@RequestBody MomoIpnPaymentRequest request) throws MoMoException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
-        logger.info("------------- MomoController.paymentConfirm -------------");
-        return momoService.validateIPN(request);
+        logger.info("------------- MomoController.paymentConfirm Start-------------");
+        MomoIPNResponseDTO responseDTO = momoService.validateIPN(request);
+        logger.info(CommonFunction.convertToJSONString(responseDTO));
+        logger.info("------------- MomoController.paymentConfirm End-------------");
+        return responseDTO;
     }
 }
