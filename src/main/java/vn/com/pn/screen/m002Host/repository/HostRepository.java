@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import vn.com.pn.screen.m002Host.entity.Host;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface HostRepository extends JpaRepository<Host, Long>,
@@ -27,6 +28,9 @@ public interface HostRepository extends JpaRepository<Host, Long>,
     @Query(value = "SELECT * FROM hosts WHERE status = true and agent_id = :id ORDER BY created_at DESC",
             nativeQuery = true)
     Page<Host> getHostByUser(@Param("id") Long id, Pageable pageable);
+
+    @Query(value = "SELECT * FROM hosts where stars >= 4", nativeQuery = true)
+    List<Host> getHostRecommendation();
 }
 
 

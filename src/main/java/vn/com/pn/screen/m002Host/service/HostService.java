@@ -29,4 +29,6 @@ public interface HostService {
     BaseOutput search(String searchText, int pageNo);
 
     BaseOutput getByCityId(String cityId, Integer pageNo, Integer pageSize, String sortBy);
+
+    BaseOutput recommendHost();
 }

@@ -1424,6 +1424,11 @@ public class HostServiceImpl implements HostService {
         return CommonFunction.successOutput(object);
     }
 
+    @Override
+    public BaseOutput recommendHost() {
+        List<Host> hosts = hostRepository.getHostRecommendation();
+        return CommonFunction.successOutput(hosts);
+    }
 }
 
 

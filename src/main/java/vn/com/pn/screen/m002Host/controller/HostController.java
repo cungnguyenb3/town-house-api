@@ -177,4 +177,14 @@ public class HostController {
         BaseOutput response = hostService.approve(id);
         return CommonFunction.successOutput(response);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Recommend host for user", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_RECOMMENDATIONS, method = RequestMethod.GET)
+    public BaseOutput recommendHost() {
+        BaseOutput baseOutput = hostService.recommendHost();
+        return baseOutput;
+    }
 }
