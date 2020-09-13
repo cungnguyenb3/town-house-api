@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.exception.ResourceInvalidInputException;
+import vn.com.pn.screen.f003Review.dto.HostReviewByHostResDTO;
 import vn.com.pn.screen.f003Review.dto.HostReviewDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.screen.f002Booking.entity.Booking;
+import vn.com.pn.screen.f003Review.dto.HostReviewWithUserDTO;
 import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.f003Review.entity.HostReview;
 import vn.com.pn.screen.m001User.entity.User;
@@ -62,8 +64,14 @@ public class HostReviewServiceImpl implements HostReviewService {
     public BaseOutput getHostReviewByHost(String hostId) {
         logger.info("HostReviewServiceImpl.insert");
         try {
-            List<?> hostReviews = hostReviewRepositoryCustom.getHostReview(Long.parseLong(hostId));
-            return CommonFunction.successOutput(hostReviews);
+            Host host = hostRepository.findById(Long.parseLong(hostId)).orElseThrow(
+                    () -> new ResourceNotFoundException("Host", "id", hostId)
+            );
+            List<HostReviewWithUserDTO> hostReviews = hostReviewRepositoryCustom.getHostReview(Long.parseLong(hostId));
+            HostReviewByHostResDTO resDTO = new HostReviewByHostResDTO();
+            resDTO.setStars(String.valueOf(host.getStars()));
+            resDTO.setListReview(hostReviews);
+            return CommonFunction.successOutput(resDTO);
         } catch (Exception e) {
             logger.error(ScreenMessageConstants.FAILURE, e);
             throw new ResourceInvalidInputException(ScreenMessageConstants.INVALID_INPUT);

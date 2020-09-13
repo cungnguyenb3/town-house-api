@@ -13,7 +13,7 @@ public class HostReviewRepositoryCustomImpl {
     @Autowired
     private EntityManager entityManager;
 
-    public List<?> getHostReview(Long hostId) {
+    public List<HostReviewWithUserDTO> getHostReview(Long hostId) {
         List<HostReviewWithUserDTO> postDTOs = entityManager.createQuery(
                 "SELECT NEW vn.com.pn.screen.f003Review.dto.HostReviewWithUserDTO (hr.id, us.fullName, hr.content, hr.starRating, hr.createdAt) FROM HostReview hr " +
                         "INNER JOIN Booking bk ON bk.id = hr.booking.id " +
