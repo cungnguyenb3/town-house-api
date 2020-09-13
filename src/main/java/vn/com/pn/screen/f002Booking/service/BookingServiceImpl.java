@@ -28,6 +28,7 @@ import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.exception.ResourceNotFoundException;
 import vn.com.pn.screen.f002Booking.repository.BookingRepository;
+import vn.com.pn.screen.m002Host.repository.DateCanNotBookingRepository;
 import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.f005Gmail.service.MailService;
 import vn.com.pn.utils.MapperUtil;
@@ -59,6 +60,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private DateCanNotBookingRepository dateCanNotBookingRepository;
 
     public BaseOutput calculatePrice(BookingCalculatePriceDTO bookingCalculatePriceDTO) {
         try {
@@ -272,9 +276,11 @@ public class BookingServiceImpl implements BookingService {
             for (java.time.LocalDate d = booking.getCheckInDate(); !d.isAfter(booking.getCheckOutDate()); d = d.plusDays(1)) {
                 DateCanNotBooking dateCanNotBooking = new DateCanNotBooking();
                 dateCanNotBooking.setDate(d);
+                dateCanNotBookingRepository.save(dateCanNotBooking);
                 dateCanNotBookingSet.add(dateCanNotBooking);
             }
             host.setDateCanNotBookings(dateCanNotBookingSet);
+            hostRepository.save(host);
             return CommonFunction.successOutput(bookingRepository.save(booking));
         }
         throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
