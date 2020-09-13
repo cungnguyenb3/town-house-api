@@ -214,8 +214,7 @@ public class UserController {
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "Get lists booking histories from user", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.USER_BOOKING_HISTORIES, method = RequestMethod.GET)
-    public BaseOutput getListBookingHistories(@RequestParam(required = false) int status,
-                                              @RequestParam(required = false) int isCancel) {
+    public BaseOutput getListBookingHistories() {
         logger.info("========== UserController.getListBookingHistories START ==========");
         User userLogin = authService.getLoggedUser();
         BaseOutput response = userService.getListBookingHistories(userLogin.getId());
