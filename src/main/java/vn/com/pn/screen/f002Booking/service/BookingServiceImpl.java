@@ -262,18 +262,10 @@ public class BookingServiceImpl implements BookingService {
             booking.setPaid(true);
             sendEmailBookingSuccess(booking);
             setCountdownBookingCompleteTime(booking);
-//            if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
-//                for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
-//                    fcmService.pushNotification(userDeviceToken.getDeviceToken(),
-//                            "Bạn nhận được thông báo booking mới từ người dùng: " + booking.getUser().getFullName());
-//                }
-//            }
-//            if (booking.getHost().getUser().getDeviceTokens() != null && booking.getHost().getUser().getDeviceTokens().size() != 0) {
-//                for (UserDeviceToken userDeviceToken : booking.getHost().getUser().getDeviceTokens()) {
-//                    fcmService.pushNotification(userDeviceToken.getDeviceToken(),
-//                            "Bạn nhận được thông báo booking mới từ người dùng: " + booking.getUser().getFullName());
-//                }
-//            }
+            pushNotification(booking.getUser(),"Thanh toán thành công", "Booking của bạn đã được thanh toán" +
+                    " thành công, chúc bạn có những trải nghiệm vui vẻ cùng Town 7.");
+            pushNotification(booking.getUser(),"Phòng của bạn đã được thanh toán", "Chúng tôi sẽ chủ động liên " +
+                    "hệ để chuyển tiền cho bạn.");
             return CommonFunction.successOutput(bookingRepository.save(booking));
         }
         throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
@@ -517,7 +509,10 @@ public class BookingServiceImpl implements BookingService {
             try {
                 booking.setCancel(true);
                 bookingRepository.save(booking);
-
+                pushNotification(booking.getUser(), "Đặt phòng thất bại", "Yêu cầu đặt phòng của bạn đã bị" +
+                        "hủy vì không thanh toán trong thời gian quy định");
+                pushNotification(booking.getHost().getUser(), "Yêu cầu đặt phòng thất bại", "Yêu cầu đặt phòng" +
+                        "đã bị hủy vì khách hàng đã không thanh toán trong thời gian quy định.");
                 String emailSubject = "Đặt phòng tại " + booking.getHost().getName() + " thất bại";
                 StringBuilder emailContent = new StringBuilder();
 
@@ -558,7 +553,7 @@ public class BookingServiceImpl implements BookingService {
                         .append("Trân trọng, \nTown house team");
                 mailService.sendEmail(booking.getUser().getEmail(), emailSubject, emailContent);
 
-            } catch (MailException mailException) {
+            } catch (MailException | JsonProcessingException mailException) {
                 logger.error(ScreenMessageConstants.FAILURE, mailException);
             }
         }
