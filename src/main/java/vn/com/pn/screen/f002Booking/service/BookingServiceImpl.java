@@ -741,4 +741,25 @@ public class BookingServiceImpl implements BookingService {
         }
         return CommonFunction.successOutput(bookingResDTOS);
     }
+
+    @Override
+    public BaseOutput getRevenueBooking(long userId) {
+        List<Booking> bookingList = bookingRepository.getBookingByAgentId(userId);
+        int countComplete = 0;
+        int countCancel = 0;
+        double totalRevenue = 0;
+        for (Booking booking : bookingList) {
+            if (booking.isStatus()) {
+                countComplete ++;
+            }
+            if (booking.isCancel()) {
+                countCancel ++;
+            }
+            totalRevenue += booking.getTotalPrice();
+        }
+        int countHappening = bookingList.size() - countComplete - countCancel;
+        BookingAnalyzeDTO analyzeDTO = new BookingAnalyzeDTO(bookingList.size(), countCancel, countHappening,
+                countComplete, totalRevenue);
+        return CommonFunction.successOutput(analyzeDTO);
+    }
 }

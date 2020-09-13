@@ -147,4 +147,14 @@ public class BookingController {
         User userLogin = authService.getLoggedUser();
         return bookingService.getAllBookingFromAgent(userLogin.getId());
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Analytics booking", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_ANALYSING, method = RequestMethod.GET)
+    public BaseOutput analystBooking() {
+        User userLogin = authService.getLoggedUser();
+        return bookingService.getRevenueBooking(userLogin.getId());
+    }
 }
