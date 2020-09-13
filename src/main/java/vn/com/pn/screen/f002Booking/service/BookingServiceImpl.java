@@ -23,6 +23,7 @@ import vn.com.pn.screen.f006Notification.entity.Notification;
 import vn.com.pn.screen.f006Notification.repository.NotificationRepository;
 import vn.com.pn.screen.f006Notification.service.FCMPushNotificationService;
 import vn.com.pn.screen.m001User.entity.UserDeviceToken;
+import vn.com.pn.screen.m002Host.entity.DateCanNotBooking;
 import vn.com.pn.screen.m002Host.entity.Host;
 import vn.com.pn.screen.m001User.entity.User;
 import vn.com.pn.exception.ResourceNotFoundException;
@@ -266,6 +267,14 @@ public class BookingServiceImpl implements BookingService {
                     " thành công, chúc bạn có những trải nghiệm vui vẻ cùng Town 7.");
             pushNotification(booking.getUser(),"Phòng của bạn đã được thanh toán", "Chúng tôi sẽ chủ động liên " +
                     "hệ để chuyển tiền cho bạn.");
+            Host host = booking.getHost();
+            Set<DateCanNotBooking> dateCanNotBookingSet = new HashSet<>();
+            for (java.time.LocalDate d = booking.getCheckInDate(); !d.isAfter(booking.getCheckOutDate()); d = d.plusDays(1)) {
+                DateCanNotBooking dateCanNotBooking = new DateCanNotBooking();
+                dateCanNotBooking.setDate(d);
+                dateCanNotBookingSet.add(dateCanNotBooking);
+            }
+            host.setDateCanNotBookings(dateCanNotBookingSet);
             return CommonFunction.successOutput(bookingRepository.save(booking));
         }
         throw new ResourceNotFoundException("Booking không tìm thấy với id: " + bookingId);
