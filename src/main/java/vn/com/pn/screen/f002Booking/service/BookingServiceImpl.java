@@ -762,4 +762,17 @@ public class BookingServiceImpl implements BookingService {
                 countComplete, totalRevenue);
         return CommonFunction.successOutput(analyzeDTO);
     }
+
+    @Override
+    public BaseOutput cancelBooking(long userId, long bookingId) {
+        List<Booking> bookingList = bookingRepository.getBookingByAgentId(userId);
+        for (Booking booking : bookingList) {
+            if (booking.getId() == bookingId) {
+                booking.setCancel(true);
+                return CommonFunction.successOutput(booking);
+            }
+        }
+        throw new ResourceNotFoundException("Booking or userId " + userId, "bookingId", bookingId);
+    }
+
 }

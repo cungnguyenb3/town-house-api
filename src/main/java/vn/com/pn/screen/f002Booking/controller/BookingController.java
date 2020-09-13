@@ -157,4 +157,14 @@ public class BookingController {
         User userLogin = authService.getLoggedUser();
         return bookingService.getRevenueBooking(userLogin.getId());
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "Cancel booking", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.BOOKING_CANCEL, method = RequestMethod.PUT)
+    public BaseOutput cancelBooking(@PathVariable long id) {
+        User userLogin = authService.getLoggedUser();
+        return bookingService.cancelBooking(userLogin.getId(), id);
+    }
 }

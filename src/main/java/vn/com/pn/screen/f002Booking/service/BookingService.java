@@ -25,4 +25,6 @@ public interface BookingService {
     BaseOutput getAllBookingFromAgent(long userId);
 
     BaseOutput getRevenueBooking(long userId);
+
+    BaseOutput cancelBooking(long userId, long bookingId);
 }
