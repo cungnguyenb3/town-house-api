@@ -784,6 +784,7 @@ public class BookingServiceImpl implements BookingService {
         for (Booking booking : bookingList) {
             if (booking.getId() == bookingId) {
                 booking.setCancel(true);
+                bookingRepository.save(booking);
                 return CommonFunction.successOutput(booking);
             }
         }

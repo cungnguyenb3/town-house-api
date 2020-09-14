@@ -18,6 +18,10 @@ import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.exception.MoMoException;
 import vn.com.pn.screen.f002Booking.entity.Booking;
 import vn.com.pn.screen.f002Booking.repository.BookingRepository;
+import vn.com.pn.screen.m002Host.entity.DateCanNotBooking;
+import vn.com.pn.screen.m002Host.entity.Host;
+import vn.com.pn.screen.m002Host.repository.DateCanNotBookingRepository;
+import vn.com.pn.screen.m002Host.repository.HostRepository;
 import vn.com.pn.screen.m013Momo.common.MomoConstants;
 import vn.com.pn.screen.m013Momo.common.Parameter;
 import vn.com.pn.screen.m013Momo.dto.MomoConfirmDTO;
@@ -39,7 +43,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class MomoService {
@@ -56,6 +62,12 @@ public class MomoService {
 
     @Autowired
     private ScheduledConfig scheduledConfig;
+
+    @Autowired
+    private DateCanNotBookingRepository dateCanNotBookingRepository;
+
+    @Autowired
+    private HostRepository hostRepository;
 
     public ResponseEntity<?> sendRequestPayment(MomoBasicInfoRequest request) throws JsonProcessingException {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -153,6 +165,16 @@ public class MomoService {
                 return momoIPNResponseDTO;
             }
             booking.setPaid(true);
+            Host host = booking.getHost();
+            Set<DateCanNotBooking> dateCanNotBookingSet = new HashSet<>();
+            for (java.time.LocalDate d = booking.getCheckInDate(); !d.isAfter(booking.getCheckOutDate()); d = d.plusDays(1)) {
+                DateCanNotBooking dateCanNotBooking = new DateCanNotBooking();
+                dateCanNotBooking.setDate(d);
+                dateCanNotBookingRepository.save(dateCanNotBooking);
+                dateCanNotBookingSet.add(dateCanNotBooking);
+            }
+            host.setDateCanNotBookings(dateCanNotBookingSet);
+            hostRepository.save(host);
             bookingRepository.save(booking);
 
             momoIPNResponseDTO.setStatus(request.getStatus());
