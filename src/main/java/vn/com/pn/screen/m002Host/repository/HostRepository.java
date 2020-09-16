@@ -31,6 +31,11 @@ public interface HostRepository extends JpaRepository<Host, Long>,
 
     @Query(value = "SELECT * FROM hosts where stars >= 4", nativeQuery = true)
     List<Host> getHostRecommendation();
+
+    @Query(value = "SELECT * FROM hosts WHERE status = true and agent_id = :id ORDER BY created_at DESC",
+            nativeQuery = true)
+    List<Host> getHostByUser(@Param("id") Long id);
+
 }
 
 

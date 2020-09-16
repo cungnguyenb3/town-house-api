@@ -31,4 +31,6 @@ public interface HostService {
     BaseOutput getByCityId(String cityId, Integer pageNo, Integer pageSize, String sortBy);
 
     BaseOutput recommendHost();
+
+    BaseOutput getLookDates(Long userId);
 }

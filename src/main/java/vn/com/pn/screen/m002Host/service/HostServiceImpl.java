@@ -17,14 +17,13 @@ import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.exception.ResourceInvalidInputException;
 import vn.com.pn.screen.f004GoogleDrive.service.GoogleDriveService;
-import vn.com.pn.screen.m002Host.dto.HostDTO;
-import vn.com.pn.screen.m002Host.dto.HostSearchDTO;
+import vn.com.pn.screen.m002Host.dto.*;
+import vn.com.pn.screen.m002Host.entity.DateCanNotBooking;
 import vn.com.pn.screen.m002Host.entity.HostDiscount;
 import vn.com.pn.screen.m005HostImage.dto.HostImageDTO;
 import vn.com.pn.screen.m005HostImage.entity.HostImage;
 import vn.com.pn.screen.m005HostImage.service.HostImageService;
 import vn.com.pn.screen.m006HostCategory.dto.HostDiscountDTO;
-import vn.com.pn.screen.m002Host.dto.HostUpdateDTO;
 import vn.com.pn.common.output.BaseOutput;
 import vn.com.pn.config.ScheduledConfig;
 import vn.com.pn.exception.ResourceNotFoundException;
@@ -1428,6 +1427,22 @@ public class HostServiceImpl implements HostService {
     public BaseOutput recommendHost() {
         List<Host> hosts = hostRepository.getHostRecommendation();
         return CommonFunction.successOutput(hosts);
+    }
+
+    public BaseOutput getLookDates(Long userId) {
+        DateCanNotBookingResDTO dateCanNotBookingResDTO = new DateCanNotBookingResDTO();
+//        List<DateResDTO> dateResDTOS = new ArrayList<>();
+        List<java.time.LocalDate> localDates = new ArrayList<>();
+        List<Host> hosts = hostRepository.getHostByUser(userId);
+        for (Host host : hosts) {
+            for (DateCanNotBooking dateCanNotBooking : host.getDateCanNotBookings()) {
+                if(!dateCanNotBooking.getDate().isBefore(java.time.LocalDate.now())) {
+                    localDates.add(dateCanNotBooking.getDate());
+                }
+            }
+        }
+        dateCanNotBookingResDTO.setDates(localDates);
+        return CommonFunction.successOutput(dateCanNotBookingResDTO);
     }
 }
 

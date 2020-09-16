@@ -69,6 +69,7 @@ public class CommonConstants {
         String HOST_SEARCH = "/hosts/search";
         String HOST_GET_BY_CITY = "/hosts/get-by-city-id/{id}";
         String HOST_RECOMMENDATIONS = "hosts/recommendations";
+        String HOST_USER_DATES_LOOK = "hosts/users/dates-look";
 
         // Booking controller
         String BOOKING_ROOT = "/bookings";

@@ -187,4 +187,18 @@ public class HostController {
         BaseOutput baseOutput = hostService.recommendHost();
         return baseOutput;
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @ApiOperation(value = "View a list date can not booking", response = BaseOutput.class)
+    @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_USER_DATES_LOOK, method = RequestMethod.GET)
+    public BaseOutput getLookDate() {
+        logger.info("========== HostController.getLookDate START ==========");
+        User userLogin = authService.getLoggedUser();
+        BaseOutput response = hostService.getLookDates(userLogin.getId());
+        logger.info(CommonFunction.convertToJSONStringResponse(response));
+        logger.info("========== HostController.getLookDate END ==========");
+        return response;
+    }
 }
