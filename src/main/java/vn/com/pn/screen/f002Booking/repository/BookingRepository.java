@@ -22,5 +22,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             " AND hosts.agent_id = ?1 order by bookings.created_at DESC", nativeQuery = true)
     List<Booking> getBookingByAgentId(Long userId);
 
+    @Query(value = "SELECT * FROM bookings where host_id = ?1 order by created_at DESC", nativeQuery = true)
+    List<Booking> getBookingByHostId(Long hostId);
+
     Optional<Booking> findByBookingCode(String bookingCode);
 }

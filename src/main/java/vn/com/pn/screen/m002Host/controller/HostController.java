@@ -193,10 +193,10 @@ public class HostController {
                     required = true, dataType = "string", paramType = "header")})
     @ApiOperation(value = "View a list date can not booking", response = BaseOutput.class)
     @RequestMapping(value = CommonConstants.API_URL_CONST.HOST_USER_DATES_LOOK, method = RequestMethod.GET)
-    public BaseOutput getLookDate() {
+    public BaseOutput getLookDate(@PathVariable String id) {
         logger.info("========== HostController.getLookDate START ==========");
-        User userLogin = authService.getLoggedUser();
-        BaseOutput response = hostService.getLookDates(userLogin.getId());
+        long hostId = Long.parseLong(id);
+        BaseOutput response = hostService.getLookDates(hostId);
         logger.info(CommonFunction.convertToJSONStringResponse(response));
         logger.info("========== HostController.getLookDate END ==========");
         return response;

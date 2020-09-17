@@ -1434,19 +1434,10 @@ public class HostServiceImpl implements HostService {
         return CommonFunction.successOutput(hosts);
     }
 
-    public BaseOutput getLookDates(Long userId) {
+    public BaseOutput getLookDates(Long hostId) {
         DateCanNotBookingResDTO dateCanNotBookingResDTO = new DateCanNotBookingResDTO();
         List<DateResDTO> dateResDTOS = new ArrayList<>();
-//        List<java.time.LocalDate> localDates = new ArrayList<>();
-//        List<Host> hosts = hostRepository.getHostByUser(userId);
-//        for (Host host : hosts) {
-//            for (DateCanNotBooking dateCanNotBooking : host.getDateCanNotBookings()) {
-//                if(!dateCanNotBooking.getDate().isBefore(java.time.LocalDate.now())) {
-//                    localDates.add(dateCanNotBooking.getDate());
-//                }
-//            }
-//        }
-        List<Booking> bookingList = bookingRepository.getBookingByAgentId(userId);
+        List<Booking> bookingList = bookingRepository.getBookingByHostId(hostId);
         for (Booking booking : bookingList) {
             if (!booking.getCheckInDate().isBefore(java.time.LocalDate.now())
             && !booking.getCheckOutDate().isBefore(java.time.LocalDate.now())) {
