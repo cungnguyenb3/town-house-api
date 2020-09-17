@@ -16,6 +16,8 @@ import vn.com.pn.common.common.CommonFunction;
 import vn.com.pn.common.common.LogMessageConstants;
 import vn.com.pn.common.common.ScreenMessageConstants;
 import vn.com.pn.exception.ResourceInvalidInputException;
+import vn.com.pn.screen.f002Booking.entity.Booking;
+import vn.com.pn.screen.f002Booking.repository.BookingRepository;
 import vn.com.pn.screen.f004GoogleDrive.service.GoogleDriveService;
 import vn.com.pn.screen.m002Host.dto.*;
 import vn.com.pn.screen.m002Host.entity.DateCanNotBooking;
@@ -83,6 +85,9 @@ public class HostServiceImpl implements HostService {
 
     @Autowired
     private HostImageService hostImageService;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @Override
     public BaseOutput getAll(Integer pageNo, Integer pageSize, String sortBy) {
@@ -1431,17 +1436,38 @@ public class HostServiceImpl implements HostService {
 
     public BaseOutput getLookDates(Long userId) {
         DateCanNotBookingResDTO dateCanNotBookingResDTO = new DateCanNotBookingResDTO();
-//        List<DateResDTO> dateResDTOS = new ArrayList<>();
-        List<java.time.LocalDate> localDates = new ArrayList<>();
-        List<Host> hosts = hostRepository.getHostByUser(userId);
-        for (Host host : hosts) {
-            for (DateCanNotBooking dateCanNotBooking : host.getDateCanNotBookings()) {
-                if(!dateCanNotBooking.getDate().isBefore(java.time.LocalDate.now())) {
-                    localDates.add(dateCanNotBooking.getDate());
+        List<DateResDTO> dateResDTOS = new ArrayList<>();
+//        List<java.time.LocalDate> localDates = new ArrayList<>();
+//        List<Host> hosts = hostRepository.getHostByUser(userId);
+//        for (Host host : hosts) {
+//            for (DateCanNotBooking dateCanNotBooking : host.getDateCanNotBookings()) {
+//                if(!dateCanNotBooking.getDate().isBefore(java.time.LocalDate.now())) {
+//                    localDates.add(dateCanNotBooking.getDate());
+//                }
+//            }
+//        }
+        List<Booking> bookingList = bookingRepository.getBookingByAgentId(userId);
+        for (Booking booking : bookingList) {
+            if (!booking.getCheckInDate().isBefore(java.time.LocalDate.now())
+            && !booking.getCheckOutDate().isBefore(java.time.LocalDate.now())) {
+                DateResDTO dateResDTO = new DateResDTO();
+                dateResDTO.setFrom(booking.getCheckInDate().toString());
+                dateResDTO.setTo(booking.getCheckOutDate().toString());
+                dateResDTOS.add(dateResDTO);
+            }
+
+            else if (!booking.getCheckOutDate().isBefore(java.time.LocalDate.now())) {
+                if (booking.getCheckInDate().isBefore(java.time.LocalDate.now())
+                || booking.getCheckOutDate().isAfter(java.time.LocalDate.now())) {
+                    DateResDTO dateResDTO = new DateResDTO();
+                    dateResDTO.setFrom(LocalDate.now().toString());
+                    dateResDTO.setTo(booking.getCheckOutDate().toString());
+                    dateResDTOS.add(dateResDTO);
                 }
             }
+
         }
-        dateCanNotBookingResDTO.setDates(localDates);
+        dateCanNotBookingResDTO.setDates(dateResDTOS);
         return CommonFunction.successOutput(dateCanNotBookingResDTO);
     }
 }

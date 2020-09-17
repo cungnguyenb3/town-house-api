@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class DateCanNotBookingResDTO {
-//    List<DateResDTO> dates;
-    List<LocalDate> dates;
+    List<DateResDTO> dates;
+//    List<LocalDate> dates;
 }
 
