@@ -70,7 +70,7 @@ public class MomoService {
     private HostRepository hostRepository;
 
     public ResponseEntity<?> sendRequestPayment(MomoBasicInfoRequest request) throws JsonProcessingException {
-        logger.info(request.toString());
+        logger.info(CommonFunction.convertToJSONString(request));
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Content-Type", "application/json");
 
