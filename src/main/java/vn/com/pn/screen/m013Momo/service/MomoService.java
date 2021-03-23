@@ -70,6 +70,7 @@ public class MomoService {
     private HostRepository hostRepository;
 
     public ResponseEntity<?> sendRequestPayment(MomoBasicInfoRequest request) throws JsonProcessingException {
+        logger.info(request.toString());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Content-Type", "application/json");
 
@@ -130,7 +131,7 @@ public class MomoService {
 
             return hashRSA;
         } catch (Exception e) {
-            LogUtils.error("[TransactionRefundRequest] "+ e);
+            e.printStackTrace();
         }
         return null;
     }
